@@ -382,11 +382,12 @@ UC08 ..> UC07 : <<include>>
 
 #### 3.5.5 DIAGRAMMA DELLE CLASSI
 
-Il diagramma mostra le entità di dominio principali, i relativi attributi, metodi pubblici, molteplicità e associazioni. Le coordinate geografiche sono modellate come *value object* (`GeoPoint`) e compaiono come attributo `position` nelle classi che le usano.
+Il diagramma mostra gli oggetti Entity, Boundary e Control, con i relativi attributi, metodi pubblici, stereotipi, molteplicità e relazioni. Nelle associazioni `1..1` indica un legame obbligatorio con un solo oggetto, `0..1` un legame facoltativo e `*` un numero non limitato di oggetti. Le dipendenze tra Boundary e Control non hanno molteplicità. Le coordinate geografiche sono modellate come *value object* (`GeoPoint`) e compaiono come attributo `position` nelle classi che le usano.
 
 ```mermaid
 classDiagram
   class Place {
+    <<entity>>
     +PlaceId id
     +String name
     +PlaceType type
@@ -395,6 +396,7 @@ classDiagram
     +hasActiveReports()
   }
   class AccessibilityFeature {
+    <<entity>>
     +FeatureType type
     +FeatureState state
     +Instant observedAt
@@ -409,6 +411,7 @@ classDiagram
     UNKNOWN
   }
   class Report {
+    <<entity>>
     +ReportId id
     +ReportCategory category
     +String description
@@ -429,11 +432,13 @@ classDiagram
     RESOLVED
   }
   class ReportAttachment {
+    <<entity>>
     +String storageKey
     +String mimeType
     +ScanResult scanResult
   }
   class ReportEvent {
+    <<entity>>
     +ReportEventId id
     +ReportEventType type
     +String motivation
@@ -441,6 +446,7 @@ classDiagram
     +getEventDetails()
   }
   class UserAccount {
+    <<entity>>
     +UserId id
     +String email
     +Set~Role~ roles
@@ -453,11 +459,13 @@ classDiagram
     ADMINISTRATOR
   }
   class FavoritePlace {
+    <<entity>>
     +Boolean notificationsConsent
     +Instant addedAt
     +updateConsent()
   }
   class DataSource {
+    <<entity>>
     +SourceId id
     +String name
     +String version
@@ -465,39 +473,123 @@ classDiagram
     +validateContract()
   }
   class SourceSync {
+    <<entity>>
     +SyncResult result
     +Instant completedAt
     +isSuccessful()
   }
   class TransitLine {
+    <<entity>>
     +TransitLineId id
     +String name
     +getStops()
   }
   class TransitStop {
+    <<entity>>
     +TransitStopId id
     +GeoPoint position
     +getLines()
   }
 
-  Place "1" --> "0..*" AccessibilityFeature : possiede
-  Place "1" --> "0..*" TransitStop : ospita
+  Place "1..1" --> "0..*" AccessibilityFeature : possiede
+  Place "1..1" --> "0..*" TransitStop : ospita
   TransitLine "1..*" --> "2..*" TransitStop : serve
-  Report "1" --> "1..*" ReportEvent : registra
+  Report "1..1" --> "1..*" ReportEvent : registra
   Report "0..*" --> "0..1" Place : riguarda
-  Report "1" --> "0..1" ReportAttachment : allega
+  Report "1..1" --> "0..1" ReportAttachment : allega
   Report "0..*" --> "0..1" Report : duplicato di
   Report "0..*" --> "0..1" UserAccount : inviata da
   ReportEvent "0..*" --> "0..1" UserAccount : eseguito da
-  UserAccount "1" --> "0..*" FavoritePlace : segue
-  FavoritePlace "0..*" --> "1" Place : riferito a
-  AccessibilityFeature "0..*" --> "1" DataSource : proviene da
-  TransitLine "0..*" --> "1" DataSource : importata da
-  TransitStop "0..*" --> "1" DataSource : importata da
-  SourceSync "0..*" --> "1" DataSource : aggiorna
+  UserAccount "1..1" --> "0..*" FavoritePlace : segue
+  FavoritePlace "0..*" --> "1..1" Place : riferito a
+  AccessibilityFeature "0..*" --> "1..1" DataSource : proviene da
+  TransitLine "0..*" --> "1..1" DataSource : importata da
+  TransitStop "0..*" --> "1..1" DataSource : importata da
+  SourceSync "0..*" --> "1..1" DataSource : aggiorna
   AccessibilityFeature ..> FeatureState
   Report ..> ReportStatus
   UserAccount ..> Role
+
+  class WebInterface {
+    <<boundary>>
+  }
+  class PlacesAccessibilityAPI {
+    <<boundary>>
+  }
+  class RoutesAPI {
+    <<boundary>>
+  }
+  class ReportsTrackingAPI {
+    <<boundary>>
+  }
+  class ModerationAPI {
+    <<boundary>>
+  }
+  class SourceAdminAPI {
+    <<boundary>>
+  }
+  class AccountAPI {
+    <<boundary>>
+  }
+  class StorageScanAdapter {
+    <<boundary>>
+  }
+  class RoutingProviderAdapter {
+    <<boundary>>
+  }
+  class NotificationChannelAdapter {
+    <<boundary>>
+  }
+  class DataSourceAdapter {
+    <<boundary>>
+  }
+  class PlanRouteControl {
+    <<control>>
+  }
+  class GetPlaceAccessibilityControl {
+    <<control>>
+  }
+  class CreateReportControl {
+    <<control>>
+  }
+  class TrackReportControl {
+    <<control>>
+  }
+  class ModerateReportControl {
+    <<control>>
+  }
+  class SynchronizeSourceControl {
+    <<control>>
+  }
+  class AuthenticateUserControl {
+    <<control>>
+  }
+  class ManageProfileControl {
+    <<control>>
+  }
+
+  WebInterface ..> PlanRouteControl
+  WebInterface ..> GetPlaceAccessibilityControl
+  WebInterface ..> CreateReportControl
+  WebInterface ..> TrackReportControl
+  WebInterface ..> ModerateReportControl
+  WebInterface ..> SynchronizeSourceControl
+  WebInterface ..> AuthenticateUserControl
+  WebInterface ..> ManageProfileControl
+  PlacesAccessibilityAPI ..> GetPlaceAccessibilityControl
+  RoutesAPI ..> PlanRouteControl
+  ReportsTrackingAPI ..> CreateReportControl
+  ReportsTrackingAPI ..> TrackReportControl
+  ModerationAPI ..> ModerateReportControl
+  SourceAdminAPI ..> SynchronizeSourceControl
+  AccountAPI ..> AuthenticateUserControl
+  AccountAPI ..> ManageProfileControl
+  CreateReportControl ..> StorageScanAdapter
+  PlanRouteControl ..> RoutingProviderAdapter
+  CreateReportControl ..> NotificationChannelAdapter
+  ModerateReportControl ..> NotificationChannelAdapter
+  ManageProfileControl ..> NotificationChannelAdapter
+  SynchronizeSourceControl ..> DataSourceAdapter
 ```
 
 *Figura 3.2: Diagramma UML delle classi del sistema*
