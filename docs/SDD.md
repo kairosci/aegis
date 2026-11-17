@@ -1,14 +1,14 @@
 # SDD
 
-## System Design Document
+## Documento di Progettazione del Sistema
 
 | Dato | Valore |
 |---|---|
 | Progetto | aegis |
-| Corso | Da confermare in OPEN-13 |
-| Docenti | Da confermare in OPEN-13 |
-| Candidati | Da confermare in OPEN-13 |
-| Anno accademico | Da confermare in OPEN-13 |
+| Corso | Ingegneria del Software e Interazione Uomo-Macchina |
+| Docenti | Prof.ssa Mariacarla Staffa |
+| Candidati | [Inserisci Nome e Cognome] |
+| Anno accademico | 2025/2026 |
 
 Bozza aggiornata il 17 novembre 2026. L’architettura è iniziale e descrive il sistema proposto. Il prodotto non è ancora implementato. Le descrizioni dei componenti e dei flussi indicano comportamenti attesi e non attestano funzionalità realizzate o verificate. Runtime Jakarta EE, fonti dati, area pilota e servizi gestiti sono da convalidare secondo la [roadmap](MILESTONES.md).
 
@@ -85,7 +85,7 @@ Il documento descrive il contesto attuale, l’architettura proposta, la decompo
 
 ## SISTEMA CORRENTE
 
-Non è stato fornito un sistema software esistente. Il progetto è greenfield. Durante la definizione dell’area pilota saranno rilevati i servizi di trasporto esistenti, le fonti dati, i processi di aggiornamento e i flussi di segnalazione già in uso.
+Il progetto è greenfield: non è stato fornito un sistema esistente da descrivere o migrare. Prima del pilota saranno censiti i servizi di trasporto, i dataset disponibili e i flussi di segnalazione già in uso nell’area geografica selezionata.
 
 ## SISTEMA PROPOSTO
 
@@ -95,7 +95,7 @@ aegis è una web app responsive per consultare l’accessibilità di luoghi e se
 
 La versione Jakarta EE e il runtime compatibile saranno selezionati in base ai requisiti di distribuzione e alle dipendenze del progetto. La proposta [ADR-0001](adr/ADR-0001-runtime-baseline.md) è in attesa di approvazione secondo OPEN-08. Provider di routing e fonti di trasporto seguono OPEN-03 e OPEN-01. Canali di notifica e servizi gestiti seguono OPEN-08. Le integrazioni restano sostituibili tramite porte applicative.
 
-Il browser riceve HTML per le viste e JSON per le API. La mappa usa una libreria cartografica client-side, ma i dati cartografici e di accessibilità provengono dall’API. La consultazione può essere pubblica. Invio e tracking delle segnalazioni applicano la policy di identità e autorizzazione da approvare in OPEN-04. Ruoli e transizioni di moderazione seguono OPEN-04 e OPEN-12.
+Il browser riceve HTML per le viste e JSON per le API. La mappa usa una libreria cartografica client-side, mentre i dati di luoghi e accessibilità provengono dall’API. Consultazione, invio delle segnalazioni e tracking tramite codice sono pubblici e non richiedono un account. L’autenticazione è richiesta per preferiti, notifiche, storico personale e operazioni amministrative. La protezione del codice di tracking, i ruoli e le transizioni di moderazione seguono le decisioni ancora aperte in OPEN-04 e OPEN-12.
 
 ### 3.2 DECOMPOSIZIONE DEL SISTEMA
 
@@ -103,18 +103,18 @@ La tabella collega i requisiti del [RAD](RAD.md#32-requisiti-funzionali) ai modu
 
 | Modulo | Responsabilità | Requisiti funzionali e casi d’uso | Requisiti di qualità |
 |---|---|---|---|
-| Places | Gestire luoghi, fermate e stazioni e fornire ricerche geospaziali. | FR-01, FR-06, UC-02 | NFR-08, NFR-11, NFR-14 |
-| Accessibility | Gestire caratteristiche, stato, fonte, timestamp e validità. | FR-02, FR-03, UC-01, UC-02 | NFR-08, NFR-14 |
-| Routing | Validare richieste, invocare il provider e mostrare l’incertezza dei tratti. | FR-04, FR-05, UC-01 | NFR-11, NFR-14 |
-| Reports | Creare segnalazioni e consentire il tracking con dati minimizzati. | FR-07, FR-08, UC-03, UC-04 | NFR-04, NFR-07 |
+| Places | Gestire luoghi, fermate e stazioni e fornire ricerche geospaziali. | FR-01, FR-06, UC-02 | NFR-08, NFR-10 |
+| Accessibility | Gestire caratteristiche, stato, fonte, timestamp e validità. | FR-02, FR-03, UC-01, UC-02 | NFR-08 |
+| Routing | Validare richieste, invocare il provider e mostrare l’incertezza dei tratti. | FR-04, FR-05, UC-01 | NFR-08, NFR-10 |
+| Reports | Creare segnalazioni e consentire il tracking pubblico tramite codice senza esporre dati personali. | FR-07, FR-08, UC-03, UC-04 | NFR-04, NFR-06, NFR-07 |
 | Moderation | Applicare le autorizzazioni e validare le transizioni conservando la cronologia append-only. | FR-09, UC-05 | NFR-04, NFR-05, NFR-06 |
-| Identity | Gestire autenticazione, ruoli e separazione dei dati identificativi. | FR-13, UC-03, UC-05, UC-06 | NFR-04, NFR-05, NFR-06 |
-| Integrations | Implementare adattatori per fonti di trasporto, routing, notifiche e storage. | FR-10 (UC-06), FR-12 (UC-03, UC-05) | NFR-07, NFR-12, NFR-16 |
-| Worker | Eseguire sincronizzazioni schedulate, riconciliare upload e inviare notifiche in modo asincrono e recuperabile. | FR-07 (UC-03), FR-10, FR-11, UC-06, FR-12 (UC-03, UC-05) | NFR-07, NFR-09, NFR-10, NFR-14 |
-| Web | Fornire viste accessibili in Facelets con mappa, alternative testuali, moduli e pannello di moderazione. | FR-01–FR-09, FR-13, UC-01–UC-05 | NFR-01, NFR-02, NFR-03, NFR-13 |
-| Runtime e Operations | Gestire configurazione, distribuzione, osservabilità, migrazioni e ripristino. | Nessun caso d’uso diretto | NFR-05, NFR-09, NFR-10, NFR-12, NFR-15, NFR-16 |
+| Identity | Gestire autenticazione, ruoli e separazione dei dati identificativi. | FR-13 (UC-05–UC-08), FR-14 (UC-07, UC-08), FR-15 (UC-08) | NFR-04, NFR-05 |
+| Integrations | Implementare adattatori per fonti di trasporto, routing, notifiche e storage. | FR-10 (UC-06), FR-12 (UC-05, UC-08) | NFR-07, NFR-12 |
+| Worker | Eseguire sincronizzazioni schedulate, riconciliare upload e inviare notifiche in modo asincrono e recuperabile. | FR-07 (UC-03), FR-10, FR-11, UC-06, FR-12 (UC-05, UC-08) | NFR-07, NFR-09, NFR-10 |
+| Web | Fornire viste accessibili in Facelets con mappa, alternative testuali, moduli e pannello di moderazione. | FR-01–FR-09, FR-13–FR-15, UC-01–UC-08 | NFR-01, NFR-02, NFR-03, NFR-10, NFR-13 |
+| Runtime e Operations | Gestire configurazione, distribuzione, osservabilità, migrazioni e ripristino. | Nessun caso d’uso diretto | NFR-05, NFR-09, NFR-10, NFR-12 |
 
-NFR-15 è trasversale: separazione tra dominio, casi d’uso e adattatori e documentazione delle interfacce si applicano a tutti i moduli, non solo a Runtime e Operations.
+NFR-12 è trasversale: separazione tra dominio, casi d’uso e adattatori e documentazione delle API riguardano i moduli applicativi.
 
 La struttura applicativa proposta organizza il codice Java per domini e separa `domain`, `application` e `adapter`. Le entità e i value object dovranno contenere invarianti. I casi d’uso dovranno orchestrare le operazioni e dipendere da porte. Gli adattatori dovranno implementare accesso HTTP, persistenza e integrazioni. DTO HTTP, modello di dominio e modello di persistenza resteranno separati.
 
@@ -256,11 +256,11 @@ Il worker elimina le chiavi delle generazioni non più attive dopo il commit. Un
 
 ### 3.5 CONTROLLO ACCESSI E SICUREZZA
 
-Il controllo accessi è applicato lato server. Il contratto proposto per autenticazione e autorizzazione, incluse identità operative e protezione del tracking, è descritto in [ADR-0004](adr/ADR-0004-identity-and-authorization-contract.md) e resta da approvare. Modalità di invio, ruoli, campi accessibili, tempi di conservazione e consenso delle immagini sono da definire secondo OPEN-04 e OPEN-05 prima del lancio.
+Il controllo accessi è applicato lato server. Consultazione, invio e tracking tramite codice sono pubblici secondo il RAD. Le operazioni amministrative e le funzioni dell’utente registrato richiedono autenticazione e autorizzazione. La proposta [ADR-0004](adr/ADR-0004-identity-and-authorization-contract.md) resta da approvare per ruoli, identità operative, protezione del codice di tracking e campi restituiti. Campi pubblici, conservazione e consenso delle immagini seguono OPEN-05.
 
 #### 3.5.1 AUTENTICAZIONE E IDENTITÀ
 
-La consultazione di luoghi e percorsi è pubblica secondo le policy applicabili. Le funzioni riservate richiedono un’identità autenticata e un permesso verificato lato server. Il provider d’identità e i relativi protocolli non sono ancora selezionati. Le credenziali e i segreti non sono conservati nei log né nel codice applicativo. Per invio, tracking e identità dei processi automatici si applica la proposta non approvata in [ADR-0004](adr/ADR-0004-identity-and-authorization-contract.md).
+Consultazione, invio di segnalazioni e tracking tramite codice non richiedono un account. Il codice di tracking autorizza la consultazione del solo stato consentito e deve essere trattato come una credenziale: non va registrato nei log. Le regole di generazione, conservazione e accesso al codice sono da approvare in OPEN-04 e OPEN-05. Preferiti, notifiche, storico personale e operazioni amministrative richiedono un’identità autenticata e un permesso verificato lato server. Provider d’identità e protocolli non sono selezionati. Le credenziali e i segreti non sono conservati nei log né nel codice applicativo.
 
 #### 3.5.2 CONTROLLO DEGLI ACCESSI AI DATI
 
@@ -356,7 +356,7 @@ Se la persona nega il permesso di geolocalizzazione, il sistema non blocca ricer
 
 ### 4.1 AUTENTICAZIONE UTENTE
 
-Il sottosistema Identity gestisce autenticazione e autorizzazione delle funzioni protette. L’amministratore deve essere autenticato e avere il permesso di moderazione o gestione della fonte richiesto dall’operazione. Le policy per autenticazione dell’invio e accesso al tracking restano da definire secondo OPEN-04. Il flusso proposto di tracking restituisce al possessore del codice solo lo stato consentito, senza rendere già approvata la policy di accesso. Provider e protocollo di autenticazione sono da selezionare. L’ospite accede alla consultazione pubblica senza sessione autenticata. I dati identificativi restano separati dai contenuti pubblici delle segnalazioni.
+Il sottosistema Identity gestisce autenticazione e autorizzazione delle funzioni protette. L’amministratore deve essere autenticato e avere il permesso di moderazione o gestione della fonte richiesto dall’operazione. Invio e tracking sono pubblici: il tracking usa il codice come credenziale e restituisce solo lo stato consentito. Le regole di protezione del codice e dei campi restituiti restano da approvare in OPEN-04 e OPEN-05. Provider e protocollo di autenticazione sono da selezionare. I dati identificativi restano separati dai contenuti pubblici delle segnalazioni.
 
 ### 4.2 GESTIONE DEI LUOGHI
 
