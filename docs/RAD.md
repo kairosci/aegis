@@ -50,7 +50,7 @@ Gli obiettivi principali sono trovare e confrontare percorsi accessibili, consul
 | Consultare l’accessibilità | Ogni caratteristica espone stato attuale, fonte dei dati e data di aggiornamento. |
 | Inviare e tracciare segnalazioni | L’invio restituisce un codice alfanumerico univoco utilizzabile per consultare lo stato della segnalazione. |
 | Moderare segnalazioni | Ogni decisione amministrativa aggiorna lo stato registrando un evento storico non sovrascrivibile. |
-| Usare i flussi essenziali con tecnologie assistive | I flussi principali sono completabili da tastiera e con screen reader (conformità WCAG 2.1 AA). |
+| Usare i flussi essenziali con tecnologie assistive | I flussi principali sono verificati da tastiera e con screen reader rispetto alla baseline di progetto WCAG 2.2 AA proposta in OPEN-06. |
 
 *Tabella 1.1: Obiettivi del sistema e relativi criteri di verifica*
 
@@ -118,11 +118,13 @@ La piattaforma offre consultazione pubblica con ricerca per area, mappa interatt
 
 ### 3.3 REQUISITI NON FUNZIONALI
 
+La baseline di accessibilità proposta per il prodotto è **[WCAG 2.2 livello AA](https://www.w3.org/TR/WCAG22/)**. Il referente accessibilità, il responsabile di prodotto e le persone coinvolte devono approvare il perimetro e il protocollo in OPEN-06 prima delle verifiche. Il piano di valutazione elenca pagine, componenti, stati dinamici e flussi completi, inclusi gli errori, e registra per ogni criterio A e AA applicabilità, esito, metodo, ambiente ed evidenza. Strumenti automatici, revisione manuale, tastiera, zoom, contrasto, tecnologie assistive e confronto tra mappa e vista testuale hanno risultati distinti. Le sessioni con utenti sono registrate separatamente dai risultati di conformità e usabilità. Gli strumenti automatici non dimostrano da soli la conformità. Eventuali dichiarazioni di conformità richiedono una valutazione completa del perimetro dichiarato e una revisione competente. ISO 9241-110 resta il riferimento complementare per l’usabilità.
+
 | ID | Qualità | Azione richiesta | Criterio di verifica | Responsabile |
 |---|---|---|---|---|
-| NFR-01 | Accessibilità | Consentire di completare i flussi essenziali da tastiera e con screen reader. | Superamento dei test di navigazione da tastiera, ordine del focus ed etichette ARIA secondo **WCAG 2.1 livello AA**. | Team di sviluppo / QA |
+| NFR-01 | Accessibilità | Consentire di completare i flussi essenziali da tastiera e con screen reader secondo la baseline **WCAG 2.2 livello AA** proposta per il prodotto. | Dopo l’approvazione del protocollo OPEN-06, verificare tastiera, ordine del focus, nome e stato dei controlli e annunci con screen reader per i criteri applicabili di livello A e AA. | Team di sviluppo / QA |
 | NFR-02 | Accessibilità | Fornire una vista testuale equivalente alle informazioni presentate sulla mappa. | Verifica di parità informativa tra vista mappa e vista elenco testuale per le medesime ricerche. | Team di sviluppo / QA |
-| NFR-03 | Accessibilità | Garantire contrasto cromatico adeguato e leggibilità con zoom fino al 200%. | Rapporto di contrasto ≥ 4.5:1 per il testo standard secondo **WCAG 2.1 AA**, senza perdita di contenuto allo zoom. | Team di sviluppo / QA |
+| NFR-03 | Accessibilità | Garantire contrasto cromatico adeguato e leggibilità con zoom fino al 200%. | Verificare il rapporto di contrasto ≥ 4.5:1 per il testo standard e l’assenza di perdita di contenuto allo zoom secondo la baseline **WCAG 2.2 livello AA** proposta. | Team di sviluppo / QA |
 | NFR-04 | Privacy | Minimizzare i dati personali e separare l’identità dell’autore dai contenuti pubblici delle segnalazioni. | Verifica che endpoint pubblici e pagine di tracking non espongano email o identificativi dell’utente (conformità GDPR). | Responsabile tecnico |
 | NFR-05 | Sicurezza | Proteggere le comunicazioni con HTTPS/TLS e applicare il controllo degli accessi basato sui ruoli (RBAC). | Verifica del protocollo HTTPS su tutti gli endpoint e rifiuto lato server delle operazioni riservate per ruoli non autorizzati. | Responsabile tecnico |
 | NFR-06 | Sicurezza | Applicare validazione server-side degli input, rate limiting e protezione da injection. | Test con input malformati e tentativi di injection verificando il rifiuto senza effetti sui dati. | Responsabile tecnico |
@@ -145,7 +147,7 @@ La piattaforma offre consultazione pubblica con ricerca per area, mappa interatt
 | Struttura software | Architettura disaccoppiata tra presentazione, casi d’uso, dominio e adattatori esterni, documentata con OpenAPI. |
 | Accesso e ruoli | Consultazione, invio di segnalazioni e tracking liberi anche per l’Ospite. Autenticazione e controllo dei ruoli (Utente registrato, Amministratore) per preferiti, notifiche, storico personale e moderazione. |
 | Qualità dei dati | Ogni proprietà di accessibilità registra fonte e timestamp, dati assenti o oltre la soglia di validità (30 giorni dall’osservazione, salvo diversa scadenza della fonte) sono classificati come *Sconosciuti*. |
-| Normativa | Conformità al Regolamento Europeo GDPR per la protezione dei dati personali, alle linee guida WCAG 2.1 livello AA e, per il contesto italiano, alla Legge 4/2004 (Legge Stanca) sull’accessibilità degli strumenti informatici. |
+| Normativa | Trattamenti di dati personali da valutare secondo GDPR. I requisiti legali di accessibilità applicabili, inclusa la Legge 4/2004 (Legge Stanca), sono da verificare in OPEN-06. WCAG 2.2 livello AA è il target di prodotto proposto e non costituisce una dichiarazione di conformità legale. |
 
 *Tabella 3.4: Vincoli di progetto*
 
@@ -843,7 +845,7 @@ sequenceDiagram
 |---|---|
 | **RAD** | *Requirements Analysis Document*, Documento di Analisi dei Requisiti. |
 | **TPL** | Trasporto Pubblico Locale (metropolitane, autobus, tram, ferrovie urbane). |
-| **WCAG 2.1 AA** | *Web Content Accessibility Guidelines*, standard internazionale W3C per l’accessibilità dei contenuti web (livello AA). |
+| **WCAG 2.2 AA** | *Web Content Accessibility Guidelines*, criteri W3C di accessibilità dei contenuti web di livello A e AA. È il target di prodotto proposto, soggetto all’approvazione OPEN-06. |
 | **ARIA** | *Accessible Rich Internet Applications*, insieme di attributi che rendono comprensibili agli screen reader i componenti dinamici delle pagine web. |
 | **Legge Stanca** | Legge 4/2004 sull’accessibilità degli strumenti informatici per le persone con disabilità. |
 | **GDPR** | Regolamento Europeo sulla protezione dei dati personali. |

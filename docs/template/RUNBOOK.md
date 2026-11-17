@@ -65,7 +65,7 @@ Descrivere avvio, retry, idempotenza, validazione, invalidazione cache e verific
 
 ### Recupero dei lavori asincroni
 
-Documentare una procedura per ogni tipo di lavoro durevole, inclusi sincronizzazione, pulizia cache, riconciliazione degli upload e invio notifiche nell'outbox. Indicare l'archivio autorevole dello stato, i passaggi per distinguere lavoro pendente, fallito e con esito ambiguo, le verifiche prima di un retry o replay, i controlli di idempotenza, le possibili duplicazioni, l'escalation e la registrazione dell'esito. Per la pulizia cache verificare la generazione attiva e non dichiarare incoerenti i dati solo perché la rimozione di chiavi superate è ancora pendente. Per gli upload verificare intento, esito della scansione, visibilità privata e collegamento al report. Rimuovere o riprendere gli oggetti non collegati secondo le policy OPEN-05, OPEN-08 e OPEN-15. Per una notifica ambigua, verificare il riscontro disponibile dal provider e applicare la regola approvata prima di ritentare. Non dichiarare consegna esattamente una volta e non registrare come riuscito un lavoro senza evidenza. Retry, backoff, scadenze e responsabilità restano da approvare secondo OPEN-08 e [ADR-0005](../adr/ADR-0005-operability-and-recovery-contract.md).
+Documentare una procedura per ogni tipo di lavoro durevole, inclusi sincronizzazione, pulizia cache, riconciliazione degli upload e invio notifiche nell'outbox. Indicare l'archivio autorevole dello stato, i passaggi per distinguere lavoro pendente, fallito e con esito ambiguo, le verifiche prima di un retry o replay, i controlli di idempotenza, le possibili duplicazioni, l'escalation e la registrazione dell'esito. Per la pulizia cache verificare la generazione attiva e non dichiarare incoerenti i dati solo perché la rimozione di chiavi superate è ancora pendente. Per gli upload verificare intento, esito della scansione, visibilità privata e collegamento al report. Rimuovere o riprendere gli oggetti non collegati secondo le policy OPEN-05, OPEN-08 e OPEN-15. Per una notifica ambigua, verificare il riscontro disponibile dal provider e applicare la regola approvata prima di ritentare. Non dichiarare consegna esattamente una volta e non registrare come riuscito un lavoro senza evidenza. Retry, backoff, scadenze e responsabilità restano da approvare secondo OPEN-08 e SDD.
 
 ### Coda di moderazione
 
@@ -83,4 +83,4 @@ Descrivere rilevazione, classificazione, contenimento, escalation, comunicazioni
 
 ## Riferimenti e dipendenze
 
-Elencare dashboard, configurazioni, inventario delle dipendenze, ADR, procedure collegate e contatti operativi approvati. Usare link a sistemi controllati invece di copiare segreti o dati riservati.
+Elencare dashboard, configurazioni, inventario delle dipendenze, riferimenti a RAD e SDD, procedure collegate e contatti operativi approvati. Usare link a sistemi controllati invece di copiare segreti o dati riservati.

@@ -6,7 +6,7 @@ Il pacchetto estratto è in `docs/template/assets/package/`. `make docs` verific
 
 Per la struttura dei documenti basati sugli esempi accademici, usare i modelli anonimizzati [RAD](template/RAD.md) e [SDD](template/SDD.md). Questa trascrizione resta il riferimento del template Word generico.
 
-Per registrare decisioni architetturali approvate o proposte, usare il [modello ADR](template/ADR.md). Un ADR non sostituisce i requisiti RAD né la descrizione architetturale SDD.
+Registrare i requisiti e le decisioni sul comportamento del prodotto direttamente in RAD e le decisioni architetturali e operative in SDD. Indicare lo stato di ogni elemento non approvato e collegarlo alla decisione aperta e alla prova richiesta in [roadmap](MILESTONES.md).
 
 Per procedure di distribuzione, ripristino, riconciliazione dei lavori asincroni e gestione degli incidenti, usare il [modello di runbook operativo](template/RUNBOOK.md). Le procedure vanno completate e provate nell’ambiente di riferimento prima di essere considerate operative.
 

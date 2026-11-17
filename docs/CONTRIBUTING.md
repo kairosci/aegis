@@ -2,13 +2,13 @@
 
 ## Stato e ambito
 
-Il repository contiene la documentazione RAD/SDD e gli strumenti per esportarla in DOCX. L’applicazione non è ancora implementata e non dispone di build o test applicativi. Gli script di validazione, i test documentali e i workflow CI sono stati rimossi. Il repository è pubblico ma non dichiara una licenza. Finché OPEN-10 non è risolta, non inviare contributi esterni che richiedono diritti di riuso o ridistribuzione. Consultare la proposta [ADR-0008](adr/ADR-0008-repository-license-and-contributions.md). Seguire la [roadmap](MILESTONES.md) per distinguere attività completate, pianificate e decisioni aperte.
+Il repository contiene la documentazione RAD/SDD e gli strumenti per esportarla in DOCX. L’applicazione non è ancora implementata e non dispone di build o test applicativi. Gli script di validazione, i test documentali e i workflow CI sono stati rimossi. Il repository è pubblico ma non dichiara una licenza. Finché OPEN-10 non è risolta, non inviare contributi esterni che richiedono diritti di riuso o ridistribuzione. Seguire la [roadmap](MILESTONES.md) per distinguere attività completate, pianificate e decisioni aperte.
 
 ## Flusso di lavoro
 
 1. Aprire o aggiornare un’attività descrivendo problema, attore, risultato atteso, criteri di accettazione e requisiti collegati. È possibile copiare il [modello di issue](template/ISSUE.md).
 2. I maintainer lavorano su un branch dedicato e aprono una pull request verso `main`. Chi segnala un problema può usare le issue abilitate. Non riscrivere la cronologia condivisa e non inserire segreti o dati personali nel repository o nelle issue.
-3. Aggiornare RAD per modifiche di requisito o comportamento. Aggiornare SDD per modifiche architetturali o operative. Registrare le decisioni architetturali in un ADR, mantenendo esplicito lo stato di approvazione.
+3. Aggiornare RAD per modifiche di requisito o comportamento. Aggiornare SDD per modifiche architetturali o operative. Registrare le decisioni direttamente nel documento pertinente, indicando se sono proposte, approvate o ancora aperte e collegandole ai criteri di verifica.
 4. Collegare ogni requisito funzionale interessato a casi d’uso e moduli. Specificare le verifiche previste per accessibilità, privacy e sicurezza quando la modifica le influenza.
 5. Riportare nella pull request la revisione svolta e i risultati effettivamente osservati. Non dichiarare prove con utenti, verifiche di ripristino o analisi non eseguite.
 
@@ -58,13 +58,13 @@ Verifica di sola lettura del repository `kairosci/aegis` il 16 novembre 2026:
 | Dependabot security updates | Abilitati |
 | Aggiornamenti Dependabot | Dipendenze Node documentali, controllo settimanale |
 | Secret scanning e push protection | Abilitati |
-| Rilevamento di pattern non provider | Disabilitato. Eleggibilità dell’account da verificare secondo ADR-0009. |
-| Verifica di validità dei segreti rilevati | Disabilitata. L’invio dei segreti agli issuer e l’eleggibilità sono da approvare secondo ADR-0009. |
+| Rilevamento di pattern non provider | Disabilitato. Eleggibilità dell’account da verificare secondo OPEN-11. |
+| Verifica di validità dei segreti rilevati | Disabilitata. L’invio dei segreti agli issuer e l’eleggibilità sono da approvare secondo OPEN-11. |
 | Segnalazione privata delle vulnerabilità GitHub | Abilitata |
 | Collegamento al report privato nel flusso issue | Configurato in `.github/ISSUE_TEMPLATE/config.yml` |
 | Release | Nessuna release pubblicata |
 
-Dependabot controlla settimanalmente gli aggiornamenti delle dipendenze Node documentali. Non sono configurati workflow CI o controlli automatici sul repository. Gli avvisi e la segnalazione privata delle vulnerabilità sono attivi. Il flusso “New issue” mostra il collegamento al report privato e la [politica di sicurezza](SECURITY.md) ne descrive l'uso. Il proprietario deve ancora decidere la licenza e i termini di contribuzione secondo la proposta [ADR-0008](adr/ADR-0008-repository-license-and-contributions.md), la protezione di `main`, le review e la policy di merge.
+Dependabot controlla settimanalmente gli aggiornamenti delle dipendenze Node documentali. Non sono configurati workflow CI o controlli automatici sul repository. Gli avvisi e la segnalazione privata delle vulnerabilità sono attivi. Il flusso “New issue” mostra il collegamento al report privato e la [politica di sicurezza](SECURITY.md) ne descrive l'uso. Il proprietario deve ancora decidere la licenza e i termini di contribuzione secondo OPEN-10, la protezione di `main` secondo OPEN-09 e le impostazioni aggiuntive di scansione secondo OPEN-11.
 
 La verifica delle impostazioni GitHub è stata eseguita in sola lettura il 16 novembre 2026. Gli endpoint sono relativi a `https://api.github.com`.
 
@@ -79,4 +79,4 @@ La verifica delle impostazioni GitHub è stata eseguita in sola lettura il 16 no
 | Segnalazione privata delle vulnerabilità | `GET /repos/kairosci/aegis/private-vulnerability-reporting` | `enabled: true`. |
 | Configurazione versionata | [.github/dependabot.yml](../.github/dependabot.yml) e [.github/ISSUE_TEMPLATE/config.yml](../.github/ISSUE_TEMPLATE/config.yml) | Aggiornamenti settimanali documentati e collegamento al report privato configurato. |
 
-Questi risultati descrivono lo stato osservato in quella data e non sostituiscono la decisione del proprietario su OPEN-09, OPEN-10 e OPEN-11. Per i limiti di eleggibilità e gli effetti delle due impostazioni aggiuntive, consultare la proposta [ADR-0009](adr/ADR-0009-secret-scanning-eligibility-and-validity.md).
+Questi risultati descrivono lo stato osservato in quella data e non sostituiscono la decisione del proprietario su OPEN-09, OPEN-10 e OPEN-11. Prima di modificare le impostazioni aggiuntive di scansione, verificare l’eleggibilità dell’account, gli effetti dell’invio dei segreti agli issuer e chi riceve gli avvisi.
