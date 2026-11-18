@@ -4,7 +4,7 @@
 
 | Dato | Valore |
 |---|---|
-| Progetto | aegis |
+| Progetto | AEGIS |
 | Corso | Ingegneria del Software e Interazione Uomo-Macchina |
 | Docenti | Prof.ssa Mariacarla Staffa |
 | Candidati | Alessio Attilio, Michela Rita Brancaccio, Andrea Plini |
@@ -32,7 +32,7 @@
 
 ### 1.1 SCOPO DEL SISTEMA
 
-Questo documento descrive l’architettura software proposta per aegis e dettaglia i componenti, i dati, le interfacce e le decisioni operative che realizzano i requisiti definiti nel [RAD](RAD.md).
+Questo documento descrive l’architettura software proposta per AEGIS e dettaglia i componenti, i dati, le interfacce e le decisioni operative che realizzano i requisiti definiti nel [RAD](RAD.md).
 
 ### 1.2 OBIETTIVI DI PROGETTAZIONE
 
@@ -78,7 +78,7 @@ Il progetto è greenfield: non è stato fornito un sistema esistente da descrive
 
 ### 3.1 PANORAMICA
 
-aegis è una web app responsive per consultare l’accessibilità di luoghi e servizi di trasporto, pianificare spostamenti e inviare segnalazioni. L’Ospite può consultare luoghi, pianificare percorsi, seguire segnalazioni tramite codice e registrarsi. Solo l’Utente registrato autenticato può inviare segnalazioni. Le viste server-side usano Jakarta Faces e Facelets. Le API REST usano Jakarta REST. I worker eseguono le sincronizzazioni e le attività asincrone.
+AEGIS è una web app responsive per consultare l’accessibilità di luoghi e servizi di trasporto, pianificare spostamenti e inviare segnalazioni. L’Ospite può consultare luoghi, pianificare percorsi, seguire segnalazioni tramite codice e registrarsi. Solo l’Utente registrato autenticato può inviare segnalazioni. Le viste server-side usano Jakarta Faces e Facelets. Le API REST usano Jakarta REST. I worker eseguono le sincronizzazioni e le attività asincrone.
 
 La baseline applicativa è Java 21 LTS, Jakarta EE 11 e WildFly 42. PostgreSQL 16 con PostGIS 3.4 conserva i dati relazionali e geografici. Redis fornisce la cache. Gli allegati sono conservati in object storage compatibile con S3, con MinIO in locale e AWS S3 in produzione. Le integrazioni esterne sono isolate dietro porte applicative.
 
@@ -172,7 +172,7 @@ Il diagramma di deployment mostra i nodi runtime e i protocolli usati tra browse
 
 ```mermaid
 flowchart LR
-  accTitle: Deployment UML di aegis
+  accTitle: Deployment UML di AEGIS
   accDescr: Nodi device ed execution environment ospitano gli artifact client e server. I collegamenti indicano HTTPS, JDBC, RESP e API S3.
   Client["<<device>> Dispositivo client<br/><<artifact>> Browser"]
   Ingress["<<device>> Ingress e distribuzione<br/>Terminazione TLS / CDN"]
@@ -404,7 +404,7 @@ Il diagramma mostra package, visibilità, operazioni, porte applicative e adatta
 
 ```mermaid
 classDiagram
-  accTitle: Classi di design di aegis
+  accTitle: Classi di design di AEGIS
   accDescr: Package domain, application e adapter. I casi d’uso dipendono dalle porte repository, routing, storage e notifiche implementate dagli adattatori JPA, S3 e worker.
   namespace domain {
     class Report {
@@ -515,7 +515,7 @@ classDiagram
   Report --> UserAccount
 ```
 
-*Figura 5.1: Diagramma delle classi di design di aegis*
+*Figura 5.1: Diagramma delle classi di design di AEGIS*
 
 ### 5.2 SEQUENZA DI DESIGN UC-03
 

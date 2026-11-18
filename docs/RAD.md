@@ -4,7 +4,7 @@
 
 | Dato | Valore |
 |---|---|
-| Progetto | Aegis |
+| Progetto | AEGIS |
 | Corso | Ingegneria del Software e Interazione Uomo-Macchina |
 | Docenti | Prof.ssa Mariacarla Staffa |
 | Candidati | Alessio Attilio, Michela Rita Brancaccio, Andrea Plini |
@@ -43,7 +43,7 @@
 
 ### 1.1 SCOPO DEL SISTEMA
 
-La web app **Aegis** aiuta le persone con disabilità motoria, visiva o uditiva a pianificare spostamenti urbani, consultare l’accessibilità di stazioni, fermate e mezzi del trasporto pubblico locale (TPL) e segnalare barriere architettoniche o guasti agli ausili (ad esempio ascensori fuori servizio, rampe ostruite). Il sistema mostra esplicitamente la fonte e la data di aggiornamento di ciascuna caratteristica. Qualsiasi dato assente o scaduto viene classificato come **sconosciuto** e non viene mai interpretato come prova di accessibilità.
+La web app **AEGIS** aiuta le persone con disabilità motoria, visiva o uditiva a pianificare spostamenti urbani, consultare l’accessibilità di stazioni, fermate e mezzi del trasporto pubblico locale (TPL) e segnalare barriere architettoniche o guasti agli ausili (ad esempio ascensori fuori servizio, rampe ostruite). Il sistema mostra esplicitamente la fonte e la data di aggiornamento di ciascuna caratteristica. Qualsiasi dato assente o scaduto viene classificato come **sconosciuto** e non viene mai interpretato come prova di accessibilità.
 
 Gli obiettivi principali sono trovare e confrontare percorsi accessibili, consultare le caratteristiche dei luoghi, inviare e tracciare segnalazioni tramite codice univoco e permettere agli amministratori autorizzati di moderarle mantenendo uno storico immutabile delle decisioni.
 
@@ -208,7 +208,7 @@ Gli scenari seguenti, inventati a scopo illustrativo, rappresentano una validazi
 
 | Titolo | Attori | Obiettivo | Descrizione dello scenario |
 |---|---|---|---|
-| **Pianificazione di un percorso** | Ospite, Provider di routing | Confrontare percorsi senza presentare dati incerti come verificati. | Giorgio si muove in carrozzina e deve raggiungere l’ospedale. Dallo smartphone apre aegis senza registrarsi, indica origine, destinazione e l’esigenza di percorso senza barriere. Il sistema propone due alternative: una è compatibile, l’altra contiene un tratto contrassegnato come “non verificato” perché l’ultimo dato sull’ascensore è scaduto. Giorgio sceglie la prima. |
+| **Pianificazione di un percorso** | Ospite, Provider di routing | Confrontare percorsi senza presentare dati incerti come verificati. | Giorgio si muove in carrozzina e deve raggiungere l’ospedale. Dallo smartphone apre AEGIS senza registrarsi, indica origine, destinazione e l’esigenza di percorso senza barriere. Il sistema propone due alternative: una è compatibile, l’altra contiene un tratto contrassegnato come “non verificato” perché l’ultimo dato sull’ascensore è scaduto. Giorgio sceglie la prima. |
 | **Consultazione di un luogo** | Ospite | Conoscere caratteristiche, stato e provenienza dei dati di una stazione. | Elena è non vedente e usa uno screen reader. Cerca la stazione dalla vista elenco testuale, naviga da tastiera fino alla scheda di dettaglio e ascolta per ogni caratteristica (ascensore, percorso tattile, annunci sonori) lo stato, la fonte e la data di aggiornamento. Il percorso tattile risulta “sconosciuto”: Elena sa che non è confermato. |
 | **Invio di una segnalazione** | Utente registrato | Comunicare un guasto e ottenere un riferimento per seguirlo. | Sara accede al proprio account e apre il modulo di segnalazione. Seleziona la fermata, indica la categoria “ascensore guasto”, descrive il problema e allega una foto. Il sistema valida i dati e le mostra un codice di tracking, che lei salva. |
 | **Tracking di una segnalazione** | Ospite | Verificare lo stato senza esporre dati riservati. | Dopo due giorni Sara inserisce il codice nella pagina di tracking e vede che la sua segnalazione è passata da “In verifica” a “Confermata”, con una nota pubblica dell’operatore. Non vede alcun dato personale, né altre segnalazioni. |
@@ -216,13 +216,13 @@ Gli scenari seguenti, inventati a scopo illustrativo, rappresentano una validazi
 | **Moderazione di una segnalazione** | Amministratore | Valutare le segnalazioni in modo autorizzato e tracciabile. | Davide, operatore dell’ente di trasporto, accede al pannello di moderazione, apre la segnalazione di Sara con la foto e la cronologia e la conferma indicando la motivazione. Un’altra segnalazione sullo stesso guasto viene unita come duplicato. Ogni decisione resta nello storico. |
 | **Aggiornamento di una fonte** | Amministratore, Fonte dati autorizzata | Mantenere aggiornati e validati i dataset ufficiali. | Davide avvia la sincronizzazione del nuovo pacchetto GTFS. Il sistema controlla formato, chiavi e coerenza geografica. Un primo tentativo fallisce perché il file è corrotto: i dati precedenti restano visibili e l’errore è registrato. Il secondo tentativo ha successo e le nuove fermate compaiono su mappa ed elenco. |
 
-*Tabella 3.7: Scenari di utilizzo di aegis*
+*Tabella 3.7: Scenari di utilizzo di AEGIS*
 
 #### 3.5.3 MODELLI DEI CASI D’USO
 
 ##### Diagramma globale
 
-Il confine di sistema separa i casi d’uso di aegis dagli attori umani e dai sistemi esterni. Ospite e Utente registrato sono specializzazioni dell’attore Utente della piattaforma. L’Ospite partecipa a UC-01, UC-02 e UC-04 e può registrarsi con UC-09. L’Utente registrato partecipa a UC-01, UC-02, UC-03 e UC-04. UC-03, UC-05, UC-06 e UC-08 includono UC-07 perché richiedono autenticazione. UC-06 descrive l’aggiornamento manuale avviato dall’Amministratore; la sincronizzazione schedulata è un processo interno automatico. I flussi alternativi e di errore sono descritti nelle specifiche dei casi d’uso.
+Il confine di sistema separa i casi d’uso di AEGIS dagli attori umani e dai sistemi esterni. Ospite e Utente registrato sono specializzazioni dell’attore Utente della piattaforma. L’Ospite partecipa a UC-01, UC-02 e UC-04 e può registrarsi con UC-09. L’Utente registrato partecipa a UC-01, UC-02, UC-03 e UC-04. UC-03, UC-05, UC-06 e UC-08 includono UC-07 perché richiedono autenticazione. UC-06 descrive l’aggiornamento manuale avviato dall’Amministratore; la sincronizzazione schedulata è un processo interno automatico. I flussi alternativi e di errore sono descritti nelle specifiche dei casi d’uso.
 
 ```mermaid
 usecase-beta
@@ -983,7 +983,7 @@ Le raccomandazioni saranno definite in base ai problemi osservati e ordinate per
 
 Ogni principio è valutato da ciascun valutatore con un voto da 0 (minimo) a 4 (massimo). Il voto riportato è la media degli n valutatori. I voti sono visualizzati in un diagramma a stella che rappresenta il profilo di qualità del sistema e, se possibile, di un sistema simile per confronto.
 
-| Principio | Voto medio aegis | Voto medio sistema di confronto | Commento |
+| Principio | Voto medio AEGIS | Voto medio sistema di confronto | Commento |
 |---|---|---|---|
 | Adeguatezza al compito | Non valutato | Non selezionato | Valutazione non svolta |
 | Autodescrizione | Non valutato | Non selezionato | Valutazione non svolta |
@@ -1030,4 +1030,4 @@ Nel repository non sono presenti allegati di test. Questionari, griglie di osser
 | **p95** | 95° percentile: soglia temporale entro cui viene completato almeno il 95% delle richieste al sistema. |
 | **Entity, Boundary, Control** | Classificazione degli oggetti del modello: dati persistenti di dominio (Entity), punti di interazione con attori e sistemi esterni (Boundary), logica applicativa che coordina i casi d’uso (Control). |
 
-*Tabella 5.1: Glossario dei termini utilizzati nel progetto aegis*
+*Tabella 5.1: Glossario dei termini utilizzati nel progetto AEGIS*

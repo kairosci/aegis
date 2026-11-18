@@ -1,9 +1,9 @@
 ---
 name: aegis-css
-description: Create or revise aegis styles for responsive layouts, accessible controls, maps, forms, and results.
+description: Create or revise AEGIS styles for responsive layouts, accessible controls, maps, forms, and results.
 ---
 
-# aegis CSS
+# AEGIS CSS
 
 Use when changing CSS, layout, component states, or responsive behavior.
 
