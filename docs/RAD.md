@@ -43,9 +43,9 @@
 
 ### 1.1 SCOPO DEL SISTEMA
 
-La web app **aegis** aiuta le persone con disabilità motoria, visiva o uditiva a pianificare spostamenti urbani, consultare l’accessibilità di stazioni, fermate e mezzi del trasporto pubblico locale (TPL) e segnalare barriere architettoniche o guasti agli ausili (ad esempio ascensori fuori servizio, rampe ostruite). Il sistema mostra esplicitamente la fonte e la data di aggiornamento di ciascuna caratteristica. Qualsiasi dato assente o scaduto viene classificato come **sconosciuto** e non viene mai interpretato come prova di accessibilità.
+La web app **Aegis** aiuta le persone con disabilità motoria, visiva o uditiva a pianificare spostamenti urbani, consultare l’accessibilità di stazioni, fermate e mezzi del trasporto pubblico locale (TPL) e segnalare barriere architettoniche o guasti agli ausili (ad esempio ascensori fuori servizio, rampe ostruite). Il sistema mostra esplicitamente la fonte e la data di aggiornamento di ciascuna caratteristica. Qualsiasi dato assente o scaduto viene classificato come **sconosciuto** e non viene mai interpretato come prova di accessibilità.
 
-Gli obiettivi principali sono trovare e confrontare percorsi accessibili, consultare le caratteristiche dei luoghi, inviare e tracciare segnalazioni tramite codice univoco e permettere agli amministratori autorizzati di moderarle mantenendo uno storico immutabile delle decisioni. L’usabilità e l’accessibilità del sistema sono validate tramite sessioni di test con utenti su compiti rappresentativi e verifica con tecnologie assistive.
+Gli obiettivi principali sono trovare e confrontare percorsi accessibili, consultare le caratteristiche dei luoghi, inviare e tracciare segnalazioni tramite codice univoco e permettere agli amministratori autorizzati di moderarle mantenendo uno storico immutabile delle decisioni.
 
 | Obiettivo | Criterio di verifica |
 |---|---|
@@ -80,7 +80,7 @@ I termini di dominio e tecnici sono raccolti nel Glossario (capitolo 5). Le abbr
 
 ### 1.4 PANORAMICA
 
-Il documento è organizzato come segue:
+Il documento è organizzato in 5 capitoli:
 
 - **Capitolo 1** definisce scopo, obiettivi e area di dominio del sistema.
 - **Capitolo 2** descrive la situazione attuale, assente di un sistema dedicato.
