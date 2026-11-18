@@ -15,6 +15,8 @@
 1. Introduzione
    - 1.1 Scopo del sistema
    - 1.2 Area di dominio
+   - 1.3 Definizioni, acronimi e abbreviazioni
+   - 1.4 Panoramica
 2. Sistema corrente
 3. Sistema proposto
    - 3.1 Panoramica
@@ -32,6 +34,7 @@
    - 4.1 Descrizione del prototipo realizzato
    - 4.2 Test di usabilità
    - 4.3 Valutazione dell’usabilità secondo ISO 9241-110
+   - 4.4 Allegati
 5. Glossario
 
 ---
@@ -40,9 +43,9 @@
 
 ### 1.1 SCOPO DEL SISTEMA
 
-La web app **aegis** aiuta le persone con disabilità motoria, visiva o uditiva a pianificare spostamenti urbani, consultare l’accessibilità di stazioni, fermate e mezzi del trasporto pubblico locale (TPL) e segnalare barriere architettoniche o guasti agli ausili (ad esempio ascensori fuori servizio, rampe ostruite). Il sistema mostra esplicitamente la fonte e la data di aggiornamento di ciascuna caratteristica. Qualsiasi dato assente o scaduto viene classificato come **sconosciuto** e non viene mai interpretato come prova di accessibilità.
+La web app **Aegis** aiuta le persone con disabilità motoria, visiva o uditiva a pianificare spostamenti urbani, consultare l’accessibilità di stazioni, fermate e mezzi del trasporto pubblico locale (TPL) e segnalare barriere architettoniche o guasti agli ausili (ad esempio ascensori fuori servizio, rampe ostruite). Il sistema mostra esplicitamente la fonte e la data di aggiornamento di ciascuna caratteristica. Qualsiasi dato assente o scaduto viene classificato come **sconosciuto** e non viene mai interpretato come prova di accessibilità.
 
-Gli obiettivi principali sono trovare e confrontare percorsi accessibili, consultare le caratteristiche dei luoghi, inviare e tracciare segnalazioni tramite codice univoco e permettere agli amministratori autorizzati di moderarle mantenendo uno storico immutabile delle decisioni. L’usabilità e l’accessibilità del sistema sono validate tramite sessioni di test con utenti su compiti rappresentativi e verifica con tecnologie assistive.
+Gli obiettivi principali sono trovare e confrontare percorsi accessibili, consultare le caratteristiche dei luoghi, inviare e tracciare segnalazioni tramite codice univoco e permettere agli amministratori autorizzati di moderarle mantenendo uno storico immutabile delle decisioni.
 
 | Obiettivo | Criterio di verifica |
 |---|---|
@@ -57,6 +60,35 @@ Gli obiettivi principali sono trovare e confrontare percorsi accessibili, consul
 ### 1.2 AREA DI DOMINIO
 
 Il dominio comprende la pianificazione della mobilità urbana, i dati geospaziali del trasporto pubblico, il monitoraggio dell’accessibilità delle infrastrutture e il *crowdsourcing* moderato delle segnalazioni. L’area geografica di riferimento comprende la rete metropolitana, ferroviaria urbana e di superficie della città di Napoli, integrando i dataset ufficiali dell’azienda di trasporto locale con le segnalazioni georeferenziate degli utenti.
+
+### 1.3 DEFINIZIONI, ACRONIMI E ABBREVIAZIONI
+
+I termini di dominio e tecnici sono raccolti nel Glossario (capitolo 5). Le abbreviazioni usate per identificare gli elementi del documento sono le seguenti.
+
+| Abbreviazione | Significato |
+|---|---|
+| FR | Requisito funzionale (*Functional Requirement*), identificato da FR-nn. |
+| NFR | Requisito non funzionale (*Non-Functional Requirement*), identificato da NFR-nn. |
+| UC | Caso d’uso (*Use Case*), identificato da UC-nn. |
+| TPL | Trasporto Pubblico Locale. |
+| GTFS | *General Transit Feed Specification*, formato dei dati ufficiali di trasporto. |
+| WCAG | *Web Content Accessibility Guidelines*, livello di conformità AA. |
+| GDPR | Regolamento Europeo sulla protezione dei dati personali. |
+| RBAC | *Role-Based Access Control*, controllo degli accessi basato sui ruoli. |
+
+*Tabella 1.2: Abbreviazioni usate nel documento*
+
+### 1.4 PANORAMICA
+
+Il documento è organizzato in 5 capitoli:
+
+- **Capitolo 1** definisce scopo, obiettivi e area di dominio del sistema.
+- **Capitolo 2** descrive la situazione attuale, assente di un sistema dedicato.
+- **Capitolo 3** presenta il sistema proposto: requisiti funzionali e non funzionali, vincoli e modelli (utenti, scenari, casi d’uso, oggetti, classi e sequenze).
+- **Capitolo 4** descrive l’interfaccia utente, il prototipo, i test di usabilità e la valutazione secondo ISO 9241-110.
+- **Capitolo 5** raccoglie il glossario dei termini.
+
+L’architettura e le scelte progettuali che realizzano questi requisiti sono documentate nel System Design Document (SDD).
 
 ## SISTEMA CORRENTE
 
@@ -76,20 +108,20 @@ La piattaforma offre consultazione pubblica con ricerca per area, mappa interatt
 
 | ID | Responsabile dell’azione | Azione richiesta | Priorità | Caso d’uso |
 |---|---|---|---|---|
-| FR-01 | Sistema | Mostrare sulla mappa e in elenco i luoghi e le informazioni di accessibilità per l’area richiesta. | Must | UC-02 |
-| FR-02 | Sistema | Mostrare caratteristiche come ascensori, rampe, percorsi tattili e annunci sonori con stato, fonte, aggiornamento e validità. | Must | UC-01, UC-02 |
-| FR-03 | Sistema | Classificare come sconosciuti i dati assenti, incoerenti o scaduti oltre la soglia di validità (30 giorni dall’osservazione, salvo diversa scadenza configurata per la fonte), senza inferire accessibilità. | Must | UC-01, UC-02 |
+| FR-01 | Sistema | Mostrare su mappa e in elenco i luoghi e le informazioni di accessibilità per l’area richiesta. | Must | UC-02 |
+| FR-02 | Sistema | Mostrare caratteristiche quali ascensori, rampe, percorsi tattili e annunci sonori con stato, fonte, aggiornamento e validità. | Must | UC-01, UC-02 |
+| FR-03 | Sistema | Classificare come sconosciuti i dati assenti, incoerenti o scaduti oltre la soglia di validità approvata per la fonte (OPEN-02), senza inferire accessibilità. | Must | UC-01, UC-02 |
 | FR-04 | Ospite o utente registrato e sistema | Acquisire origine, destinazione ed esigenze di accessibilità; calcolare e restituire percorsi alternativi. | Must | UC-01 |
 | FR-05 | Sistema | Distinguere nei percorsi barriere note, tratti compatibili e non verificati. | Must | UC-01 |
 | FR-06 | Ospite o utente registrato e sistema | Consentire la selezione di un luogo e mostrare dettagli di accessibilità e provenienza. | Must | UC-02 |
-| FR-07 | Ospite o utente registrato | Inserire luogo, categoria, descrizione e data di osservazione del problema, allegando facoltativamente una foto (max 5 MB). La data di invio è registrata dal sistema. | Must | UC-03 |
+| FR-07 | Ospite o utente registrato | Inserire luogo, categoria, descrizione e data di osservazione del problema, allegando facoltativamente una foto entro i limiti approvati in OPEN-15. La data di invio è registrata dal sistema. | Must | UC-03 |
 | FR-08 | Sistema | Generare e restituire un codice di tracking univoco per consultare lo stato della segnalazione senza esporre dati personali. | Must | UC-03, UC-04 |
 | FR-09 | Amministratore e sistema | Consentire conferma, rifiuto, risoluzione o unione di duplicati, registrando ogni decisione nello storico. | Must | UC-05 |
 | FR-10 | Amministratore e sistema | Importare dataset ufficiali (formato GTFS) e registrare versione, esito e timestamp della sincronizzazione. | Should | UC-06 |
 | FR-11 | Sistema | Aggiornare i dati visibili dell’area interessata al termine di ogni sincronizzazione validata. | Should | UC-06 |
 | FR-12 | Sistema | Inviare notifiche agli utenti registrati che hanno dato il consenso (autori delle segnalazioni e utenti che seguono un luogo) al cambio di stato di una segnalazione. | Could | UC-05, UC-08 |
 | FR-13 | Sistema | Autenticare gli utenti e verificare i ruoli per le operazioni riservate, mantenendo pubblici consultazione, invio e tracking. | Must | UC-05, UC-06, UC-07, UC-08 |
-| FR-14 | Utente non registrato e sistema | Consentire la registrazione e l’accesso con credenziali personali e la gestione dei luoghi preferiti e dei consensi per le notifiche. | Should | UC-07, UC-08 |
+| FR-14 | Ospite e sistema | Consentire la registrazione e l’accesso con credenziali personali e la gestione dei luoghi preferiti e dei consensi per le notifiche. | Should | UC-07, UC-08 |
 | FR-15 | Utente registrato e sistema | Consentire la consultazione dello storico delle proprie segnalazioni con il relativo stato. | Should | UC-08 |
 
 *Tabella 3.1: Requisiti funzionali*
@@ -128,11 +160,11 @@ La baseline di accessibilità proposta per il prodotto è **[WCAG 2.2 livello AA
 | NFR-04 | Privacy | Minimizzare i dati personali e separare l’identità dell’autore dai contenuti pubblici delle segnalazioni. | Verifica che endpoint pubblici e pagine di tracking non espongano email o identificativi dell’utente (conformità GDPR). | Responsabile tecnico |
 | NFR-05 | Sicurezza | Proteggere le comunicazioni con HTTPS/TLS e applicare il controllo degli accessi basato sui ruoli (RBAC). | Verifica del protocollo HTTPS su tutti gli endpoint e rifiuto lato server delle operazioni riservate per ruoli non autorizzati. | Responsabile tecnico |
 | NFR-06 | Sicurezza | Applicare validazione server-side degli input, rate limiting e protezione da injection. | Test con input malformati e tentativi di injection verificando il rifiuto senza effetti sui dati. | Responsabile tecnico |
-| NFR-07 | Sicurezza | Controllare gli upload per formato (JPEG/PNG/WebP), dimensione (≤ 5 MB) e integrità prima della pubblicazione. | Test di rifiuto automatico per file non validi o eccedenti il limite di dimensione. | Responsabile tecnico |
+| NFR-07 | Sicurezza | Controllare tipo, dimensione e integrità degli upload secondo la policy approvata in OPEN-15, prima della pubblicazione. | Verificare rifiuto o quarantena per file che non rispettano la policy, inclusi i casi in cui la scansione fallisce o non è disponibile. | Responsabile tecnico |
 | NFR-08 | Qualità dei dati | Esporre provenienza e freschezza di ogni dato di accessibilità. | Ispezione di un campione di luoghi, in cui ogni caratteristica riporta fonte e data di osservazione. | Team di sviluppo / QA |
-| NFR-09 | Affidabilità | Garantire la disponibilità del servizio e il rollback automatico in caso di importazione fallita. | Disponibilità del servizio ≥ 99,5% e mantenimento dei dati validi precedenti in caso di errore della fonte. | Team di sviluppo / QA |
-| NFR-10 | Performance | Mantenere tempi di risposta rapidi per il caricamento della mappa, dei luoghi e dei percorsi. | Latenza inferiore a **2 secondi** per il 95% delle richieste (p95) in condizioni di carico standard. | Team di sviluppo / QA |
-| NFR-11 | Usabilità | Rendere i flussi principali comprensibili e coerenti, fornendo feedback immediato sulle operazioni. | Tasso di completamento ≥ 85% nei compiti assegnati durante i test di usabilità con gli utenti. | Team di sviluppo / QA |
+| NFR-09 | Affidabilità | Mantenere disponibili i dati validi precedenti quando l’importazione di una fonte fallisce. | Una prova di importazione fallita verifica che il dataset valido precedente resta consultabile. Obiettivo di disponibilità e finestra di misura da approvare in OPEN-07. | Team di sviluppo / QA |
+| NFR-10 | Performance | Misurare i tempi di risposta per il caricamento della mappa, dei luoghi e dei percorsi. | Rilevare il p95 per i flussi e il profilo di carico approvati in OPEN-07; confrontare i risultati con il target approvato. | Team di sviluppo / QA |
+| NFR-11 | Usabilità | Valutare comprensibilità e coerenza dei flussi principali e il feedback sulle operazioni. | Dopo l’approvazione del protocollo OPEN-06, registrare compiti, partecipanti, completamenti e difficoltà. Soglia di accettazione da approvare prima delle sessioni. | Team di sviluppo / QA |
 | NFR-12 | Manutenibilità | Mantenere separati dominio, casi d’uso e adattatori, documentando le API. | Revisione dell’architettura a livelli e documentazione completa degli endpoint REST tramite specifica OpenAPI. | Responsabile tecnico |
 | NFR-13 | Portabilità | Garantire la fruibilità dell’interfaccia web su browser desktop e dispositivi mobili (*responsive design*). | Test di compatibilità su Chrome, Firefox, Safari ed Edge sia su desktop che su smartphone. | Team di sviluppo / QA |
 
@@ -146,8 +178,8 @@ La baseline di accessibilità proposta per il prodotto è **[WCAG 2.2 livello AA
 | Persistenza e file | Database relazionale PostgreSQL con estensione spaziale PostGIS e storage dedicato per le immagini allegate. |
 | Struttura software | Architettura disaccoppiata tra presentazione, casi d’uso, dominio e adattatori esterni, documentata con OpenAPI. |
 | Accesso e ruoli | Consultazione, invio di segnalazioni e tracking liberi anche per l’Ospite. Autenticazione e controllo dei ruoli (Utente registrato, Amministratore) per preferiti, notifiche, storico personale e moderazione. |
-| Qualità dei dati | Ogni proprietà di accessibilità registra fonte e timestamp, dati assenti o oltre la soglia di validità (30 giorni dall’osservazione, salvo diversa scadenza della fonte) sono classificati come *Sconosciuti*. |
-| Normativa | Trattamenti di dati personali da valutare secondo GDPR. I requisiti legali di accessibilità applicabili, inclusa la Legge 4/2004 (Legge Stanca), sono da verificare in OPEN-06. WCAG 2.2 livello AA è il target di prodotto proposto e non costituisce una dichiarazione di conformità legale. |
+| Qualità dei dati | Ogni proprietà di accessibilità registra fonte e timestamp. Dati assenti o oltre la soglia di validità approvata per la fonte in OPEN-02 sono classificati come *Sconosciuti*. |
+| Normativa | Trattamenti di dati personali da valutare secondo GDPR. Esigenze di percorso, descrizioni e immagini delle segnalazioni possono rivelare, se associate a una persona, informazioni sulla disabilità o sulla salute (art. 9 GDPR): minimizzazione dei dati e valutazione d’impatto sono a cura del responsabile del trattamento. I requisiti legali di accessibilità applicabili, inclusa la Legge 4/2004 (Legge Stanca), sono da verificare in OPEN-06. WCAG 2.2 livello AA è il target di prodotto proposto e non costituisce una dichiarazione di conformità legale. |
 
 *Tabella 3.4: Vincoli di progetto*
 
@@ -180,7 +212,7 @@ Gli scenari seguenti, inventati a scopo illustrativo, rappresentano una validazi
 | **Consultazione di un luogo** | Ospite | Conoscere caratteristiche, stato e provenienza dei dati di una stazione. | Elena è non vedente e usa uno screen reader. Cerca la stazione dalla vista elenco testuale, naviga da tastiera fino alla scheda di dettaglio e ascolta per ogni caratteristica (ascensore, percorso tattile, annunci sonori) lo stato, la fonte e la data di aggiornamento. Il percorso tattile risulta “sconosciuto”: Elena sa che non è confermato. |
 | **Invio di una segnalazione** | Ospite | Comunicare un guasto e ottenere un riferimento per seguirlo. | Sara trova fuori servizio l’ascensore di una fermata. Apre il modulo di segnalazione, seleziona il luogo, la categoria “ascensore guasto”, descrive il problema e allega una foto. Il sistema valida i dati e le mostra un codice di tracking, che lei salva. |
 | **Tracking di una segnalazione** | Ospite | Verificare lo stato senza esporre dati riservati. | Dopo due giorni Sara inserisce il codice nella pagina di tracking e vede che la sua segnalazione è passata da “In verifica” a “Confermata”, con una nota pubblica dell’operatore. Non vede alcun dato personale, né altre segnalazioni. |
-| **Registrazione e preferiti** | Utente non registrato, Utente registrato | Seguire i luoghi usati abitualmente e ricevere avvisi. | Giorgio crea un account, aggiunge ai preferiti la fermata sotto casa e attiva il consenso alle notifiche. Quando una segnalazione su quella fermata viene confermata, riceve un avviso. Dall’area personale consulta lo storico delle sue segnalazioni. |
+| **Registrazione e preferiti** | Ospite, Utente registrato | Seguire i luoghi usati abitualmente e ricevere avvisi. | Giorgio crea un account, aggiunge ai preferiti la fermata sotto casa e attiva il consenso alle notifiche. Quando una segnalazione su quella fermata viene confermata, riceve un avviso. Dall’area personale consulta lo storico delle sue segnalazioni. |
 | **Moderazione di una segnalazione** | Amministratore | Valutare le segnalazioni in modo autorizzato e tracciabile. | Davide, operatore dell’ente di trasporto, accede al pannello di moderazione, apre la segnalazione di Sara con la foto e la cronologia e la conferma indicando la motivazione. Un’altra segnalazione sullo stesso guasto viene unita come duplicato. Ogni decisione resta nello storico. |
 | **Aggiornamento di una fonte** | Amministratore, Fonte dati autorizzata | Mantenere aggiornati e validati i dataset ufficiali. | Davide avvia la sincronizzazione del nuovo pacchetto GTFS. Il sistema controlla formato, chiavi e coerenza geografica. Un primo tentativo fallisce perché il file è corrotto: i dati precedenti restano visibili e l’errore è registrato. Il secondo tentativo ha successo e le nuove fermate compaiono su mappa ed elenco. |
 
@@ -190,7 +222,7 @@ Gli scenari seguenti, inventati a scopo illustrativo, rappresentano una validazi
 
 ##### Diagramma globale
 
-Il confine di sistema separa i casi d’uso di aegis dagli attori umani e dai sistemi esterni. L’Utente registrato specializza l’Ospite, quindi eredita UC-01, UC-02, UC-03 e UC-04. Le funzioni riservate includono UC-07 (Autenticarsi).
+Il confine di sistema separa i casi d’uso di aegis dagli attori umani e dai sistemi esterni. L’Utente registrato specializza l’Ospite, quindi eredita UC-01, UC-02, UC-03 e UC-04. UC-05 e UC-08 includono UC-07 (Autenticarsi). Anche UC-06 richiede UC-07, ma solo per l’avvio manuale: l’esecuzione schedulata non prevede un’autenticazione umana.
 
 ```plantuml
 @startuml
@@ -235,6 +267,25 @@ UC08 ..> UC07 : <<include>>
 
 *Figura 3.1: Diagramma dei casi d’uso di aegis*
 
+##### Ciclo di vita della segnalazione
+
+La macchina a stati rende esplicite le transizioni di moderazione proposte in FR-09. Ruoli, precondizioni ed effetti delle transizioni restano da approvare in OPEN-12.
+
+```mermaid
+stateDiagram-v2
+  direction LR
+  [*] --> InVerifica: creazione
+  InVerifica --> Confermata: conferma
+  InVerifica --> Rifiutata: rifiuto
+  InVerifica --> Duplicata: collega alla segnalazione primaria
+  Confermata --> Risolta: risoluzione
+  Rifiutata --> [*]
+  Duplicata --> [*]
+  Risolta --> [*]
+```
+
+*Figura 3.2: Macchina a stati della segnalazione*
+
 ##### Specifiche dei casi d’uso
 
 ###### UC-01: Pianificare un viaggio
@@ -244,7 +295,7 @@ UC08 ..> UC07 : <<include>>
 | Attori partecipanti | Ospite, Utente registrato, Provider di routing |
 | Condizioni d’ingresso | Origine, destinazione ed esigenze di accessibilità specificate e valide. La consultazione non richiede autenticazione. |
 | Condizioni d’uscita | Restituiti zero o più percorsi con tempi, cambi e stato di verifica. Fonte e freschezza sono esposte quando disponibili, dati assenti o scaduti risultano sconosciuti. |
-| Requisiti qualitativi | Il sistema distingue barriere note, tratti compatibili e tratti non verificati (FR-05), risposta entro 2 secondi (NFR-10). |
+| Requisiti qualitativi | Il sistema distingue barriere note, tratti compatibili e tratti non verificati (FR-05). La prestazione è misurata secondo il protocollo approvato in OPEN-07 (NFR-10). |
 | Flusso degli eventi | 1. L’utente inserisce origine, destinazione ed esigenze.<br>2. Il sistema valida la richiesta e la inoltra al Provider di routing.<br>3. Il provider restituisce le alternative disponibili.<br>4. Il sistema arricchisce i percorsi con stato di verifica e provenienza dei dati e mostra risultati ed eventuali incertezze. |
 | Flussi alternativi e di errore | • Input non valido: il sistema segnala i campi da correggere senza invocare il provider.<br>• Provider non disponibile o nessun percorso trovato: il sistema comunica l’indisponibilità senza presentare risultati non verificati come accessibili. |
 
@@ -266,7 +317,7 @@ UC08 ..> UC07 : <<include>>
 | Attori partecipanti | Ospite, Utente registrato |
 | Condizioni d’ingresso | Campi obbligatori compilati correttamente, informativa sul trattamento dei dati accettata. |
 | Condizioni d’uscita | Segnalazione ed evento iniziale salvati, codice di tracking univoco restituito all’utente. |
-| Requisiti qualitativi | Nessun dato identificativo dell’utente è esposto pubblicamente (NFR-04), l’eventuale foto (max 5 MB) è verificata prima della pubblicazione (NFR-07), rate limiting sugli invii dell’Ospite (NFR-06). |
+| Requisiti qualitativi | Nessun dato identificativo dell’utente è esposto pubblicamente (NFR-04). L’eventuale foto rispetta la policy di upload approvata (NFR-07, OPEN-15). Si applica il rate limiting sugli invii dell’Ospite (NFR-06). |
 | Flusso degli eventi | 1. L’utente inserisce luogo, categoria, descrizione, data di osservazione e allega facoltativamente una foto.<br>2. Il sistema valida i campi e controlla formato e sicurezza dell’eventuale immagine.<br>3. Il sistema salva in un’unica transazione la segnalazione e l’evento iniziale, e genera un codice di tracking non enumerabile.<br>4. Il sistema restituisce il codice di tracking. |
 | Flussi alternativi e di errore | • Campi mancanti o file non valido: il sistema rifiuta l’invio evidenziando l’errore, senza salvare dati parziali.<br>• Errore di persistenza: il sistema annulla la transazione e invita a riprovare.<br>• Limite di invii superato: il sistema rifiuta la richiesta e invita a riprovare più tardi. |
 
@@ -592,7 +643,7 @@ classDiagram
   SynchronizeSourceControl ..> DataSourceAdapter
 ```
 
-*Figura 3.2: Diagramma UML delle classi del sistema*
+*Figura 3.3: Diagramma UML delle classi del sistema*
 
 L’associazione `Report` → `UserAccount` (autore) è facoltativa, perché un Ospite non ha account, ed è visibile solo all’autore e agli amministratori, mai nelle risposte pubbliche (NFR-04). Il tipo `ReportEventType` comprende l’evento iniziale (CREATED) e le decisioni di moderazione (CONFIRMED, REJECTED, MARKED_DUPLICATE, RESOLVED).
 
@@ -635,7 +686,7 @@ sequenceDiagram
   end
 ```
 
-*Figura 3.3: Diagramma di sequenza per UC-01*
+*Figura 3.4: Diagramma di sequenza per UC-01*
 
 ##### UC-02: Consultazione di un luogo
 
@@ -666,7 +717,7 @@ sequenceDiagram
   end
 ```
 
-*Figura 3.4: Diagramma di sequenza per UC-02*
+*Figura 3.5: Diagramma di sequenza per UC-02*
 
 ##### UC-03: Invio di una segnalazione
 
@@ -708,7 +759,7 @@ sequenceDiagram
   end
 ```
 
-*Figura 3.5: Diagramma di sequenza per UC-03*
+*Figura 3.6: Diagramma di sequenza per UC-03*
 
 ##### UC-04: Tracking di una segnalazione
 
@@ -738,7 +789,7 @@ sequenceDiagram
   end
 ```
 
-*Figura 3.6: Diagramma di sequenza per UC-04*
+*Figura 3.7: Diagramma di sequenza per UC-04*
 
 ##### UC-05: Moderazione di una segnalazione
 
@@ -789,7 +840,7 @@ sequenceDiagram
   end
 ```
 
-*Figura 3.7: Diagramma di sequenza per UC-05*
+*Figura 3.8: Diagramma di sequenza per UC-05*
 
 ##### UC-06: Aggiornamento di una fonte
 
@@ -838,7 +889,7 @@ sequenceDiagram
   end
 ```
 
-*Figura 3.8: Diagramma di sequenza per UC-06*
+*Figura 3.9: Diagramma di sequenza per UC-06*
 
 ##### UC-07: Registrazione e autenticazione
 
@@ -881,7 +932,7 @@ sequenceDiagram
   end
 ```
 
-*Figura 3.9: Diagramma di sequenza per UC-07*
+*Figura 3.10: Diagramma di sequenza per UC-07*
 
 ##### UC-08: Gestione di preferiti e storico
 
@@ -921,7 +972,7 @@ sequenceDiagram
   end
 ```
 
-*Figura 3.10: Diagramma di sequenza per UC-08*
+*Figura 3.11: Diagramma di sequenza per UC-08*
 
 ---
 
@@ -929,9 +980,86 @@ sequenceDiagram
 
 ---
 
-## GLOSSARIO
+## INTERFACCIA UTENTE
 
-*(Da inserire in fondo al documento, dopo il capitolo 4.)*
+### 4.1 DESCRIZIONE DEL PROTOTIPO REALIZZATO
+
+| Aspetto | Descrizione |
+|---|---|
+| Scopo (ruolo, interfaccia, implementazione) | [Da completare: cosa verifica il prototipo, ad esempio i flussi UC-01, UC-02, UC-03 e UC-04, e quali parti di interfaccia e implementazione rappresenta.] |
+| Modo d’uso (statico, dinamico, interattivo) | [Da completare.] |
+| Fedeltà (bassa o alta) | [Da completare, con motivazione.] |
+| Completezza funzionale (orizzontale o verticale) | [Da completare: quali funzionalità e quali livelli sono realizzati.] |
+| Durata (usa e getta, evolutivo, incrementale, interattivo) | [Da completare.] |
+
+*Tabella 4.1: Caratteristiche del prototipo*
+
+### 4.2 TEST DI USABILITÀ
+
+#### 4.2.1 Obiettivi del test
+
+[Da completare.] Gli obiettivi devono verificare i criteri del RAD per tastiera, screen reader e vista testuale (NFR-01, NFR-02) e misurare il completamento dei compiti secondo il protocollo approvato in OPEN-06 (NFR-11).
+
+#### 4.2.2 Metodologia
+
+[Da completare: numero e profilo dei partecipanti, livello di esperienza, contesto e strumentazione, durata per utente e complessiva, misure raccolte, ruolo degli osservatori, modalità di analisi dei risultati.]
+
+Compiti proposti, derivati dagli scenari della Tabella 3.7:
+
+| Compito | Scenario di riferimento | Caso d’uso |
+|---|---|---|
+| Trovare un percorso accessibile tra due punti e riconoscere i tratti non verificati. | Pianificazione di un percorso | UC-01 |
+| Consultare stato, fonte e aggiornamento di una caratteristica di una stazione. | Consultazione di un luogo | UC-02 |
+| Inviare una segnalazione con foto e annotare il codice di tracking. | Invio di una segnalazione | UC-03 |
+| Consultare lo stato di una segnalazione tramite codice. | Tracking di una segnalazione | UC-04 |
+
+*Tabella 4.2: Compiti del test*
+
+#### 4.2.3 Sintesi delle misure
+
+| Utente | Compito | Tempo | Completato (sì/no) | Note |
+|---|---|---|---|---|
+| [U1] | [Da completare] | [ ] | [ ] | [ ] |
+
+*Tabella 4.3: Misure raccolte, per utente e complessive (tempi e percentuale di compiti completati)*
+
+#### 4.2.4 Analisi dei risultati
+
+[Da completare: per ogni utente e compito, problemi incontrati, numerati (P-01, P-02…), con livello di gravità, eventuali screenshot, reazioni e commenti registrati.]
+
+#### 4.2.5 Sintesi delle interviste
+
+[Da completare: risultati delle interviste svolte dopo il test.]
+
+#### 4.2.6 Raccomandazioni finali
+
+[Da completare: interventi migliorativi numerati e raggruppati per priorità (1 indispensabili, 2 necessari, 3 auspicabili), ciascuno con riferimento al problema corrispondente.]
+
+### 4.3 VALUTAZIONE DELL’USABILITÀ SECONDO ISO 9241-110
+
+Ogni principio è valutato da ciascun valutatore con un voto da 0 (minimo) a 4 (massimo). Il voto riportato è la media degli n valutatori. I voti sono visualizzati in un diagramma a stella che rappresenta il profilo di qualità del sistema e, se possibile, di un sistema simile per confronto.
+
+| Principio | Voto medio aegis | Voto medio sistema di confronto | Commento |
+|---|---|---|---|
+| Adeguatezza al compito | [ ] | [ ] | [ ] |
+| Autodescrizione | [ ] | [ ] | [ ] |
+| Conformità alle aspettative | [ ] | [ ] | [ ] |
+| Apprendibilità | [ ] | [ ] | [ ] |
+| Controllabilità | [ ] | [ ] | [ ] |
+| Robustezza agli errori d’uso | [ ] | [ ] | [ ] |
+| Adattabilità all’individualizzazione | [ ] | [ ] | [ ] |
+
+*Tabella 4.4: Valutazione per principi ISO 9241-110*
+
+*Figura 4.1: Diagramma a stella del profilo di usabilità*
+
+Nota: la revisione ISO 9241-110:2020 ha rinominato l’ultimo principio in “coinvolgimento dell’utente”. Usare la denominazione indicata dalla prof.
+
+### 4.4 ALLEGATI
+
+[Da completare: questionari, griglie di osservazione, registrazioni e altri dati raccolti durante i test.]
+
+## GLOSSARIO
 
 | Termine | Definizione |
 |---|---|
@@ -949,7 +1077,7 @@ sequenceDiagram
 | **Amministratore** | Operatore autorizzato a moderare le segnalazioni e gestire la sincronizzazione delle fonti dati ufficiali. |
 | **Luogo** | Stazione, fermata o altro punto di interesse del trasporto pubblico per cui sono consultabili le caratteristiche di accessibilità. |
 | **Segnalazione (Report)** | Comunicazione con cui un utente informa il sistema di una barriera architettonica o di un guasto, soggetta a moderazione. |
-| **Dato valido** | Informazione verificata e non scaduta rispetto alla soglia di validità della relativa fonte (30 giorni dall’osservazione, salvo diversa scadenza configurata). |
+| **Dato valido** | Informazione verificata e non scaduta rispetto alla soglia di validità approvata per la relativa fonte (OPEN-02). |
 | **Sconosciuto** | Stato esplicito assegnato a una caratteristica priva di dati o con dati scaduti, per evitare di dichiarare accessibile un luogo non verificato. |
 | **Tratto non verificato** | Segmento di un itinerario per il quale non sono disponibili dati aggiornati sull’accessibilità. |
 | **Codice di tracking** | Codice alfanumerico univoco e non enumerabile generato all’invio di una segnalazione per consultarne lo stato pubblico. |
