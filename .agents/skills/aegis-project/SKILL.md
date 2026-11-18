@@ -7,6 +7,8 @@ description: Plan and implement changes that cross aegis monorepo modules, build
 
 Use this skill for cross-module planning, repository layout, dependency changes, build and CI work, and project-level decisions.
 
+For feature work that spans requirements, design, implementation, and verification, also apply [aegis-software-engineering](../aegis-software-engineering/SKILL.md). For RAD, SDD, template, or project-documentation changes, apply `aegis-docs` and `aegis-antislop` as required by the project instructions.
+
 - Inspect the current tree and existing conventions before choosing a location or adding a tool. The repository is a monorepo. Do not create placeholder modules or duplicate an existing capability.
 - Keep project documentation and all source templates and template assets under `docs/`. The reference template is `docs/template/template.docx`. Generated DOCX files go to `build/` or CI artifacts, not `docs/`.
 - Keep project data and configuration under the root `config/` tree. Keep application source under `src/`.
