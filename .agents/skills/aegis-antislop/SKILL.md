@@ -1,11 +1,11 @@
 ---
 name: aegis-antislop
-description: Keep aegis documentation concise, evidence-based, traceable, and free of invented claims.
+description: Keep AEGIS documentation concise, evidence-based, traceable, and free of invented claims.
 ---
 
-# aegis anti-slop writing
+# AEGIS anti-slop writing
 
-Use this skill whenever creating, reviewing, or revising aegis documentation, diagrams, examples, or exports.
+Use this skill whenever creating, reviewing, or revising AEGIS documentation, diagrams, examples, or exports.
 
 ## Writing rules
 
@@ -20,7 +20,7 @@ Use this skill whenever creating, reviewing, or revising aegis documentation, di
 - Define domain and architecture terms in the document glossary when they affect behavior, data contracts, or failure handling.
 - Keep one authoritative source for each decision. Link to it when summarizing elsewhere.
 - Preserve supplied hierarchy, numbering, and source quotations. Do not rewrite user-owned material without authorization.
-- Keep Markdown and human-readable text in DOCX deliverables and reference templates free of semicolons. Write the project name exactly as `aegis`.
+- Keep Markdown and human-readable text in DOCX deliverables and reference templates free of semicolons. Write the project name exactly as `AEGIS`.
 
 ## Requirements and diagrams
 

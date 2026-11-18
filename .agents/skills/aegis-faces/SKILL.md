@@ -1,9 +1,9 @@
 ---
 name: aegis-faces
-description: Build or revise aegis Jakarta Faces views using Facelets and accessible server-rendered UI patterns.
+description: Build or revise AEGIS Jakarta Faces views using Facelets and accessible server-rendered UI patterns.
 ---
 
-# aegis Jakarta Faces and Facelets
+# AEGIS Jakarta Faces and Facelets
 
 Use for the selected server-rendered view layer. Keep Faces as an adapter around application use cases. Do not put business rules, persistence, or external integrations in view beans or Facelets pages.
 

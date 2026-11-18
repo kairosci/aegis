@@ -1,9 +1,9 @@
 ---
 name: aegis-software-engineering
-description: Apply software-engineering principles to aegis requirements, design, implementation, verification, and delivery.
+description: Apply software-engineering principles to AEGIS requirements, design, implementation, verification, and delivery.
 ---
 
-# aegis software engineering
+# AEGIS software engineering
 
 Use this skill when planning or delivering a product change across its requirements, design, implementation, and evidence. It records practices drawn from Carlo Ghezzi, Mehdi Jazayeri, and Dino Mandrioli, *Ingegneria del software: Fondamenti e principi*, chapters 1–10.
 
