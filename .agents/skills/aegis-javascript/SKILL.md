@@ -1,9 +1,9 @@
 ---
 name: aegis-javascript
-description: Implement aegis browser behavior, form interactions, and accessible progressive enhancement in JavaScript.
+description: Implement AEGIS browser behavior, form interactions, and accessible progressive enhancement in JavaScript.
 ---
 
-# aegis JavaScript
+# AEGIS JavaScript
 
 Use when changing browser-side behavior or JavaScript modules.
 

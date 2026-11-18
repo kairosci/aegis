@@ -4,7 +4,7 @@
 
 | Dato | Valore |
 |---|---|
-| Progetto | aegis |
+| Progetto | AEGIS |
 | Corso | Ingegneria del Software e Interazione Uomo-Macchina |
 | Docenti | Prof.ssa Mariacarla Staffa |
 | Candidati | [Inserisci Nome e Cognome] |
@@ -33,7 +33,7 @@ Bozza aggiornata il 17 novembre 2026. L’architettura è iniziale e descrive il
 
 ### 1.1 SCOPO DEL SISTEMA
 
-Questo documento descrive l’architettura software proposta per aegis e dettaglia i componenti, i dati, le interfacce e le decisioni operative che realizzano i requisiti definiti nel [RAD](RAD.md).
+Questo documento descrive l’architettura software proposta per AEGIS e dettaglia i componenti, i dati, le interfacce e le decisioni operative che realizzano i requisiti definiti nel [RAD](RAD.md).
 
 ### 1.2 OBIETTIVI DI PROGETTAZIONE
 
@@ -86,7 +86,7 @@ Il progetto è greenfield: non è stato fornito un sistema esistente da descrive
 
 ### 3.1 PANORAMICA
 
-aegis è una web app responsive per consultare l’accessibilità di luoghi e servizi di trasporto, pianificare spostamenti e inviare segnalazioni. Le viste server-side usano Jakarta Faces e Facelets. Le API REST usano Jakarta REST. La persistenza geografica usa PostgreSQL con PostGIS. Le immagini sono archiviate in object storage e le sincronizzazioni e attività lente sono svolte da worker.
+AEGIS è una web app responsive per consultare l’accessibilità di luoghi e servizi di trasporto, pianificare spostamenti e inviare segnalazioni. Le viste server-side usano Jakarta Faces e Facelets. Le API REST usano Jakarta REST. La persistenza geografica usa PostgreSQL con PostGIS. Le immagini sono archiviate in object storage e le sincronizzazioni e attività lente sono svolte da worker.
 
 La baseline applicativa proposta è Jakarta EE 11 con Java SE 21 LTS e WildFly 42 standard, come combinazione iniziale per le API Faces e REST previste. Jakarta EE 11 supporta Java SE 17 o successivo. Il progetto WildFly dichiara la compatibilità EE 11 di WildFly 42 su Java SE 17 e 21, ma raccomanda Java SE 25 e non dichiara la compatibilità EE 11 su tale versione. Java SE 21 è LTS secondo la roadmap Oracle. La combinazione 21/42 è una proposta per allineare runtime e compatibilità EE dichiarata, non una scelta approvata. OPEN-08 deve confermare la compatibilità richiesta, la distribuzione JDK, il modello di supporto, il runtime e gli ambienti prima dell’avvio della build applicativa. Provider di routing e fonti di trasporto seguono OPEN-03 e OPEN-01. Canali di notifica e servizi gestiti seguono OPEN-08. Le integrazioni restano sostituibili tramite porte applicative.
 
