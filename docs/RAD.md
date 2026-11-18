@@ -4,10 +4,10 @@
 
 | Dato | Valore |
 |---|---|
-| Progetto | aegis |
+| Progetto | Aegis |
 | Corso | Ingegneria del Software e Interazione Uomo-Macchina |
 | Docenti | Prof.ssa Mariacarla Staffa |
-| Candidati | [Inserisci Nome e Cognome] |
+| Candidati | Alessio Attilio, Michela Rita Brancaccio, Andrea Plini |
 | Anno accademico | 2025/2026 |
 
 ## SOMMARIO
@@ -76,11 +76,11 @@ La piattaforma offre consultazione pubblica con ricerca per area, mappa interatt
 
 | ID | Responsabile dell’azione | Azione richiesta | Priorità | Caso d’uso |
 |---|---|---|---|---|
-| FR-01 | Sistema | Mostrare su mappa e in elenco i luoghi e le informazioni di accessibilità per l’area richiesta. | Must | UC-02 |
-| FR-02 | Sistema | Mostrare caratteristiche quali ascensori, rampe, percorsi tattili e annunci sonori con stato, fonte, aggiornamento e validità. | Must | UC-01, UC-02 |
+| FR-01 | Sistema | Mostrare sulla mappa e in elenco i luoghi e le informazioni di accessibilità per l’area richiesta. | Must | UC-02 |
+| FR-02 | Sistema | Mostrare caratteristiche come ascensori, rampe, percorsi tattili e annunci sonori con stato, fonte, aggiornamento e validità. | Must | UC-01, UC-02 |
 | FR-03 | Sistema | Classificare come sconosciuti i dati assenti, incoerenti o scaduti oltre la soglia di validità (30 giorni dall’osservazione, salvo diversa scadenza configurata per la fonte), senza inferire accessibilità. | Must | UC-01, UC-02 |
 | FR-04 | Ospite o utente registrato e sistema | Acquisire origine, destinazione ed esigenze di accessibilità; calcolare e restituire percorsi alternativi. | Must | UC-01 |
-| FR-05 | Sistema | Distinguere nei percorsi barriere note, tratti compatibili e tratti non verificati. | Must | UC-01 |
+| FR-05 | Sistema | Distinguere nei percorsi barriere note, tratti compatibili e non verificati. | Must | UC-01 |
 | FR-06 | Ospite o utente registrato e sistema | Consentire la selezione di un luogo e mostrare dettagli di accessibilità e provenienza. | Must | UC-02 |
 | FR-07 | Ospite o utente registrato | Inserire luogo, categoria, descrizione e data di osservazione del problema, allegando facoltativamente una foto (max 5 MB). La data di invio è registrata dal sistema. | Must | UC-03 |
 | FR-08 | Sistema | Generare e restituire un codice di tracking univoco per consultare lo stato della segnalazione senza esporre dati personali. | Must | UC-03, UC-04 |
