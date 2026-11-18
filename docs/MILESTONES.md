@@ -1,4 +1,4 @@
-# Roadmap documentale e ingegneristica aegis
+# Roadmap documentale e ingegneristica AEGIS
 
 ## Ambito
 
@@ -25,9 +25,9 @@ Gli sprint sono ordinati per dipendenza e non assegnano date o durate non concor
 
 ## Competenze del corso e adattamento del progetto
 
-Riferimento di studio: Carlo Ghezzi, Mehdi Jazayeri e Dino Mandrioli, *Ingegneria del software: Fondamenti e principi*, Pearson, capitoli 1–10. Il testo collega qualità del prodotto, principi di progettazione, specifiche, verifica, processo, gestione, strumenti e responsabilità professionale. Questa tabella collega tali competenze alle evidenze di aegis senza confondere documentazione, codice implementato e risultati osservati.
+Riferimento di studio: Carlo Ghezzi, Mehdi Jazayeri e Dino Mandrioli, *Ingegneria del software: Fondamenti e principi*, Pearson, capitoli 1–10. Il testo collega qualità del prodotto, principi di progettazione, specifiche, verifica, processo, gestione, strumenti e responsabilità professionale. Questa tabella collega tali competenze alle evidenze di AEGIS senza confondere documentazione, codice implementato e risultati osservati.
 
-| Capitoli | Competenza | Applicazione ed evidenza attuale in aegis |
+| Capitoli | Competenza | Applicazione ed evidenza attuale in AEGIS |
 |---|---|---|
 | 1, 7 | Programmare usando linguaggi, algoritmi e strutture dati; modellare e analizzare il dominio, trasformare esigenze in specifiche, comunicare con utenti e specialisti, scegliere un processo adatto e coordinare il lavoro. | RAD, casi d’uso e roadmap definiscono il dominio e il processo. Area pilota e fonti restano da convalidare in OPEN-01. `src/` non contiene implementazione, quindi programmazione, algoritmi e strutture dati non hanno ancora evidenze nel progetto. Non ci sono sessioni con utenti. |
 | 2 | Valutare qualità di prodotto e di processo: correttezza, affidabilità, robustezza, prestazioni e scalabilità, usabilità, verificabilità, evolvibilità, manutenibilità e riparabilità, riuso, portabilità, comprensibilità, interoperabilità, produttività e puntualità. | I NFR del RAD collegano alcune qualità a metodi di verifica. La copertura va completata in base alle decisioni di prodotto; target di performance, disponibilità, freschezza, usabilità e upload restano subordinati a OPEN-02, OPEN-06, OPEN-07 e OPEN-15. Non si assumono valori non approvati. |

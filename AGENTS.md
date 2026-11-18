@@ -6,7 +6,7 @@
 - Prima di creare un Google Doc, controlla il registro dei link in `docs/GOOGLE_DOCS_SYNC.md`. Se il link esiste, aggiorna quel documento e conserva il suo ID. Se non esiste o non è più valido, crea il documento e registra subito il nuovo link nello stesso file.
 - Non introdurre simboli decorativi, caratteri insoliti, artefatti di codifica o testo spazzatura. Usa testo pulito e formattazione coerente con il file. Mantieni i caratteri necessari al contenuto e alla lingua.
 
-## Skill aegis
+## Skill AEGIS
 
 Le skill specifiche del progetto si trovano in `.agents/skills/`. Usa solo quelle pertinenti alla richiesta. Non caricare le skill di altri ambiti per abitudine.
 

@@ -1,9 +1,9 @@
 ---
 name: aegis-docs
-description: Create or revise aegis RAD, SDD, template, and project documentation while preserving the supplied academic template and traceable requirements.
+description: Create or revise AEGIS RAD, SDD, template, and project documentation while preserving the supplied academic template and traceable requirements.
 ---
 
-# aegis documentation
+# AEGIS documentation
 
 Use for changes to `docs/RAD.md`, `docs/SDD.md`, `docs/template.md`, or related project documentation.
 
