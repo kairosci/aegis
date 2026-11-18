@@ -11,3 +11,7 @@
 Le skill specifiche del progetto si trovano in `.agents/skills/`. Usa solo quelle pertinenti alla richiesta. Non caricare le skill di altri ambiti per abitudine.
 
 Per ogni modifica a RAD, SDD, template o documentazione di progetto, applica `aegis-docs` e `aegis-antislop` insieme. Verifica evidenze, tracciabilità, linguaggio, diagrammi ed export prima di concludere.
+
+## Pull request
+
+Prima di creare o aggiornare una pull request, leggi `.github/pull_request_template.md` e segui le sue istruzioni, inclusa l’indicazione di lasciare vuoto il corpo quando richiesto.
