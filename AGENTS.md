@@ -6,8 +6,12 @@
 - Prima di creare un Google Doc, controlla il registro dei link in `docs/GOOGLE_DOCS_SYNC.md`. Se il link esiste, aggiorna quel documento e conserva il suo ID. Se non esiste o non è più valido, crea il documento e registra subito il nuovo link nello stesso file.
 - Non introdurre simboli decorativi, caratteri insoliti, artefatti di codifica o testo spazzatura. Usa testo pulito e formattazione coerente con il file. Mantieni i caratteri necessari al contenuto e alla lingua.
 
-## Skill aegis
+## Skill AEGIS
 
 Le skill specifiche del progetto si trovano in `.agents/skills/`. Usa solo quelle pertinenti alla richiesta. Non caricare le skill di altri ambiti per abitudine.
 
 Per ogni modifica a RAD, SDD, template o documentazione di progetto, applica `aegis-docs` e `aegis-antislop` insieme. Verifica evidenze, tracciabilità, linguaggio, diagrammi ed export prima di concludere.
+
+## Pull request
+
+Prima di creare o aggiornare una pull request, leggi `.github/pull_request_template.md` e segui le sue istruzioni, inclusa l’indicazione di lasciare vuoto il corpo quando richiesto.
