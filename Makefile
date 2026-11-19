@@ -62,7 +62,7 @@ docs: check-node check-pandoc
 	$(MAKE) --no-print-directory $(OUTPUT_DIR)/rad-is.docx $(OUTPUT_DIR)/sdd-is.docx
 
 $(OUTPUT_DIR)/rad-is.docx: docs/RAD.md docs/template/template.docx $(DOCX_TOOL_INPUTS) | render-docs
-	$(PANDOC) --from=gfm --to=docx --standalone --reference-doc=docs/template/template.docx --resource-path=".:$(OUTPUT_DIR)" "$(OUTPUT_DIR)/rad-rendered.md" --output="$@"
+	$(PANDOC) --from=gfm --to=docx --standalone --reference-doc=docs/template/template.docx --resource-path=".:docs:$(OUTPUT_DIR)" "$(OUTPUT_DIR)/rad-rendered.md" --output="$@"
 
 $(OUTPUT_DIR)/sdd-is.docx: docs/SDD.md docs/template/template.docx $(DOCX_TOOL_INPUTS) | render-docs
 	$(PANDOC) --from=gfm --to=docx --standalone --reference-doc=docs/template/template.docx --resource-path=".:$(OUTPUT_DIR)" "$(OUTPUT_DIR)/sdd-rendered.md" --output="$@"
