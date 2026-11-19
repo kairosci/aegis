@@ -103,10 +103,10 @@ La tabella collega i requisiti del [RAD](RAD.md#32-requisiti-funzionali) ai modu
 | Routing | Validare richieste, invocare il provider e mostrare l’incertezza dei tratti. | FR-04, FR-05, UC-01 | NFR-08, NFR-10 |
 | Reports | Creare segnalazioni e consentire il tracking pubblico tramite codice senza esporre dati personali. | FR-07, FR-08, UC-03, UC-04 | NFR-04, NFR-06, NFR-07 |
 | Moderation | Applicare le autorizzazioni e validare le transizioni conservando la cronologia append-only. | FR-09, UC-05 | NFR-04, NFR-05, NFR-06 |
-| Identity | Gestire autenticazione, ruoli e separazione dei dati identificativi. | FR-13 (UC-05–UC-08), FR-14 (UC-07, UC-08), FR-15 (UC-08) | NFR-04, NFR-05 |
+| Identity | Gestire autenticazione, registrazione, ruoli e separazione dei dati identificativi. | FR-13 (UC-05–UC-08), FR-14 (UC-07–UC-09), FR-15 (UC-08) | NFR-04, NFR-05 |
 | Integrations | Implementare adattatori per fonti di trasporto, routing, notifiche e storage. | FR-10 (UC-06), FR-12 (UC-05, UC-08) | NFR-07, NFR-12 |
 | Worker | Eseguire sincronizzazioni schedulate, riconciliare upload e inviare notifiche in modo asincrono e recuperabile. | FR-07 (UC-03), FR-10, FR-11, UC-06, FR-12 (UC-05, UC-08) | NFR-07, NFR-09, NFR-10 |
-| Web | Fornire viste accessibili in Facelets con mappa, alternative testuali, moduli e pannello di moderazione. | FR-01–FR-09, FR-13–FR-15, UC-01–UC-08 | NFR-01, NFR-02, NFR-03, NFR-10, NFR-13 |
+| Web | Fornire viste accessibili in Facelets con mappa, alternative testuali, moduli e pannello di moderazione. | FR-01–FR-09, FR-13–FR-15, UC-01–UC-09 | NFR-01, NFR-02, NFR-03, NFR-10, NFR-13 |
 | Runtime e Operations | Gestire configurazione, distribuzione, osservabilità, migrazioni e ripristino. | Nessun caso d’uso diretto | NFR-05, NFR-09, NFR-10, NFR-12 |
 
 NFR-12 è trasversale: separazione tra dominio, casi d’uso e adattatori e documentazione delle API riguardano i moduli applicativi.
