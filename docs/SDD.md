@@ -38,12 +38,14 @@ Questo documento descrive l’architettura software proposta per AEGIS e dettagl
 
 | Obiettivo | Criterio architetturale |
 |---|---|
-| Separazione delle responsabilità | Mantenere distinti dominio, casi d’uso e adattatori. |
-| Affidabilità dei dati di accessibilità | Registrare fonte e freschezza. Trattare i dati assenti o scaduti come sconosciuti. |
-| Sostituibilità delle integrazioni | Collegare fonti e provider tramite porte e adattatori. |
-| Tracciabilità della moderazione | Conservare gli eventi decisionali in forma append-only. |
-| Sicurezza e privacy | Applicare autorizzazione server-side, minimizzazione dei dati e controlli sugli upload. |
-| Operatività misurabile | Registrare esiti di sincronizzazione, ritardi delle fonti, errori e stato dei processi asincroni. |
+| Separazione delle responsabilità | Mantenere distinti dominio, casi d’uso e adattatori tramite architettura esagonale (*Ports & Adapters*). |
+| Affidabilità dei dati di accessibilità | Registrare fonte e freschezza. Trattare come sconosciuti i dati assenti o aggiornati da più di 30 giorni. |
+| Sostituibilità delle integrazioni | Collegare fonti GTFS, provider di routing, storage e canali di notifica tramite porte e adattatori isolati. |
+| Tracciabilità della moderazione | Conservare gli eventi decisionali in forma *append-only* nella stessa transazione dell’aggiornamento di stato. |
+| Sicurezza e privacy | Applicare autorizzazione server-side (RBAC), minimizzazione dei dati personali (GDPR) e scansione degli upload. |
+| Operatività misurabile | Registrare esiti di sincronizzazione, ritardi delle fonti, errori e stato dei processi asincroni mediante log strutturati e metriche. |
+
+*Tabella 1.1: Obiettivi di progettazione e relativi criteri architetturali*
 
 ### 1.3 DEFINIZIONI, ACRONIMI E ABBREVIAZIONI
 
@@ -55,7 +57,7 @@ Le altre definizioni sono raccolte nel [glossario](#6-glossario).
 
 ### 1.4 RIFERIMENTI
 
-| Riferimento | Uso e stato |
+| Riferimento | Ruolo nel progetto |
 |---|---|
 | [RAD: Documento di Analisi dei Requisiti](RAD.md) | Requisiti, attori, casi d’uso e vincoli. |
 | [Template RAD/SDD convertito](template.md) | Struttura accademica di riferimento. |
@@ -68,11 +70,11 @@ Le altre definizioni sono raccolte nel [glossario](#6-glossario).
 
 ### 1.5 PANORAMICA
 
-Il documento descrive il contesto attuale, l’architettura proposta, la decomposizione dei moduli, la mappatura hardware/software, la persistenza, il controllo accessi, il flusso globale, le condizioni limite e i servizi dei sottosistemi.
+Il documento è organizzato in 6 capitoli: il Capitolo 1 definisce scopo e obiettivi di progettazione; il Capitolo 2 inquadra l’assenza di sistemi preesistenti (*greenfield*); il Capitolo 3 descrive l’architettura proposta, la decomposizione in moduli, il mapping hardware/software, la persistenza, la sicurezza e il flusso di controllo; il Capitolo 4 specifica i servizi dei sottosistemi; il Capitolo 5 presenta i diagrammi UML di design (classi e sequenze); il Capitolo 6 raccoglie il glossario tecnico.
 
 ## SISTEMA CORRENTE
 
-Il progetto è greenfield: non è stato fornito un sistema esistente da descrivere o migrare. Prima del pilota saranno censiti i servizi di trasporto, i dataset disponibili e i flussi di segnalazione già in uso nell’area geografica selezionata.
+Il progetto è di tipo **greenfield** (sviluppo ex novo): non esiste un sistema preesistente da migrare o integrare come legacy. L’architettura viene progettata da zero per acquisire i feed ufficiali GTFS del trasporto pubblico locale dell’area metropolitana di Napoli e affiancarli alle segnalazioni georeferenziate degli utenti.
 
 ## SISTEMA PROPOSTO
 
@@ -86,9 +88,9 @@ Il browser riceve HTML per le viste e JSON per le API. La mappa usa una libreria
 
 ### 3.2 DECOMPOSIZIONE DEL SISTEMA
 
-La tabella collega i requisiti del [RAD](RAD.md#32-requisiti-funzionali) ai moduli proposti. I riferimenti NFR indicano responsabilità architetturali da verificare, non requisiti già soddisfatti dall’implementazione.
+La tabella seguente mappa i moduli architetturali sui requisiti funzionali, non funzionali e casi d’uso del RAD.
 
-| Modulo | Responsabilità | Requisiti funzionali e casi d’uso | Requisiti di qualità |
+| Modulo | Responsabilità architetturale | Requisiti funzionali e casi d’uso | Requisiti di qualità |
 |---|---|---|---|
 | Places | Gestire luoghi, fermate e stazioni e fornire ricerche geospaziali. | FR-01, FR-06, UC-02 | NFR-08, NFR-10 |
 | Accessibility | Gestire caratteristiche, stato, fonte, timestamp e validità. | FR-02, FR-03, UC-01, UC-02 | NFR-08 |
@@ -101,63 +103,66 @@ La tabella collega i requisiti del [RAD](RAD.md#32-requisiti-funzionali) ai modu
 | Web | Fornire viste accessibili in Facelets con mappa, alternative testuali, moduli e pannello di moderazione. | FR-01–FR-09, FR-13–FR-15, UC-01–UC-09 | NFR-01, NFR-02, NFR-03, NFR-10, NFR-13 |
 | Runtime e Operations | Gestire configurazione, distribuzione, osservabilità, migrazioni e ripristino. | Nessun caso d’uso diretto | NFR-05, NFR-09, NFR-10, NFR-12 |
 
-NFR-12 è trasversale: separazione tra dominio, casi d’uso e adattatori e documentazione delle API riguardano i moduli applicativi.
+*Tabella 3.1: Decomposizione del sistema in moduli e tracciabilità verso il RAD*
 
-La struttura applicativa proposta organizza il codice Java per domini e separa `domain`, `application` e `adapter`. Le entità e i value object dovranno contenere invarianti. I casi d’uso dovranno orchestrare le operazioni e dipendere da porte. Gli adattatori dovranno implementare accesso HTTP, persistenza e integrazioni. DTO HTTP, modello di dominio e modello di persistenza resteranno separati.
+Internamente, ciascun dominio applicativo è organizzato in tre package:
 
-La struttura dei package proposta è `places`, `accessibility`, `routing`, `reports`, `identity`, `integrations` e `shared`, ciascuno articolato secondo le responsabilità effettive. La collocazione dettagliata dei componenti web e dei worker dipende dalla selezione del runtime e dal packaging applicativo.
+- `domain`: entità, value object immutabili, enumerazioni e regole di invariante pure (prive di dipendenze da framework).
+- `application`: casi d’uso (`*Control`), coordinamento transazionale e porte (*interfaces*) verso persistenza e servizi esterni.
+- `adapter`: implementazioni concrete per risorse Jakarta REST, controller Jakarta Faces, repository JPA/PostGIS, client HTTP e storage S3.
 
 #### 3.2.1 DIAGRAMMA DEI MODULI
 
-Il diagramma mostra il browser e il runtime Jakarta EE, i moduli applicativi, le porte verso le dipendenze sostituibili e i sistemi persistenti.
-
 ```mermaid
 flowchart TB
-  accDescr: Browser e runtime si collegano ai moduli, alla persistenza e ai provider esterni tramite adattatori.
-  Browser[Browser: Facelets, HTML, JavaScript accessibile]
-  Runtime[Runtime Jakarta EE]
-  Faces[Jakarta Faces e Facelets]
-  Rest[API Jakarta REST]
-  Places[Places e Accessibility]
+  Browser[Browser: Facelets, HTML/ARIA, JS]
+  Ingress[Reverse Proxy / Terminazione TLS]
+  Faces[Modulo Web: Jakarta Faces e Facelets]
+  Rest[API Gateway: Jakarta REST]
+  Places[Places & Accessibility]
   Routing[Routing]
-  Reports[Reports e Moderation]
+  Reports[Reports & Moderation]
   Identity[Identity]
-  Worker[Worker asincroni]
-  Integrations[Adattatori di integrazione]
-  Database[(PostgreSQL e PostGIS)]
-  Storage[(Object storage)]
-  Cache[(Cache geospaziale)]
-  Transit[Fonti ufficiali di trasporto]
+  Worker[Worker Asincroni]
+  Integrations[Adapters di Integrazione]
+  Database[(PostgreSQL 16 + PostGIS)]
+  Storage[(Object Storage S3)]
+  Cache[(Cache Redis)]
+  Transit[Fonti ufficiali GTFS]
   RouteProvider[Provider di routing]
-  GeoProvider[Provider di geocodifica]
-  Notify[Canali di notifica]
+  Notify[Canali di notifica Email/Push]
 
-  Browser --> Faces
-  Browser --> Rest
-  Runtime --> Faces
-  Runtime --> Rest
+  Browser -->|HTTPS| Ingress
+  Ingress --> Faces
+  Ingress --> Rest
+  Faces --> Places
+  Faces --> Routing
+  Faces --> Reports
+  Faces --> Identity
   Rest --> Places
   Rest --> Routing
   Rest --> Reports
   Rest --> Identity
+  Worker --> Places
+  Worker --> Reports
   Worker --> Integrations
   Worker --> Cache
   Places --> Database
   Places --> Cache
   Reports --> Database
-  Identity --> Database
   Reports --> Storage
-  Places --> Integrations
+  Identity --> Database
   Routing --> Integrations
   Integrations --> Transit
   Integrations --> RouteProvider
-  Integrations --> GeoProvider
   Integrations --> Notify
 ```
 
+*Figura 3.1: Diagramma dei moduli e delle dipendenze architetturali*
+
 ### 3.3 HARDWARE/SOFTWARE MAPPING
 
-| Nodo | Hardware e software | Responsabilità |
+| Nodo | Ambiente e software | Responsabilità |
 |---|---|---|
 | Dispositivo client | Browser desktop o mobile e tecnologie assistive. | Renderizzare le viste, interagire con la mappa e inviare richieste HTTPS. |
 | Container applicativo | Java 21 LTS, Jakarta EE 11, WildFly 42, Jakarta Faces, Facelets e Jakarta REST. | Servire viste e API e coordinare i casi d’uso. |
@@ -200,15 +205,15 @@ In sviluppo è previsto Docker Compose con PostgreSQL 16/PostGIS 3.4, Redis e Mi
 
 La pipeline di rilascio dovrà compilare e verificare gli artefatti applicativi, eseguire test e scansioni delle dipendenze, creare immagini versionate e distribuire progressivamente. Le migrazioni devono mantenere la compatibilità con le versioni applicative attive durante il rilascio. La configurazione applicativa dovrà essere versionata e distinta per ambiente. I segreti non dovranno essere inclusi nel repository.
 
-Le procedure operative per rilascio, migrazione, rollback, incidenti e ripristino seguono il [modello di runbook](template/RUNBOOK.md) e devono essere provate nell’ambiente di riferimento prima dell’esercizio. Log, metriche, allarmi, retry, backup e recupero degli esiti ambigui sono responsabilità del sottosistema Operations.
+Le procedure operative per rilascio, migrazione, rollback, incidenti e ripristino seguono il [modello di runbook](template/RUNBOOK.md) e devono essere provate nell'ambiente di riferimento prima dell'esercizio. Log, metriche, allarmi, retry, backup e recupero degli esiti ambigui sono responsabilità del sottosistema Operations.
 
 ### 3.4 GESTIONE DEI DATI PERSISTENTI
 
-La persistenza relazionale proposta usa PostgreSQL e PostGIS. Le migrazioni dovranno essere versionate e rimanere compatibili con le versioni applicative durante il rilascio progressivo. Le entità di dominio non dovranno dipendere dal modello relazionale. Gli adattatori di persistenza le convertiranno nel modello dati.
+La persistenza relazionale utilizza **PostgreSQL 16 con PostGIS 3.4**. Le migrazioni dello schema sono versionate tramite **Flyway** ed eseguite in modalità retrocompatibile. Le entità del package `domain` sono mappate sulle tabelle mediante adattatori JPA/Hibernate isolati nel layer `adapter`.
 
 #### 3.4.1 POSTGRESQL E STRUTTURA RELAZIONALE
 
-| Tabella | Contenuto e relazioni |
+| Tabella | Contenuto, chiavi e vincoli principali |
 |---|---|
 | `place` | Luogo, fermata o stazione con nome, tipo e geometria a SRID esplicito. |
 | `accessibility_feature` | Tipo, stato, fonte, validità e timestamp della caratteristica. Riferimento a `place`. |
@@ -280,7 +285,11 @@ Consultazione dei luoghi e tracking tramite codice non richiedono un account. L�
 
 #### 3.5.2 CONTROLLO DEGLI ACCESSI AI DATI
 
-Ogni operazione riservata verifica l’autorizzazione sul server. L’accesso ai dati identificativi è separato da quello ai contenuti pubblici delle segnalazioni. Le query sono parametrizzate. Input e transizioni di dominio sono validati. Le migrazioni applicano vincoli relazionali e indici necessari all’integrità e alle query autorizzate.
+Ogni endpoint e azione Facelets verifica identità e ruoli lato server tramite annotazioni Jakarta Security (`@RolesAllowed`):
+
+- Ruolo `REGISTERED_USER`: accesso alla propria area personale, gestione luoghi preferiti, gestione consensi notifiche e consultazione delle proprie segnalazioni (`author_id = currentUser.id`).
+- Ruolo `ADMINISTRATOR`: accesso alla coda di moderazione, esecuzione delle transizioni di stato delle segnalazioni e avvio/monitoraggio delle sincronizzazioni GTFS.
+- Tutte le query SQL/JPQL utilizzano parametri vincolati (*prepared statements*) per prevenire SQL Injection.
 
 #### 3.5.3 GESTIONE DELLE IMMAGINI
 
@@ -288,7 +297,8 @@ Gli upload accettano JPEG, PNG o WebP fino a 5 MB. Il sistema registra un intent
 
 #### 3.5.4 PROTEZIONE DA ABUSI
 
-Gli endpoint applicano rate limiting e validazione server-side. Le richieste non valide sono rifiutate senza effetti parziali. Gli errori non devono rivelare dati riservati o consentire l’enumerazione delle segnalazioni. I log strutturati escludono credenziali, codici di tracking e descrizioni personali. Le azioni amministrative sono sottoposte ad audit.
+- **Rate limiting:** applicato al livello di ingresso e API (ad esempio massimo 10 invii di segnalazione/ora per indirizzo IP per utenti Ospite; massimo 20 richieste/minuto per IP sull’endpoint di tracking per impedire attacchi a dizionario sui codici).
+- **Risposte uniformi:** l’endpoint di tracking restituisce il medesimo errore generico `404 Not Found` sia per codici inesistenti sia per codici formalmente malformati, evitando qualsiasi leak informativo.
 
 **Analisi delle minacce.** La seguente valutazione descrive i controlli previsti dal progetto e le evidenze richieste prima del rilascio.
 
@@ -314,19 +324,13 @@ Gli esiti delle verifiche, le limitazioni note e l'accettazione del rischio resi
 
 ### 3.6 DECISIONI SUL FLUSSO DI CONTROLLO GLOBALE
 
-Le viste Facelets e le risorse Jakarta REST costituiscono adattatori. Validano la forma degli input e invocano casi d’uso applicativi. I casi d’uso applicano le regole di dominio, coordinano porte e transazioni e restituiscono risultati tipizzati. Gli adattatori convertono i risultati in viste o DTO HTTP. Le chiamate di rete lente sono eseguite fuori dalle transazioni di database quando possibile.
-
-Le porte applicative includono repository per luoghi e segnalazioni, provider per dati di trasporto e routing, storage e notifiche. Le implementazioni sono selezionabili senza modificare le regole del dominio. OpenAPI documenta le API versionate, gli schemi, gli errori e le regole di accesso.
-
 #### 3.6.1 GESTIONE DELLA SESSIONE UTENTE
 
 La sessione è necessaria per le funzioni protette e non condiziona consultazione dei luoghi e tracking pubblico. Jakarta Security integra la sessione applicativa con il controllo dei ruoli Utente registrato e Amministratore. Le sessioni sono terminate al logout e scadono secondo la configurazione sicura del runtime WildFly.
 
 #### 3.6.2 NAVIGAZIONE TRA VISTE
 
-Jakarta Faces e Facelets gestiscono la navigazione server-side secondo le convenzioni del runtime selezionato. Le viste previste comprendono ricerca, risultati, mappa con elenco testuale, dettaglio luogo, modulo di segnalazione, tracking e pannello di moderazione. Le transizioni riservate applicano i controlli di autorizzazione. I flussi mantengono etichette, focus e annunci accessibili.
-
-Le API REST sono versionate e separate dal contratto delle viste. Un client cartografico riceve dati dall’API e offre una rappresentazione testuale equivalente.
+Jakarta Faces gestisce il flusso delle pagine server-side (Home/Mappa e Ricerca, Dettaglio Luogo, Pianificatore Percorso, Nuova Segnalazione, Tracking Segnalazione, Area Personale, Dashboard Amministratore). Ogni vista espone i dati in doppia modalità sincronizzata (mappa interattiva e tabella HTML semantica con attributi ARIA) per garantire la piena navigabilità da tastiera e screen reader (NFR-01, NFR-02).
 
 #### 3.6.3 GESTIONE ASINCRONA ED EVENTI
 
@@ -334,9 +338,7 @@ Le sincronizzazioni e le attività lente sono eseguite da worker. La transazione
 
 #### 3.6.4 GESTIONE DEGLI ERRORI
 
-Gli errori sono convertiti in una forma HTTP uniforme e in messaggi comprensibili per l’interfaccia. I dettagli interni e i dati personali non sono restituiti al client né registrati nei log. Ogni caso d’uso garantisce le proprie condizioni transazionali: un errore di moderazione non lascia divergenze tra stato e cronologia. Un errore di creazione non lascia una segnalazione parziale. Poiché database e object storage non condividono una transazione, un allegato non collegato resta privato e recuperabile o eliminabile tramite il suo intento durevole. Le viste espongono in modo accessibile stati di caricamento, assenza di risultati ed errore.
-
-La procedura operativa per gli incidenti deve definire rilevazione, escalation, contenimento, ripristino, comunicazioni e registrazione degli esiti prima dell’apertura del servizio.
+Un `ExceptionMapper` centralizzato (per Jakarta REST) e un `ExceptionHandler` dedicato (per Jakarta Faces) intercettano tutte le eccezioni applicative e tecniche, traducendole in codici HTTP standard (`400`, `401`, `403`, `404`, `429`, `500`) e messaggi utente chiari, accessibili tramite `aria-live="assertive"`, senza mai esporre stack trace o dettagli interni del database.
 
 ### 3.7 CONDIZIONI LIMITE
 
@@ -376,11 +378,11 @@ Il sottosistema Identity gestisce autenticazione e autorizzazione delle funzioni
 
 ### 4.2 GESTIONE DEI LUOGHI
 
-Il sottosistema Places importa e consulta luoghi, fermate e stazioni. Le query geospaziali usano PostGIS e restituiscono geometrie e identificativi secondo il contratto API. La ricerca e il dettaglio sono in sola lettura per i dati ufficiali. Gli aggiornamenti arrivano dagli adattatori delle fonti autorizzate.
+Il sottosistema `places` espone `PlacesAccessibilityAPI` e interroga `PlaceRepository` su PostGIS tramite query spaziali (`ST_DWithin`, `ST_Intersects`) filtrando esclusivamente sui record appartenenti alla `active_generation_id` corrente. Restituisce DTO tipizzati con coordinate WGS84, linee servite e sintesi di accessibilità.
 
 ### 4.3 INFORMAZIONI DI ACCESSIBILITÀ
 
-Il sottosistema Accessibility recupera le caratteristiche associate ai luoghi e valuta validità e provenienza. Ogni risposta include stato, fonte e freschezza disponibili. Dato assente o scaduto è classificato sconosciuto. Le informazioni sono fornite ai dettagli dei luoghi e ai casi d’uso di pianificazione.
+Il sottosistema `accessibility`, tramite `GetPlaceAccessibilityControl`, recupera tutte le `AccessibilityFeature` del luogo selezionato (UC-02), verifica per ciascuna la condizione `observed_at >= now() - 30 days` e mappa automaticamente ogni record scaduto o mancante nello stato `FeatureState.UNKNOWN`, preservando fonte e timestamp originale per trasparenza verso l’utente.
 
 ### 4.4 PIANIFICAZIONE DEI PERCORSI
 
