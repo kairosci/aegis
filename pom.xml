@@ -18,6 +18,9 @@
     <module>src/adapters/rest</module>
     <module>src/adapters/web</module>
     <module>src/adapters/worker</module>
+    <module>src/adapters/routing</module>
+    <module>src/adapters/storage</module>
+    <module>src/adapters/gtfs</module>
     <module>src/bootstrap</module>
   </modules>
 
@@ -69,6 +72,21 @@
       <dependency>
         <groupId>it.aegis</groupId>
         <artifactId>worker</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>it.aegis</groupId>
+        <artifactId>routing</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>it.aegis</groupId>
+        <artifactId>storage</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>it.aegis</groupId>
+        <artifactId>gtfs</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

@@ -10,5 +10,10 @@
  * <p>Le porte di notifica distinguono la scrittura dell'intenzione nella stessa
  * unità di lavoro del caso d'uso dalla consegna da parte del worker, che non
  * garantisce consegna esattamente una volta.
+ *
+ * <p>Le porte di integrazione descrivono snapshot di fermate e riferimenti a
+ * oggetti privati. I tipi restituiti sono immutabili e non trasportano
+ * affermazioni di accessibilità, così una fonte mancante o parziale resta
+ * distinta da un dato verificato.
  */
 package it.aegis.application.port;

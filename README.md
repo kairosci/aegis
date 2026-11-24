@@ -4,7 +4,7 @@ Monorepo per la piattaforma di mobilità urbana accessibile.
 
 ## Stato del repository
 
-Il repository contiene la documentazione, gli strumenti per esportare RAD e SDD in DOCX e lo scheletro applicativo Java. La struttura separa dominio, casi d'uso e adattatori, ma non implementa le integrazioni esterne né le viste complete. I dati applicativi risiedono in `config/data/` e la toolchain in `mise.toml`. Requisiti e architettura restano da convalidare.
+Il repository contiene la documentazione, gli strumenti per esportare RAD e SDD in DOCX e lo scheletro applicativo Java. La struttura separa dominio, casi d'uso e adattatori e include le porte `TransitDataProvider` e `StoragePort` con gli adattatori `GtfsTransitDataProvider`, `HttpRoutingProvider` e `S3CompatibleStorageAdapter`. Endpoint, credenziali e scelta del provider restano aperti e devono essere forniti dalla distribuzione. Le viste complete restano da implementare. I dati applicativi risiedono in `config/data/` e la toolchain in `mise.toml`. Requisiti e architettura restano da convalidare.
 
 ## Struttura
 
@@ -15,13 +15,14 @@ Il repository contiene la documentazione, gli strumenti per esportare RAD e SDD 
 | `config/data/` | Unica radice versionata dei dati applicativi. |
 | `config/data/application.properties` | Valori di policy e percorso del bundle messaggi letti dal caricamento tipizzato. |
 | `config/data/it/aegis/adapter/web/messages.properties` | Testi localizzati della vista di tracking. |
+| `config/data/it/aegis/adapter/messages.properties` | Testi localizzati degli errori degli adattatori. |
 | `mise.toml` | Versioni bloccate di JDK, Maven, Node.js, Pandoc e Tomcat. |
 | `Makefile` | Comandi per toolchain, build Java ed export DOCX. |
 | `pom.xml` | Reactor Maven dei moduli Java. |
 | `src/config/` | Caricamento della configurazione esterna. |
 | `src/domain/` | Entità, value object e regole di dominio. |
 | `src/application/` | Porte e casi d'uso. |
-| `src/adapters/` | Adattatori `inmemory`, `rest`, `web` e `worker`. |
+| `src/adapters/` | Adattatori `inmemory`, `rest`, `web`, `worker`, `routing`, `storage` e `gtfs`. |
 | `src/bootstrap/` | Assemblaggio WAR dell'applicazione. |
 | `.agents/skills/` | Skill specifiche del progetto. |
 | `.github/` | Dependabot e collegamento issue alla segnalazione privata delle vulnerabilità. |
@@ -52,9 +53,9 @@ Tomcat è uno strumento locale per servlet e JSP. Non sostituisce WildFly 42, ch
 
 ## Dati e codice
 
-I dati applicativi stanno solo in `config/data/`. `ConfigLoader` richiede `AEGIS_DATA_DIR` e legge `application.properties` senza default silenziosi. `MessageSource` carica il bundle dei messaggi dalla stessa directory. Nessun file dati o testo dell'interfaccia è presente in `src/`.
+I dati applicativi stanno solo in `config/data/`. `ConfigLoader` richiede `AEGIS_DATA_DIR` e legge `application.properties` senza default silenziosi. I nomi delle variabili d'ambiente sono definiti solo nel package `it.aegis.config.env`. `MessageSource` carica i bundle della vista e degli adattatori dalla stessa directory. Nessun file dati o testo dell'interfaccia è presente in `src/`. Le chiavi delle integrazioni esterne sono vuote nel repository e vanno assegnate dalla distribuzione.
 
-I valori provenienti dai dati esterni non sono ripetuti nel codice. Le regole di transizione, gli invarianti e i valori di protocollo, come i limiti delle coordinate geografiche, restano nel dominio come costanti esplicite o valori derivati. I byte massimi dell'allegato, la lunghezza dell'impronta, l'esito di verifica dei tratti e la dimensione del token Base62 sono calcolati dalla configurazione, dai parametri dell'algoritmo e dallo stato canonico. I messaggi diagnostici delle eccezioni e gli identificatori di chiave sono riferimenti di protocollo, non dati configurabili.
+I valori provenienti dai dati esterni non sono ripetuti nel codice. Le regole di transizione, gli invarianti e i valori di protocollo, come i limiti delle coordinate geografiche, restano nel dominio come costanti esplicite o valori derivati. I byte massimi dell'allegato, la lunghezza dell'impronta, l'esito di verifica dei tratti e la dimensione del token Base62 sono calcolati dalla configurazione, dai parametri dell'algoritmo e dallo stato canonico. I messaggi visibili delle eccezioni degli adattatori stanno nel bundle degli adattatori. Gli identificatori di chiave e i messaggi diagnostici interni restano riferimenti di protocollo, non dati configurabili.
 
 Ogni package, tipo, campo e metodo del sorgente Java è documentato con Javadoc. Il comando `make javadoc` genera la documentazione API e verifica che non manchino commenti.
 
