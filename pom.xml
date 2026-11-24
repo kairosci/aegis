@@ -18,6 +18,7 @@
     <module>src/adapters/rest</module>
     <module>src/adapters/web</module>
     <module>src/adapters/worker</module>
+    <module>src/bootstrap</module>
   </modules>
 
   <properties>
