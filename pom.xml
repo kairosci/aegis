@@ -17,6 +17,7 @@
     <module>src/adapters/inmemory</module>
     <module>src/adapters/rest</module>
     <module>src/adapters/web</module>
+    <module>src/adapters/worker</module>
   </modules>
 
   <properties>
