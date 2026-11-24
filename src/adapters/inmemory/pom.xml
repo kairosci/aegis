@@ -11,17 +11,17 @@
     <relativePath>../../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>aegis-adapter-inmemory</artifactId>
+  <artifactId>inmemory</artifactId>
   <name>AEGIS In-memory adapters</name>
 
   <dependencies>
     <dependency>
       <groupId>it.aegis</groupId>
-      <artifactId>aegis-application</artifactId>
+      <artifactId>application</artifactId>
     </dependency>
     <dependency>
       <groupId>it.aegis</groupId>
-      <artifactId>aegis-config</artifactId>
+      <artifactId>config</artifactId>
     </dependency>
   </dependencies>
 </project>

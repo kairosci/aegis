@@ -11,6 +11,6 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>aegis-domain</artifactId>
+  <artifactId>domain</artifactId>
   <name>AEGIS Domain</name>
 </project>
