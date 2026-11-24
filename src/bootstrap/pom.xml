@@ -11,26 +11,26 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>aegis-app</artifactId>
+  <artifactId>bootstrap</artifactId>
   <name>AEGIS Application assembly</name>
   <packaging>war</packaging>
 
   <dependencies>
     <dependency>
       <groupId>it.aegis</groupId>
-      <artifactId>aegis-adapter-rest</artifactId>
+      <artifactId>rest</artifactId>
     </dependency>
     <dependency>
       <groupId>it.aegis</groupId>
-      <artifactId>aegis-adapter-web</artifactId>
+      <artifactId>web</artifactId>
     </dependency>
     <dependency>
       <groupId>it.aegis</groupId>
-      <artifactId>aegis-adapter-worker</artifactId>
+      <artifactId>worker</artifactId>
     </dependency>
     <dependency>
       <groupId>it.aegis</groupId>
-      <artifactId>aegis-adapter-inmemory</artifactId>
+      <artifactId>inmemory</artifactId>
       <scope>runtime</scope>
     </dependency>
   </dependencies>

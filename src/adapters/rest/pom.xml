@@ -11,13 +11,13 @@
     <relativePath>../../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>aegis-adapter-rest</artifactId>
+  <artifactId>rest</artifactId>
   <name>AEGIS REST adapter</name>
 
   <dependencies>
     <dependency>
       <groupId>it.aegis</groupId>
-      <artifactId>aegis-application</artifactId>
+      <artifactId>application</artifactId>
     </dependency>
     <dependency>
       <groupId>jakarta.ws.rs</groupId>

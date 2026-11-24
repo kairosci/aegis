@@ -11,13 +11,13 @@
     <relativePath>../../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>aegis-adapter-worker</artifactId>
+  <artifactId>worker</artifactId>
   <name>AEGIS Worker adapter</name>
 
   <dependencies>
     <dependency>
       <groupId>it.aegis</groupId>
-      <artifactId>aegis-application</artifactId>
+      <artifactId>application</artifactId>
     </dependency>
     <dependency>
       <groupId>jakarta.enterprise</groupId>

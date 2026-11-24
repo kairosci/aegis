@@ -38,42 +38,42 @@
       </dependency>
       <dependency>
         <groupId>it.aegis</groupId>
-        <artifactId>aegis-config</artifactId>
+        <artifactId>config</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>it.aegis</groupId>
-        <artifactId>aegis-domain</artifactId>
+        <artifactId>domain</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>it.aegis</groupId>
-        <artifactId>aegis-application</artifactId>
+        <artifactId>application</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>it.aegis</groupId>
-        <artifactId>aegis-adapter-inmemory</artifactId>
+        <artifactId>inmemory</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>it.aegis</groupId>
-        <artifactId>aegis-adapter-rest</artifactId>
+        <artifactId>rest</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>it.aegis</groupId>
-        <artifactId>aegis-adapter-web</artifactId>
+        <artifactId>web</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>it.aegis</groupId>
-        <artifactId>aegis-adapter-worker</artifactId>
+        <artifactId>worker</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>it.aegis</groupId>
-        <artifactId>aegis-app</artifactId>
+        <artifactId>bootstrap</artifactId>
         <version>${project.version}</version>
         <type>war</type>
       </dependency>
