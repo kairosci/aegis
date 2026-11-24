@@ -5,11 +5,11 @@ description: Create or revise aegis RAD, SDD, template, and project documentatio
 
 # aegis documentation
 
-Use for changes to `docs/RAD.md`, `docs/SDD.md`, `docs/template.md`, or related project documentation.
+Use for changes to `docs/RAD.md`, `docs/SDD.md`, template files under `docs/template/`, or related project documentation.
 
 Apply the companion `aegis-antislop` skill to every documentation change. Use it to review evidence, traceability, wording, actors, failure paths, diagrams, and generated exports.
 
-- Follow the structure of the specific academic template or example documents supplied for the current task. When the user identifies example PDFs as the structural reference, mirror their section hierarchy and numbering in RAD/SDD. The generic transcription in `docs/template.md` is secondary for that task. Preserve the example's headings and section order while adapting domain content without copying its project-specific claims.
+- Follow the structure of the specific academic template or example documents supplied for the current task. When the user identifies example PDFs as the structural reference, mirror their section hierarchy and numbering in RAD/SDD. Preserve the example's headings and section order while adapting domain content without copying its project-specific claims.
 - Keep functional and non-functional requirements in tables. State an explicit actor/system action for functional requirements. Give each non-functional requirement an action and an observable criterion. Include performance where relevant.
 - Give use cases actors, preconditions, and postconditions. Preserve uncertainty as an explicit TBD rather than presenting an assumption as a fact.
 - Write concise Italian prose suitable for an academic project. Remove filler, promotional claims, repeated context, and invented implementation status. Preserve technical terms where they are precise.

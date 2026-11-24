@@ -4,13 +4,13 @@ Monorepo per la piattaforma di mobilità urbana accessibile.
 
 ## Stato del repository
 
-Il repository contiene la documentazione e gli strumenti per esportare RAD e SDD in DOCX. Il prodotto applicativo non è ancora implementato: `src/` non contiene moduli e non è presente una build applicativa. Requisiti e architettura descrivono il sistema proposto e restano da convalidare nei punti elencati in [RAD e SDD](docs/MILESTONES.md).
+Il repository contiene la documentazione e gli strumenti per esportare RAD e SDD in DOCX. Il prodotto applicativo non è ancora implementato: `src/` non contiene moduli e non è presente una build applicativa. Requisiti e architettura descrivono il sistema proposto e restano da convalidare.
 
 ## Struttura
 
 | Percorso | Contenuto |
 |---|---|
-| `docs/` | [RAD](docs/RAD.md), [SDD](docs/SDD.md), [modelli e riferimenti](docs/template.md), [roadmap](docs/MILESTONES.md) e [guida ai contributi](docs/CONTRIBUTING.md). |
+| `docs/` | [RAD](docs/RAD.md), [SDD](docs/SDD.md) e [template](docs/template/). |
 | `config/` | Configurazione condivisa della toolchain documentale e dei dati del progetto. |
 | `config/data/` | Directory per i dati del progetto. Attualmente vuota. |
 | `src/` | Codice applicativo. |
@@ -21,7 +21,7 @@ La documentazione e i relativi template risiedono in `docs/`. Il DOCX sorgente �
 
 ## Segnalazioni
 
-Per bug e richieste, consultare le [issue aperte](https://github.com/kairosci/aegis/issues) e usare il [modello issue](docs/template/ISSUE.md) per descrivere contesto, riproduzione e risultato atteso. Per le vulnerabilità seguire la [politica di sicurezza](docs/SECURITY.md) e usare il report privato GitHub. Prima di condividere log o esempi, rimuovere credenziali, token, dati personali e codici di tracking.
+Per bug e richieste, consultare le [issue aperte](https://github.com/kairosci/aegis/issues). Per le vulnerabilità usare il report privato GitHub. Prima di condividere log o esempi, rimuovere credenziali, token, dati personali e codici di tracking.
 
 ## Prerequisiti documentali
 
