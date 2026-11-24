@@ -158,20 +158,31 @@ flowchart TB
 
 #### 3.2.2 STRUTTURA DEL CODICE SORGENTE
 
-La struttura versionata è una proposta di scheletro, non una dichiarazione di funzionalità completata. Il reactor Maven risiede in `pom.xml` e i moduli in `src/`.
+La struttura versionata è una proposta di scheletro, non una dichiarazione di funzionalità completata. Il reactor Maven risiede in `pom.xml`. I sorgenti stanno in `src/` e seguono una gerarchia semantica senza prefissi `aegis-` nelle directory. Gli adattatori sono raggruppati in `src/adapters/` e l'assemblaggio applicativo in `src/bootstrap/`.
 
-| Modulo | Contenuto | Responsabilità |
+| Modulo Maven | Percorso | Contenuto | Responsabilità |
+|---|---|---|---|
+| `aegis-config` | `src/config` | Caricamento tipizzato da `config/data/`. | Valori di policy e percorsi dei messaggi esterni al codice. |
+| `aegis-domain` | `src/domain` | `places`, `accessibility`, `routing`, `reports`, `identity`. | Entità, value object e regole di dominio. |
+| `aegis-application` | `src/application` | `port` e `usecase`. | Porte e casi d'uso senza API Jakarta EE. |
+| `aegis-adapter-inmemory` | `src/adapters/inmemory` | Implementazioni in memoria delle porte. | Sviluppo locale, non produzione. |
+| `aegis-adapter-rest` | `src/adapters/rest` | Risorse Jakarta REST e DTO HTTP. | Confine HTTP. |
+| `aegis-adapter-web` | `src/adapters/web` | Bean Jakarta Faces e accesso al bundle esterno. | Confine delle viste. |
+| `aegis-adapter-worker` | `src/adapters/worker` | `OutboxNotificationWorker`. | Lavoro asincrono dopo il commit. |
+| `aegis-app` | `src/bootstrap` | Assemblaggio WAR. | Packaging. |
+
+Tutti i dati applicativi risiedono in `config/data/`. Il file `application.properties` contiene i valori di policy configurabili e il percorso del bundle dei messaggi. Il file `it/aegis/adapter/web/messages.properties` contiene i testi localizzati della vista. `ConfigLoader` richiede la variabile `AEGIS_DATA_DIR` e non applica default silenziosi. `MessageSource` legge il bundle dalla directory dati. Nessun dato di configurazione o testo dell'interfaccia è presente in `src/`. Le regole di transizione, gli invarianti e i valori di protocollo, come i limiti delle coordinate geografiche, restano nel dominio come costanti esplicite o valori derivati. I byte massimi dell'allegato, la lunghezza dell'impronta, l'esito di verifica dei tratti e la dimensione del token Base62 sono calcolati dalla configurazione, dai parametri dell'algoritmo e dallo stato canonico. I messaggi diagnostici delle eccezioni e gli identificatori di chiave restano nel codice come riferimenti di protocollo, non come dati configurabili.
+
+La toolchain è definita in `mise.toml` e installata con `make install-tools`. Ogni target del Makefile invoca gli strumenti tramite `mise exec`. I target `make compile` e `make package` usano JDK e Maven con versioni bloccate. `make docs` usa Node.js e Pandoc con le stesse versioni bloccate. Ogni package, tipo, campo e metodo del sorgente Java è documentato con Javadoc e `make javadoc` ne verifica la completezza. Le integrazioni JPA, S3, GTFS e il provider di routing restano da collegare. La demarcazione transazionale e il wiring dei bean restano aperti fino alla build applicativa. Non sono presenti test applicativi e la build non ne esegue.
+
+| Decisione | Stato | Criterio di verifica |
 |---|---|---|
-| `aegis-config` | Caricamento tipizzato di `config/application.properties`. | Valori di policy esterni al codice. |
-| `aegis-domain` | `places`, `accessibility`, `routing`, `reports`, `identity`. | Entità, value object e regole di dominio. |
-| `aegis-application` | `port` e `usecase`. | Porte e casi d'uso senza API Jakarta EE. |
-| `aegis-adapter-inmemory` | Implementazioni in memoria delle porte. | Sviluppo locale, non produzione. |
-| `aegis-adapter-rest` | Risorse Jakarta REST e DTO HTTP. | Confine HTTP. |
-| `aegis-adapter-web` | Bean Jakarta Faces e bundle di messaggi. | Confine delle viste. |
-| `aegis-adapter-worker` | `OutboxNotificationWorker`. | Lavoro asincrono dopo il commit. |
-| `aegis-app` | Assemblaggio WAR. | Packaging. |
-
-I valori di policy configurabili sono definiti in `config/application.properties` e caricati senza default silenziosi. Le regole di transizione, gli invarianti e i valori di protocollo, come i limiti delle coordinate geografiche, restano nel dominio come costanti esplicite o valori derivati. I byte massimi dell'allegato, la lunghezza dell'impronta, l'esito di verifica dei tratti e la dimensione del token Base62 sono calcolati dalla configurazione, dai parametri dell'algoritmo e dallo stato canonico. Le integrazioni JPA, S3, GTFS e il provider di routing restano da collegare. La demarcazione transazionale e il wiring dei bean restano aperti fino alla build applicativa. Non sono presenti test applicativi.
+| Versioni degli strumenti in `mise.toml` | Approvata | `make install-tools` installa gli strumenti bloccati e ogni target del Makefile passa da `mise exec`. |
+| Dati applicativi solo in `config/data/` | Approvata | Nessun file dati è presente in `src/` e `AEGIS_DATA_DIR` è richiesto senza default. |
+| Nessun valore di policy ripetuto nel codice | Approvata | Ogni chiave di `application.properties` è letta dal caricamento tipizzato e i valori derivati sono calcolati. |
+| Struttura semantica di `src/` senza prefissi `aegis-` | Approvata | Il reactor risolve tutti gli otto moduli e gli adattatori sono sotto `src/adapters/`. |
+| Javadoc su package, tipi, campi e metodi | Approvata | `make javadoc` non segnala commenti mancanti. |
+| Nessun test applicativo | Approvata | Nessuna dipendenza, sorgente o plugin di test è presente nei POM. |
 
 ### 3.3 HARDWARE/SOFTWARE MAPPING
 

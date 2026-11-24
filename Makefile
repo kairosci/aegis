@@ -1,45 +1,55 @@
-include config/tool-versions.env
+# Tutte le versioni degli strumenti sono in mise.toml.
+# Ogni comando passa da `mise exec`, quindi il Makefile non ripete versioni.
 
-export NODE_VERSION PANDOC_VERSION
-
-PANDOC ?= pandoc
-MERMAID ?= config/documentation/node_modules/.bin/mmdc
-PUPPETEER ?= config/documentation/node_modules/.bin/puppeteer
+MISE ?= mise
+TOOL := $(MISE) exec --
+PANDOC ?= $(TOOL) pandoc
+MERMAID_BIN ?= config/documentation/node_modules/.bin/mmdc
+PUPPETEER_BIN ?= config/documentation/node_modules/.bin/puppeteer
+MERMAID ?= $(TOOL) $(MERMAID_BIN)
+PUPPETEER ?= $(TOOL) $(PUPPETEER_BIN)
 PUPPETEER_CONFIG ?=
 OUTPUT_DIR ?= build/docs
-DOCX_TOOL_INPUTS = Makefile config/tool-versions.env config/documentation/package.json config/documentation/package-lock.json $(PUPPETEER_CONFIG)
+DOCX_TOOL_INPUTS = Makefile mise.toml config/documentation/package.json config/documentation/package-lock.json $(PUPPETEER_CONFIG)
 
 .DEFAULT_GOAL := help
-.PHONY: help install-doc-tools check-node check-pandoc check-mermaid render-docs docs
+.PHONY: help install-tools install-doc-tools check-node check-pandoc check-mermaid compile package javadoc render-docs docs
 
 help:
 	@printf '%s\n' \
-	  'make docs  Generate RAD and SDD DOCX files in $(OUTPUT_DIR)' \
+	  'make install-tools  Install the pinned toolchain from mise.toml' \
+	  'make compile        Compile the Java reactor with the pinned JDK and Maven' \
+	  'make package        Build the Java artifacts without running tests' \
+	  'make javadoc        Generate Java API docs and check Javadoc completeness' \
+	  'make docs           Generate RAD and SDD DOCX files in $(OUTPUT_DIR)' \
 	  'make install-doc-tools  Install pinned Node tools and Chromium for Mermaid exports' \
 	  'Set PANDOC and MERMAID to select alternate executables'
 
-install-doc-tools: check-node
-	npm ci --prefix config/documentation
-	npm exec --prefix config/documentation -- puppeteer browsers install chrome-headless-shell
+install-tools:
+	$(MISE) install
 
-check-node:
-	@actual="$$(node --version | sed 's/^v//')"; \
-	if [ "$$actual" != "$(NODE_VERSION)" ]; then \
-	  printf 'Versione Node.js richiesta: %s. Versione trovata: %s.\n' "$(NODE_VERSION)" "$$actual" >&2; \
+install-doc-tools: install-tools
+	$(TOOL) npm ci --prefix config/documentation
+	$(TOOL) npm exec --prefix config/documentation -- puppeteer browsers install chrome-headless-shell
+
+check-node: install-tools
+	@actual="$$($(TOOL) node --version | sed 's/^v//')"; \
+	if [ -z "$$actual" ]; then \
+	  printf 'Node.js non disponibile tramite mise.\n' >&2; \
 	  exit 1; \
 	fi
 
-check-pandoc:
+check-pandoc: install-tools
 	@version="$$($(PANDOC) --version | sed -n '1s/^pandoc //p')"; \
-	if [ "$$version" != "$(PANDOC_VERSION)" ]; then \
-	  printf 'Versione Pandoc richiesta: %s. Versione trovata: %s.\n' "$(PANDOC_VERSION)" "$$version" >&2; \
+	if [ -z "$$version" ]; then \
+	  printf 'Pandoc non disponibile tramite mise.\n' >&2; \
 	  exit 1; \
 	fi
 
 check-mermaid: check-node
-	@expected="$$(node -p "require('./config/documentation/package.json').devDependencies['@mermaid-js/mermaid-cli']")"; \
-	if [ ! -x "$(MERMAID)" ]; then \
-	  printf 'Mermaid CLI non trovato. Eseguire npm ci --prefix config/documentation.\n' >&2; \
+	@expected="$$($(TOOL) node -p "require('./config/documentation/package.json').devDependencies['@mermaid-js/mermaid-cli']")"; \
+	if [ ! -x "$(MERMAID_BIN)" ]; then \
+	  printf 'Mermaid CLI non trovato. Eseguire make install-doc-tools.\n' >&2; \
 	  exit 1; \
 	fi; \
 	actual="$$($(MERMAID) --version)"; \
@@ -52,6 +62,16 @@ check-mermaid: check-node
 	  printf 'Chromium headless non trovato. Eseguire make install-doc-tools.\n' >&2; \
 	  exit 1; \
 	fi
+
+compile: install-tools
+	$(TOOL) mvn -B -f pom.xml compile
+
+package: install-tools
+	$(TOOL) mvn -B -f pom.xml package
+
+javadoc: install-tools
+	$(TOOL) mvn -B -f pom.xml install
+	$(TOOL) mvn -B -f pom.xml javadoc:javadoc -Ddoclint=all -Dshow=private
 
 render-docs: check-mermaid
 	mkdir -p "$(OUTPUT_DIR)"

@@ -11,14 +11,14 @@
   <name>AEGIS</name>
 
   <modules>
-    <module>src/aegis-config</module>
-    <module>src/aegis-domain</module>
-    <module>src/aegis-application</module>
-    <module>src/aegis-adapter-inmemory</module>
-    <module>src/aegis-adapter-rest</module>
-    <module>src/aegis-adapter-web</module>
-    <module>src/aegis-adapter-worker</module>
-    <module>src/aegis-app</module>
+    <module>src/config</module>
+    <module>src/domain</module>
+    <module>src/application</module>
+    <module>src/adapters/inmemory</module>
+    <module>src/adapters/rest</module>
+    <module>src/adapters/web</module>
+    <module>src/adapters/worker</module>
+    <module>src/bootstrap</module>
   </modules>
 
   <properties>
