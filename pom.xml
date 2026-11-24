@@ -11,14 +11,7 @@
   <name>AEGIS</name>
 
   <modules>
-    <module>src/config</module>
-    <module>src/domain</module>
-    <module>src/application</module>
-    <module>src/adapters/inmemory</module>
-    <module>src/adapters/rest</module>
-    <module>src/adapters/web</module>
-    <module>src/adapters/worker</module>
-    <module>src/bootstrap</module>
+    <!-- I moduli sono aggiunti dalle PR successive, una per modulo. -->
   </modules>
 
   <properties>
