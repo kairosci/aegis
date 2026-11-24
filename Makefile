@@ -13,7 +13,7 @@ OUTPUT_DIR ?= build/docs
 DOCX_TOOL_INPUTS = Makefile mise.toml config/documentation/package.json config/documentation/package-lock.json $(PUPPETEER_CONFIG)
 
 .DEFAULT_GOAL := help
-.PHONY: help install-tools install-doc-tools check-node check-pandoc check-mermaid compile package javadoc render-docs docs
+.PHONY: help install-tools install-doc-tools check-node check-pandoc check-mermaid compile package javadoc tomcat render-docs docs
 
 help:
 	@printf '%s\n' \
@@ -21,6 +21,7 @@ help:
 	  'make compile        Compile the Java reactor with the pinned JDK and Maven' \
 	  'make package        Build the Java artifacts without running tests' \
 	  'make javadoc        Generate Java API docs and check Javadoc completeness' \
+	  'make tomcat         Start the pinned local servlet/JSP container' \
 	  'make docs           Generate RAD and SDD DOCX files in $(OUTPUT_DIR)' \
 	  'make install-doc-tools  Install pinned Node tools and Chromium for Mermaid exports' \
 	  'Set PANDOC and MERMAID to select alternate executables'
@@ -72,6 +73,9 @@ package: install-tools
 javadoc: install-tools
 	$(TOOL) mvn -B -f pom.xml install
 	$(TOOL) mvn -B -f pom.xml javadoc:javadoc -Ddoclint=all -Dshow=private
+
+tomcat: install-tools
+	$(TOOL) catalina.sh run
 
 render-docs: check-mermaid
 	mkdir -p "$(OUTPUT_DIR)"

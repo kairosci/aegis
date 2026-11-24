@@ -15,7 +15,7 @@ Il repository contiene la documentazione, gli strumenti per esportare RAD e SDD 
 | `config/data/` | Unica radice versionata dei dati applicativi. |
 | `config/data/application.properties` | Valori di policy e percorso del bundle messaggi letti dal caricamento tipizzato. |
 | `config/data/it/aegis/adapter/web/messages.properties` | Testi localizzati della vista di tracking. |
-| `mise.toml` | Versioni bloccate di JDK, Maven, Node.js e Pandoc. |
+| `mise.toml` | Versioni bloccate di JDK, Maven, Node.js, Pandoc e Tomcat. |
 | `Makefile` | Comandi per toolchain, build Java ed export DOCX. |
 | `pom.xml` | Reactor Maven dei moduli Java. |
 | `src/config/` | Caricamento della configurazione esterna. |
@@ -34,13 +34,21 @@ Per bug e richieste, consultare le [issue aperte](https://github.com/kairosci/ae
 
 ## Toolchain
 
-`mise.toml` è l'unica fonte delle versioni degli strumenti di sviluppo. Il comando seguente installa JDK, Maven, Node.js e Pandoc alle versioni bloccate:
+`mise.toml` è l'unica fonte delle versioni degli strumenti di sviluppo. Il comando seguente installa JDK, Maven, Node.js, Pandoc e Tomcat alle versioni bloccate:
 
 ```sh
 make install-tools
 ```
 
 Ogni target del Makefile invoca gli strumenti tramite `mise exec`. Il Makefile non ripete numeri di versione. Per usare gli strumenti fuori da Make, eseguire i comandi con `mise exec --`.
+
+Per avviare il container servlet/JSP locale usato dalle pagine in sviluppo:
+
+```sh
+make tomcat
+```
+
+Tomcat è uno strumento locale per servlet e JSP. Non sostituisce WildFly 42, che resta il runtime Jakarta EE completo descritto nel SDD. L'eventuale WAR va distribuito manualmente nell'istanza avviata.
 
 ## Dati e codice
 
