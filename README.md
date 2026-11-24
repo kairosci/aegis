@@ -4,7 +4,7 @@ Monorepo per la piattaforma di mobilità urbana accessibile.
 
 ## Stato del repository
 
-Il repository contiene la documentazione e gli strumenti per esportare RAD e SDD in DOCX. Il prodotto applicativo non è ancora implementato: `src/` non contiene moduli e non è presente una build applicativa. Requisiti e architettura descrivono il sistema proposto e restano da convalidare.
+Il repository contiene la documentazione e gli strumenti per esportare RAD e SDD in DOCX, oltre allo scheletro applicativo Java. La struttura separa dominio, casi d'uso e adattatori, ma non implementa le integrazioni esterne né le viste complete. I valori di policy risiedono in `config/application.properties`. Requisiti e architettura restano da convalidare.
 
 ## Struttura
 
@@ -12,12 +12,14 @@ Il repository contiene la documentazione e gli strumenti per esportare RAD e SDD
 |---|---|
 | `docs/` | [RAD](docs/RAD.md), [SDD](docs/SDD.md) e [template](docs/template/). |
 | `config/` | Configurazione condivisa della toolchain documentale e dei dati del progetto. |
+| `config/application.properties` | Valori applicativi letti dal caricamento tipizzato. |
 | `config/data/` | Directory per i dati del progetto. Attualmente vuota. |
-| `src/` | Codice applicativo. |
+| `pom.xml` | Reactor Maven dei moduli Java. |
+| `src/` | Moduli applicativi Java organizzati per dominio, casi d'uso e adattatori. |
 | `.agents/skills/` | Skill Codex specifiche del progetto. |
 | `.github/` | Dependabot e collegamento issue alla segnalazione privata delle vulnerabilità. |
 
-La documentazione e i relativi template risiedono in `docs/`. Il DOCX sorgente è il riferimento di stile e struttura. I DOCX esportati non sono versionati. Non sono configurati script di test o validazione documentale e non sono presenti workflow CI. La generazione locale degli export è disponibile con `make docs`.
+La documentazione e i relativi template risiedono in `docs/`. Il DOCX sorgente è il riferimento di stile e struttura. I DOCX esportati non sono versionati. Non sono configurati script di validazione documentale, test applicativi o workflow CI. La generazione locale degli export è disponibile con `make docs`. La build Java richiede JDK 21 e Maven.
 
 ## Segnalazioni
 
@@ -48,3 +50,13 @@ Mermaid CLI converte i diagrammi in immagini e Pandoc incorpora immagini e testo
 `make docs` verifica che Node.js e Pandoc corrispondano alle versioni configurate e Mermaid CLI alla versione dichiarata nel lockfile. Dependabot controlla settimanalmente gli aggiornamenti delle dipendenze Node.
 
 L'esportazione usa `docs/template/template.docx` come riferimento di stile. Pandoc converte Markdown in DOCX. MarkItDown svolge la direzione opposta, da documenti sorgente a Markdown.
+
+## Build Java
+
+La compilazione richiede JDK 21 e Maven. I valori applicativi sono letti da `config/application.properties`. La variabile `AEGIS_CONFIG_DIR` indica la directory che contiene il file e non ha un valore predefinito.
+
+```sh
+AEGIS_CONFIG_DIR=config mvn -f pom.xml compile
+```
+
+Il reactor separa i moduli in `src/`. Non sono presenti test applicativi e la build non esegue controlli automatici sui documenti.
