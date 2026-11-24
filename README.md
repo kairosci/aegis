@@ -6,6 +6,8 @@ Monorepo per la piattaforma di mobilità urbana accessibile.
 
 Il repository contiene la documentazione, gli strumenti per esportare RAD e SDD in DOCX e lo scheletro applicativo Java. La struttura separa dominio, casi d'uso e adattatori, ma non implementa le integrazioni esterne né le viste complete. I dati applicativi risiedono in `config/data/` e la toolchain in `mise.toml`. Requisiti e architettura restano da convalidare.
 
+Il modulo `jpa` implementa le porte `PlaceRepository`, `ReportRepository` e `SubmissionReservationPort` sulle tabelle `place`, `accessibility_feature`, `report`, `report_event` e `report_submission`. Le classi `JpaPlaceRepository`, `JpaReportRepository` e `JpaSubmissionReservations` convertono le righe nei tipi di dominio tramite mapper espliciti. La selezione della sorgente dati a runtime e il wiring transazionale restano aperti.
+
 ## Struttura
 
 | Percorso | Contenuto |
@@ -18,10 +20,10 @@ Il repository contiene la documentazione, gli strumenti per esportare RAD e SDD 
 | `mise.toml` | Versioni bloccate di JDK, Maven, Node.js, Pandoc e Tomcat. |
 | `Makefile` | Comandi per toolchain, build Java ed export DOCX. |
 | `pom.xml` | Reactor Maven dei moduli Java. |
-| `src/config/` | Caricamento della configurazione esterna. |
+| `src/config/` | Caricamento della configurazione esterna e costanti in `it.aegis.config.env`. |
 | `src/domain/` | Entità, value object e regole di dominio. |
 | `src/application/` | Porte e casi d'uso. |
-| `src/adapters/` | Adattatori `inmemory`, `rest`, `web` e `worker`. |
+| `src/adapters/` | Adattatori `inmemory`, `jpa`, `rest`, `web` e `worker`. |
 | `src/bootstrap/` | Assemblaggio WAR dell'applicazione. |
 | `.agents/skills/` | Skill specifiche del progetto. |
 | `.github/` | Dependabot e collegamento issue alla segnalazione privata delle vulnerabilità. |
@@ -52,7 +54,7 @@ Tomcat è uno strumento locale per servlet e JSP. Non sostituisce WildFly 42, ch
 
 ## Dati e codice
 
-I dati applicativi stanno solo in `config/data/`. `ConfigLoader` richiede `AEGIS_DATA_DIR` e legge `application.properties` senza default silenziosi. `MessageSource` carica il bundle dei messaggi dalla stessa directory. Nessun file dati o testo dell'interfaccia è presente in `src/`.
+I dati applicativi stanno solo in `config/data/`. `ConfigLoader` richiede `AEGIS_DATA_DIR` e legge `application.properties` senza default silenziosi. Il nome della variabile è definito in `it.aegis.config.env.EnvironmentVariables` e non è ripetuto altrove nel codice. `MessageSource` carica il bundle dei messaggi dalla stessa directory. Nessun file dati o testo dell'interfaccia è presente in `src/`.
 
 I valori provenienti dai dati esterni non sono ripetuti nel codice. Le regole di transizione, gli invarianti e i valori di protocollo, come i limiti delle coordinate geografiche, restano nel dominio come costanti esplicite o valori derivati. I byte massimi dell'allegato, la lunghezza dell'impronta, l'esito di verifica dei tratti e la dimensione del token Base62 sono calcolati dalla configurazione, dai parametri dell'algoritmo e dallo stato canonico. I messaggi diagnostici delle eccezioni e gli identificatori di chiave sono riferimenti di protocollo, non dati configurabili.
 

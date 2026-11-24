@@ -15,6 +15,7 @@
     <module>src/domain</module>
     <module>src/application</module>
     <module>src/adapters/inmemory</module>
+    <module>src/adapters/jpa</module>
     <module>src/adapters/rest</module>
     <module>src/adapters/web</module>
     <module>src/adapters/worker</module>
@@ -54,6 +55,11 @@
       <dependency>
         <groupId>it.aegis</groupId>
         <artifactId>inmemory</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>it.aegis</groupId>
+        <artifactId>jpa</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

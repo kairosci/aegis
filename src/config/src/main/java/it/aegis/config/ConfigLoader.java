@@ -1,5 +1,6 @@
 package it.aegis.config;
 
+import it.aegis.config.env.EnvironmentVariables;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
@@ -16,9 +17,6 @@ import java.util.Properties;
  * non valido interrompe il caricamento invece di essere sostituito da un default.
  */
 public final class ConfigLoader {
-
-    /** Nome della variabile d'ambiente che indica la directory dati esterna. */
-    private static final String DATA_DIR_ENV = "AEGIS_DATA_DIR";
 
     /** Nome del file di configurazione letto nella directory dati. */
     private static final String CONFIG_FILE = "application.properties";
@@ -50,7 +48,7 @@ public final class ConfigLoader {
 
     /**
      * Carica la configurazione dal file {@value #CONFIG_FILE} nella directory indicata
-     * da {@value #DATA_DIR_ENV}. Tutte le chiavi attese devono essere presenti e
+     * da {@value EnvironmentVariables#DATA_DIR}. Tutte le chiavi attese devono essere presenti e
      * interpretabili; non vengono applicati valori predefiniti.
      *
      * @return configurazione tipizzata derivata dal file esterno
@@ -60,9 +58,9 @@ public final class ConfigLoader {
      *         supera l'intervallo di {@code long}
      */
     public static AegisConfig load() {
-        String directory = System.getenv(DATA_DIR_ENV);
+        String directory = System.getenv(EnvironmentVariables.DATA_DIR);
         if (directory == null || directory.isBlank()) {
-            throw new IllegalStateException(DATA_DIR_ENV + " must be set");
+            throw new IllegalStateException(EnvironmentVariables.DATA_DIR + " must be set");
         }
         Path dataDirectory = Path.of(directory);
         Path file = dataDirectory.resolve(CONFIG_FILE);
