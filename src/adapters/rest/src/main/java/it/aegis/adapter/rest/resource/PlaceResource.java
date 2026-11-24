@@ -8,6 +8,7 @@ import it.aegis.application.usecase.SearchPlacesQuery;
 import it.aegis.domain.places.GeoPoint;
 import it.aegis.domain.places.Place;
 import it.aegis.domain.places.PlaceId;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -19,10 +20,11 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.UUID;
 
-/** Risorsa HTTP di sola lettura dei luoghi. */
+/** Risorsa HTTP di sola lettura dei luoghi, con scope di richiesta CDI. */
 @Path("/places")
 @Produces(MediaType.APPLICATION_JSON)
-public final class PlaceResource {
+@RequestScoped
+public class PlaceResource {
 
     /** Caso d'uso per il dettaglio di un singolo luogo. */
     private final FindPlace findPlace;

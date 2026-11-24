@@ -1,24 +1,30 @@
 package it.aegis.config;
 
+import it.aegis.config.env.EnvironmentVariables;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.DateTimeException;
 import java.time.Duration;
+import java.time.ZoneId;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Carica la configurazione dalla directory dati esterna al codice, senza valori predefiniti.
  *
- * <p>La directory è indicata da una variabile d'ambiente e il file è letto in UTF-8.
- * Ogni chiave attesa deve essere presente e interpretabile: un valore mancante o
- * non valido interrompe il caricamento invece di essere sostituito da un default.
+ * <p>La directory è indicata da una variabile d'ambiente il cui nome è definito
+ * in {@link it.aegis.config.env.EnvironmentVariables}. Il file è letto in UTF-8.
+ * Ogni chiave attesa deve essere presente e interpretabile: un valore mancante
+ * o non valido interrompe il caricamento invece di essere sostituito da un default.
+ * Le chiavi delle identità autorizzate ammettono elenchi vuoti, che non concedono
+ * permessi.
  */
 public final class ConfigLoader {
-
-    /** Nome della variabile d'ambiente che indica la directory dati esterna. */
-    private static final String DATA_DIR_ENV = "AEGIS_DATA_DIR";
 
     /** Nome del file di configurazione letto nella directory dati. */
     private static final String CONFIG_FILE = "application.properties";
@@ -41,6 +47,18 @@ public final class ConfigLoader {
     /** Chiave del percorso del bundle dei messaggi, relativo alla directory dati. */
     private static final String MESSAGE_BUNDLE_BASE_PATH = "aegis.messages.base-path";
 
+    /** Chiave dell'elenco di identificativi autorizzati a inviare segnalazioni. */
+    private static final String SUBMITTER_IDS = "aegis.authorization.submitters";
+
+    /** Chiave dell'elenco di identificativi autorizzati a moderare segnalazioni. */
+    private static final String MODERATOR_IDS = "aegis.authorization.moderators";
+
+    /** Chiave del fuso orario usato per datare eventi e segnalazioni. */
+    private static final String TIME_ZONE = "aegis.time.zone-id";
+
+    /** Separatore degli identificativi negli elenchi di configurazione. */
+    private static final String IDENTIFIER_SEPARATOR = ",";
+
     /** Fattore binario elevato al quadrato per convertire i mebibyte in byte. */
     private static final long BINARY_PREFIX_BASE = 1024L;
 
@@ -50,8 +68,9 @@ public final class ConfigLoader {
 
     /**
      * Carica la configurazione dal file {@value #CONFIG_FILE} nella directory indicata
-     * da {@value #DATA_DIR_ENV}. Tutte le chiavi attese devono essere presenti e
-     * interpretabili; non vengono applicati valori predefiniti.
+     * da {@value EnvironmentVariables#DATA_DIR}. Tutte le chiavi attese devono essere
+     * presenti e interpretabili; non vengono applicati valori predefiniti. Gli elenchi
+     * di identificativi possono essere vuoti.
      *
      * @return configurazione tipizzata derivata dal file esterno
      * @throws IllegalStateException se la variabile d'ambiente non è impostata, il file non
@@ -60,9 +79,9 @@ public final class ConfigLoader {
      *         supera l'intervallo di {@code long}
      */
     public static AegisConfig load() {
-        String directory = System.getenv(DATA_DIR_ENV);
+        String directory = System.getenv(EnvironmentVariables.DATA_DIR);
         if (directory == null || directory.isBlank()) {
-            throw new IllegalStateException(DATA_DIR_ENV + " must be set");
+            throw new IllegalStateException(EnvironmentVariables.DATA_DIR + " must be set");
         }
         Path dataDirectory = Path.of(directory);
         Path file = dataDirectory.resolve(CONFIG_FILE);
@@ -82,7 +101,10 @@ public final class ConfigLoader {
                 required(properties, TRACKING_ALPHABET),
                 requiredDouble(properties, EARTH_RADIUS_METRES),
                 dataDirectory,
-                required(properties, MESSAGE_BUNDLE_BASE_PATH));
+                required(properties, MESSAGE_BUNDLE_BASE_PATH),
+                identifiers(properties, SUBMITTER_IDS),
+                identifiers(properties, MODERATOR_IDS),
+                zone(properties, TIME_ZONE));
     }
 
     /**
@@ -99,6 +121,53 @@ public final class ConfigLoader {
             throw new IllegalStateException("missing configuration value: " + key);
         }
         return value;
+    }
+
+    /**
+     * Legge un elenco di identificativi, ammettendo una chiave presente ma vuota.
+     *
+     * @param properties proprietà lette dal file di configurazione
+     * @param key chiave da cercare
+     * @return insieme non modificabile di identificativi, vuoto se il valore è vuoto
+     * @throws IllegalStateException se la chiave è assente o un identificativo non è valido
+     */
+    private static Set<UUID> identifiers(Properties properties, String key) {
+        String value = properties.getProperty(key);
+        if (value == null) {
+            throw new IllegalStateException("missing configuration value: " + key);
+        }
+        if (value.isBlank()) {
+            return Set.of();
+        }
+        Set<UUID> result = new HashSet<>();
+        for (String item : value.split(IDENTIFIER_SEPARATOR, -1)) {
+            String identifier = item.trim();
+            if (identifier.isEmpty()) {
+                throw new IllegalStateException("empty identifier for " + key);
+            }
+            try {
+                result.add(UUID.fromString(identifier));
+            } catch (IllegalArgumentException cause) {
+                throw new IllegalStateException("invalid identifier for " + key, cause);
+            }
+        }
+        return Set.copyOf(result);
+    }
+
+    /**
+     * Legge un valore obbligatorio e lo interpreta come fuso orario.
+     *
+     * @param properties proprietà lette dal file di configurazione
+     * @param key chiave da cercare
+     * @return fuso orario associato alla chiave
+     * @throws IllegalStateException se il valore è assente, vuoto o non è un fuso valido
+     */
+    private static ZoneId zone(Properties properties, String key) {
+        try {
+            return ZoneId.of(required(properties, key));
+        } catch (DateTimeException cause) {
+            throw new IllegalStateException("invalid time zone for " + key, cause);
+        }
     }
 
     /**

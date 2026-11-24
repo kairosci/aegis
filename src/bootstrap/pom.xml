@@ -18,6 +18,22 @@
   <dependencies>
     <dependency>
       <groupId>it.aegis</groupId>
+      <artifactId>config</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>it.aegis</groupId>
+      <artifactId>domain</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>it.aegis</groupId>
+      <artifactId>application</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>it.aegis</groupId>
+      <artifactId>inmemory</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>it.aegis</groupId>
       <artifactId>rest</artifactId>
     </dependency>
     <dependency>
@@ -29,9 +45,19 @@
       <artifactId>worker</artifactId>
     </dependency>
     <dependency>
-      <groupId>it.aegis</groupId>
-      <artifactId>inmemory</artifactId>
-      <scope>runtime</scope>
+      <groupId>jakarta.enterprise</groupId>
+      <artifactId>jakarta.enterprise.cdi-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.inject</groupId>
+      <artifactId>jakarta.inject-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.transaction</groupId>
+      <artifactId>jakarta.transaction-api</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 

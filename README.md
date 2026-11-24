@@ -99,3 +99,5 @@ AEGIS_DATA_DIR=config/data make package
 ```
 
 Il reactor separa i moduli in `src/`, con gli adattatori in `src/adapters/` e l'assemblaggio in `src/bootstrap/`. Non sono presenti test applicativi e la build non ne esegue.
+
+Il bootstrap contiene `WEB-INF/beans.xml` e `BeanConfiguration`, che collega le porte agli adattatori in memoria. I bean prodotti sono `AegisConfig`, `MessageSource`, `ReportRepository`, `PlaceRepository`, `TrackingCodeGenerator`, `SubmissionReservationPort`, `NotificationChannel`, `AuthorizationPolicy`, `Clock`, `InMemoryNotificationGateway`, `NotificationPort`, `NotificationOutbox`, `RoutingProvider` e i casi d'uso `FindPlace`, `SearchPlaces`, `PlanRoute`, `TrackReport`, `ReportSubmission` e `ModerateReport`. Le risorse JAX-RS usano lo scope di richiesta e `OutboxNotificationWorker` usa lo scope applicativo. Il confine transazionale è `@Transactional` su `ReportResource.create`. Il provider di routing, la persistenza durevole e la sessione autenticata restano scelte aperte, come descritto nel SDD.

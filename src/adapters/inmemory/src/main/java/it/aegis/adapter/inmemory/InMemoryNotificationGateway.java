@@ -11,9 +11,11 @@ import java.util.List;
  *
  * <p>Implementa sia la porta di scrittura sia l'outbox consultato dal worker: le
  * intenzioni restano nel processo e non producono effetti esterni. La struttura
- * non è pensata per accessi concorrenti da più thread.
+ * non è pensata per accessi concorrenti da più thread. La classe non è finale
+ * perché il bootstrap la espone con scope applicativo e il container CDI deve
+ * poterla delegare tramite proxy.
  */
-public final class InMemoryNotificationGateway implements NotificationPort, NotificationOutbox {
+public class InMemoryNotificationGateway implements NotificationPort, NotificationOutbox {
 
     /** Intenzioni in attesa di consegna, in ordine di accodamento. */
     private final List<NotificationIntent> pending = new ArrayList<>();

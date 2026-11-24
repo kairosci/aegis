@@ -16,11 +16,12 @@ import java.util.Locale;
  *
  * <p>Mantiene il codice inserito e l'ultimo stato ottenuto per la durata della
  * richiesta. I messaggi di errore sono risolti tramite la sorgente messaggi
- * configurata, usando la lingua della vista corrente.</p>
+ * configurata, usando la lingua della vista corrente. La classe non è finale
+ * perché lo scope di richiesta richiede un proxy CDI.</p>
  */
 @Named
 @RequestScoped
-public final class ReportTrackingView {
+public class ReportTrackingView {
 
     /** Caso d'uso che restituisce lo stato pubblico della segnalazione. */
     private final TrackReport trackReport;

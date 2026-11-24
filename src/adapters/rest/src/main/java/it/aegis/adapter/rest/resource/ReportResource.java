@@ -11,7 +11,9 @@ import it.aegis.application.usecase.TrackReport;
 import it.aegis.domain.identity.Role;
 import it.aegis.domain.identity.UserId;
 import it.aegis.domain.reports.TrackingCode;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -24,10 +26,11 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import java.util.UUID;
 
-/** Risorsa HTTP delle segnalazioni. Valida gli input prima di invocare i casi d'uso. */
+/** Risorsa HTTP delle segnalazioni, con scope di richiesta CDI e confine transazionale sulla creazione. */
 @Path("/reports")
 @Produces(MediaType.APPLICATION_JSON)
-public final class ReportResource {
+@RequestScoped
+public class ReportResource {
 
     /** Caso d'uso per l'invio di una nuova segnalazione. */
     private final ReportSubmission submissions;
@@ -52,7 +55,8 @@ public final class ReportResource {
      *
      * <p>La richiesta viene tradotta in un comando prima di invocare il caso
      * d'uso. Le eccezioni di autorizzazione, validazione e conflitto sono
-     * tradotte in risposte forbidden, bad request e conflict.</p>
+     * tradotte in risposte forbidden, bad request e conflict. Questo metodo è
+     * il confine transazionale dell'adapter.</p>
      *
      * @param request corpo della richiesta con chiave, categoria e descrizione
      * @param securityContext contesto di sicurezza da cui ricavare l'autore
@@ -60,6 +64,7 @@ public final class ReportResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
     public Response create(
             CreateReportRequest request,
             @Context SecurityContext securityContext) {

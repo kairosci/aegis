@@ -3,6 +3,7 @@ package it.aegis.adapter.worker;
 import it.aegis.application.port.NotificationChannel;
 import it.aegis.application.port.NotificationIntent;
 import it.aegis.application.port.NotificationOutbox;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.Objects;
 
@@ -11,9 +12,11 @@ import java.util.Objects;
  *
  * <p>Per ogni intenzione in attesa il worker invia prima il messaggio al canale
  * esterno e poi registra la conferma nell'outbox, contando le intenzioni
- * elaborate.</p>
+ * elaborate. Lo scope applicativo permette l'iniezione delle porte senza
+ * richiedere un contesto di richiesta.</p>
  */
-public final class OutboxNotificationWorker {
+@ApplicationScoped
+public class OutboxNotificationWorker {
 
     /** Outbox da cui leggere e confermare le intenzioni in attesa. */
     private final NotificationOutbox outbox;
