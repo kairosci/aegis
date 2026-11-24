@@ -61,7 +61,7 @@ Le altre definizioni sono raccolte nel [glossario](#6-glossario).
 | [Template RAD/SDD convertito](template.md) | Struttura accademica di riferimento. |
 | [Jakarta EE 11](https://jakarta.ee/release/11/) | Piattaforma e versione minima Java supportata. |
 | [Compatibilità WildFly 42](https://www.wildfly.org/news/2026/10/22/WildFly-42-is-released/) | Profili EE 11 supportati e combinazioni Java dichiarate dal progetto WildFly. |
-| [Roadmap di supporto Java SE di Oracle](https://www.oracle.com/java/technologies/java-se-support-roadmap.html) | Versioni Java classificate LTS da Oracle; il supporto dipende dalla distribuzione scelta. |
+| [Roadmap di supporto Java SE di Oracle](https://www.oracle.com/java/technologies/java-se-support-roadmap.html) | Versioni Java classificate LTS da Oracle. Il supporto dipende dalla distribuzione scelta. |
 | [WCAG 2.1 livello AA](https://www.w3.org/TR/WCAG21/) | Baseline di accessibilità del RAD. |
 | Specifica OpenAPI | Da generare e versionare insieme all’API. |
 | Documentazione Jakarta EE e PostGIS | Riferimenti tecnici da associare alle versioni selezionate. |
@@ -113,6 +113,7 @@ Il diagramma mostra il browser e il runtime Jakarta EE, i moduli applicativi, le
 
 ```mermaid
 flowchart TB
+  accTitle: Diagramma dei moduli di AEGIS
   accDescr: Browser e runtime si collegano ai moduli, alla persistenza e ai provider esterni tramite adattatori.
   Browser[Browser: Facelets, HTML, JavaScript accessibile]
   Runtime[Runtime Jakarta EE]
@@ -246,7 +247,7 @@ La matrice seguente descrive il trattamento progettato. Le richieste di percorso
 | Immagine allegata | È mantenuta privata fino a verifica e associazione al report. I metadati non necessari sono rimossi prima della pubblicazione autorizzata. |
 | Log operativi | Escludono descrizioni personali, credenziali, token di tracking, coordinate, preferenze e richieste di percorso. L’accesso è limitato al personale operativo autorizzato. |
 
-La separazione tra identità, contenuto e cronologia è un confine architetturale, non una garanzia di anonimato. Descrizioni, coordinate, preferenze di percorso e immagini possono identificare una persona. I log applicativi escludono credenziali, token di tracking, descrizioni, coordinate e dati personali non necessari. Gli oggetti allegati sono privati e le risposte pubbliche omettono identità e contatti. Le richieste di percorso non sono persistite nel dominio dopo la risposta; al provider sono trasmessi solo i campi necessari. La pseudonimizzazione non è dichiarata anonimizzazione.
+La separazione tra identità, contenuto e cronologia è un confine architetturale, non una garanzia di anonimato. Descrizioni, coordinate, preferenze di percorso e immagini possono identificare una persona. I log applicativi escludono credenziali, token di tracking, descrizioni, coordinate e dati personali non necessari. Gli oggetti allegati sono privati e le risposte pubbliche omettono identità e contatti. Le richieste di percorso non sono persistite nel dominio dopo la risposta. Al provider sono trasmessi solo i campi necessari. La pseudonimizzazione non è dichiarata anonimizzazione.
 
 Le relazioni sono protette da chiavi esterne e vincoli. Le ricerche geografiche usano indici spaziali. Ulteriori indici sono definiti in base alle query validate. Le coordinate di dominio sono rappresentate da `GeoPoint`, value object immutabile con controlli di validità.
 
@@ -276,7 +277,7 @@ Il controllo accessi è applicato lato server. Consultazione dei luoghi e tracki
 
 #### 3.5.1 AUTENTICAZIONE E IDENTITÀ
 
-Consultazione dei luoghi e tracking tramite codice non richiedono un account. L’invio di segnalazioni richiede un Utente registrato autenticato tramite UC-07. Il codice di tracking è un token casuale a 128 bit codificato in Base62, tratta solo lo stato consentito ed è memorizzato come digest; non viene registrato nei log. Preferiti, notifiche, storico personale e operazioni amministrative richiedono un’identità autenticata e un permesso verificato lato server. Le credenziali e i segreti non sono conservati nei log né nel codice applicativo.
+Consultazione dei luoghi e tracking tramite codice non richiedono un account. L’invio di segnalazioni richiede un Utente registrato autenticato tramite UC-07. Il codice di tracking è un token casuale a 128 bit codificato in Base62, tratta solo lo stato consentito ed è memorizzato come digest. Il token non viene registrato nei log. Preferiti, notifiche, storico personale e operazioni amministrative richiedono un’identità autenticata e un permesso verificato lato server. Le credenziali e i segreti non sono conservati nei log né nel codice applicativo.
 
 #### 3.5.2 CONTROLLO DEGLI ACCESSI AI DATI
 
@@ -354,7 +355,7 @@ Una segnalazione che descrive un caso già registrato può essere unita al repor
 
 #### 3.7.4 INVII RIPETUTI E DUPLICAZIONE DEI DATI IMPORTATI
 
-Retry della creazione e sincronizzazioni ripetute non devono creare segnalazioni o dati di trasporto duplicati. Per l’invio, una transazione prenota in `report_submission` una chiave univoca nello scope dell’Utente registrato e l’impronta canonica dell’intera richiesta prima degli effetti esterni. La stessa chiave e lo stesso payload recuperano una sola operazione; una chiave riusata con payload diverso è rifiutata e una richiesta in corso non viene eseguita in parallelo. Il replay restituisce il risultato solo all’account associato alla prenotazione. Le sincronizzazioni GTFS giornaliere usano identificativi stabili e sono idempotenti. Un codice di tracking inesistente o non valido non permette di enumerare segnalazioni.
+Retry della creazione e sincronizzazioni ripetute non devono creare segnalazioni o dati di trasporto duplicati. Per l’invio, una transazione prenota in `report_submission` una chiave univoca nello scope dell’Utente registrato e l’impronta canonica dell’intera richiesta prima degli effetti esterni. La stessa chiave e lo stesso payload recuperano una sola operazione. Una chiave riusata con payload diverso è rifiutata e una richiesta in corso non viene eseguita in parallelo. Il replay restituisce il risultato solo all’account associato alla prenotazione. Le sincronizzazioni GTFS giornaliere usano identificativi stabili e sono idempotenti. Un codice di tracking inesistente o non valido non permette di enumerare segnalazioni.
 
 #### 3.7.5 CARICAMENTO LENTO O ASSENZA DI RETE
 
@@ -384,11 +385,11 @@ Il sottosistema Accessibility recupera le caratteristiche associate ai luoghi e 
 
 ### 4.4 PIANIFICAZIONE DEI PERCORSI
 
-Il caso d’uso `PlanRouteControl` valida origine, destinazione e vincoli, invoca la porta sostituibile `RoutingProvider` e combina il risultato con le informazioni di accessibilità. L’adattatore invia solo i campi necessari al calcolo ed esclude identificativi dell’account e codici di tracking. La richiesta non è persistita nel dominio dopo la risposta. Ogni tratto è compatibile, incompatibile o sconosciuto sulla base di evidenze valide; il solo risultato del provider non prova l’accessibilità. Timeout, indisponibilità, risposta incompleta e profilo non supportato producono uno stato esplicito. Un eventuale fallback è marcato non verificato e non è presentato come equivalente a un percorso compatibile. Il provider è collegato tramite `RoutingProvider` e può essere sostituito senza modificare il dominio. Il servizio non modifica lo stato persistente di dominio.
+Il caso d’uso `PlanRouteControl` (mappato nel design a `PlanRoute`) valida origine, destinazione e vincoli, invoca la porta sostituibile `RoutingProvider` e combina il risultato con le informazioni di accessibilità. L’adattatore invia solo i campi necessari al calcolo ed esclude identificativi dell’account e codici di tracking. La richiesta non è persistita nel dominio dopo la risposta. Ogni tratto è compatibile, incompatibile o sconosciuto sulla base di evidenze valide. Il solo risultato del provider non prova l’accessibilità. Timeout, indisponibilità, risposta incompleta e profilo non supportato producono uno stato esplicito. Un eventuale fallback è marcato non verificato e non è presentato come equivalente a un percorso compatibile. Il provider è collegato tramite `RoutingProvider` e può essere sostituito senza modificare il dominio. Il servizio non modifica lo stato persistente di dominio.
 
 ### 4.5 SEGNALAZIONI E MODERAZIONE
 
-`CreateReportControl` è invocato solo dopo la verifica della sessione e del ruolo Utente registrato. Valida i dati e gestisce l’eventuale upload tramite intento durevole, storage privato e scansione ClamAV. Prima del primo effetto esterno registra una prenotazione durevole e univoca legata allo scope dell’account e all’impronta canonica di tutti i dati, compreso il digest verificato dell’allegato. La stessa chiave e lo stesso payload recuperano la stessa operazione; la stessa chiave con payload diverso è rifiutata; una richiesta in corso non viene avviata in parallelo. La chiave non concede accesso ai dati: il replay è consentito solo all’account proprietario. Quando l’immagine supera i controlli, una transazione database persiste segnalazione, evento iniziale, collegamento a `report_attachment`, intenzione autorizzata di notifica e completamento della prenotazione. La transazione non comprende object storage. Se fallisce, l’intento lascia l’oggetto privato e consente retry o pulizia idempotente. `TrackReportControl` tratta il token casuale a 128 bit come credenziale e restituisce solo i campi pubblici consentiti. `ModerateReportControl` verifica identità, ruolo, esistenza del report e transizione ammessa. Le transizioni sono In verifica verso Confermata, Rifiutata o Duplicata e Confermata verso Risolta, come stabilito da FR-09. Ogni transizione ammessa aggiorna stato ed evento append-only nella stessa transazione. Un comando non ammesso non modifica stato, evento o outbox. L’unione collega il duplicato a un report di riferimento e non cancella la segnalazione né la sua cronologia. Un worker elabora l’outbox dopo il commit; un errore di invio non annulla la segnalazione o la transizione persistita. Il sistema non garantisce consegna esattamente una volta.
+`CreateReportControl` (mappato nel design a `ReportSubmission`) è invocato solo dopo la verifica della sessione e del ruolo Utente registrato. Valida i dati e gestisce l’eventuale upload tramite intento durevole, storage privato e scansione ClamAV. Prima del primo effetto esterno registra una prenotazione durevole e univoca legata allo scope dell’account e all’impronta canonica di tutti i dati, compreso il digest verificato dell’allegato. La stessa chiave e lo stesso payload recuperano la stessa operazione. La stessa chiave con payload diverso è rifiutata. Una richiesta in corso non viene avviata in parallelo. La chiave non concede accesso ai dati: il replay è consentito solo all’account proprietario. Quando l’immagine supera i controlli, una transazione database persiste segnalazione, evento iniziale, collegamento a `report_attachment`, intenzione autorizzata di notifica e completamento della prenotazione. La transazione non comprende object storage. Se fallisce, l’intento lascia l’oggetto privato e consente retry o pulizia idempotente. `TrackReportControl` tratta il token casuale a 128 bit come credenziale e restituisce solo i campi pubblici consentiti. `ModerateReportControl` (mappato nel design a `ModerateReport`) verifica identità, ruolo, esistenza del report e transizione ammessa. Le transizioni sono In verifica verso Confermata, Rifiutata o Duplicata e Confermata verso Risolta, come stabilito da FR-09. Ogni transizione ammessa aggiorna stato ed evento append-only nella stessa transazione. Un comando non ammesso non modifica stato, evento o outbox. L’unione collega il duplicato a un report di riferimento e non cancella la segnalazione né la sua cronologia. Un worker elabora l’outbox dopo il commit. Un errore di invio non annulla la segnalazione o la transizione persistita. Il sistema non garantisce consegna esattamente una volta.
 
 Prima dell’upload, `CreateReportControl` inserisce in `report_submission` la prenotazione durevole con scope dell’account, digest della chiave e impronta canonica che include i campi normalizzati e il digest verificato dell’eventuale allegato. Un vincolo univoco serializza la prenotazione. Il report, l’evento iniziale, il collegamento dell’allegato, l’outbox autorizzato e il completamento della prenotazione vengono poi persistiti nella stessa transazione. Se il processo si interrompe tra prenotazione e completamento, un retry dello stesso account osserva lo stato pendente e il recupero usa l’intento durevole senza avviare in parallelo una seconda operazione.
 
@@ -400,7 +401,7 @@ La ricerca consente di usare coordinate quando disponibili e un inserimento test
 
 ### 5.1 DIAGRAMMA DELLE CLASSI DI DESIGN
 
-Il diagramma mostra package, visibilità, operazioni, porte applicative e adattatori. Il dominio non dipende dagli adattatori; i casi d’uso dipendono dalle interfacce delle porte.
+Il diagramma mostra package, visibilità, operazioni, porte applicative e adattatori. Il dominio non dipende dagli adattatori. I casi d’uso dipendono dalle interfacce delle porte. I nomi dei casi d’uso di design (`ReportSubmission`, `ModerateReport`, `PlanRoute`) corrispondono ai control di analisi RAD (`CreateReportControl`, `ModerateReportControl`, `PlanRouteControl`).
 
 ```mermaid
 classDiagram
@@ -488,7 +489,7 @@ classDiagram
     class OutboxNotificationWorker {
       +processPending() int
     }
-    class S3NotificationAdapter {
+    class NotificationChannelAdapter {
       +send(notification) DeliveryResult
     }
     class RoutingProviderAdapter {
@@ -507,7 +508,7 @@ classDiagram
   S3StorageAdapter ..|> StoragePort
   RoutingProviderAdapter ..|> RoutingProvider
   OutboxNotificationWorker --> NotificationPort
-  S3NotificationAdapter ..|> NotificationPort
+  NotificationChannelAdapter ..|> NotificationPort
   StorageScanAdapter --> S3StorageAdapter
   ReportSubmission --> StorageScanAdapter
   ReportRepository --> Report
@@ -585,7 +586,7 @@ La sequenza verifica identità e ruolo amministrativo, registra stato ed evento 
 ```mermaid
 sequenceDiagram
   accTitle: Sequenza di design UC-05
-  accDescr: L’amministratore autenticato esegue una transizione consentita. Report, evento e outbox sono persistiti in una transazione; un worker elabora la notifica dopo il commit.
+  accDescr: L’amministratore autenticato esegue una transizione consentita. Report, evento e outbox sono persistiti in una transazione. Un worker elabora la notifica dopo il commit.
   actor A as Amministratore
   participant API as ModerationAPI
   participant ID as Identity
