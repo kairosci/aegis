@@ -32,7 +32,7 @@
 
 ### 1.1 SCOPO DEL SISTEMA
 
-Questo documento descrive l’architettura software proposta per AEGIS e dettaglia i componenti, i dati, le interfacce e le decisioni operative che realizzano i requisiti definiti nel [RAD](RAD.md).
+Questo documento definisce l’architettura software di AEGIS e dettaglia i componenti, i dati, le interfacce e le decisioni operative che realizzano i requisiti definiti nel [RAD](RAD.md).
 
 ### 1.2 OBIETTIVI DI PROGETTAZIONE
 
@@ -61,14 +61,14 @@ Le altre definizioni sono raccolte nel [glossario](#6-glossario).
 | [Template RAD/SDD convertito](template.md) | Struttura accademica di riferimento. |
 | [Jakarta EE 11](https://jakarta.ee/release/11/) | Piattaforma e versione minima Java supportata. |
 | [Compatibilità WildFly 42](https://www.wildfly.org/news/2026/10/22/WildFly-42-is-released/) | Profili EE 11 supportati e combinazioni Java dichiarate dal progetto WildFly. |
-| [Roadmap di supporto Java SE di Oracle](https://www.oracle.com/java/technologies/java-se-support-roadmap.html) | Versioni Java classificate LTS da Oracle; il supporto dipende dalla distribuzione scelta. |
+| [Roadmap di supporto Java SE di Oracle](https://www.oracle.com/java/technologies/java-se-support-roadmap.html) | Versioni Java classificate LTS da Oracle. La baseline di progetto adotta Java 21 LTS con supporto della distribuzione selezionata per l’ambiente. |
 | [WCAG 2.1 livello AA](https://www.w3.org/TR/WCAG21/) | Baseline di accessibilità del RAD. |
 | Specifica OpenAPI | Da generare e versionare insieme all’API. |
 | Documentazione Jakarta EE e PostGIS | Riferimenti tecnici da associare alle versioni selezionate. |
 
 ### 1.5 PANORAMICA
 
-Il documento descrive il contesto attuale, l’architettura proposta, la decomposizione dei moduli, la mappatura hardware/software, la persistenza, il controllo accessi, il flusso globale, le condizioni limite e i servizi dei sottosistemi.
+Il documento descrive il contesto attuale, l’architettura definita, la decomposizione dei moduli, la mappatura hardware/software, la persistenza, il controllo accessi, il flusso globale, le condizioni limite e i servizi dei sottosistemi.
 
 ## SISTEMA CORRENTE
 
@@ -103,9 +103,9 @@ La tabella collega i requisiti del [RAD](RAD.md#32-requisiti-funzionali) ai modu
 
 NFR-12 è trasversale: separazione tra dominio, casi d’uso e adattatori e documentazione delle API riguardano i moduli applicativi.
 
-La struttura applicativa proposta organizza il codice Java per domini e separa `domain`, `application` e `adapter`. Le entità e i value object dovranno contenere invarianti. I casi d’uso dovranno orchestrare le operazioni e dipendere da porte. Gli adattatori dovranno implementare accesso HTTP, persistenza e integrazioni. DTO HTTP, modello di dominio e modello di persistenza resteranno separati.
+La struttura applicativa organizza il codice Java per domini e separa `domain`, `application` e `adapter`. Le entità e i value object contengono invarianti. I casi d’uso orchestrano le operazioni e dipendono da porte. Gli adattatori implementano accesso HTTP, persistenza e integrazioni. DTO HTTP, modello di dominio e modello di persistenza restano separati.
 
-La struttura dei package proposta è `places`, `accessibility`, `routing`, `reports`, `identity`, `integrations` e `shared`, ciascuno articolato secondo le responsabilità effettive. La collocazione dettagliata dei componenti web e dei worker dipende dalla selezione del runtime e dal packaging applicativo.
+La struttura dei package è `places`, `accessibility`, `routing`, `reports`, `identity`, `integrations` e `shared`, ciascuno articolato secondo le responsabilità effettive. I componenti web sono collocati nei moduli `adapter/web` e `adapter/rest`. I worker sono collocati nel modulo `adapter/worker`, nel packaging applicativo definito dalla baseline WildFly/Jakarta EE.
 
 #### 3.2.1 DIAGRAMMA DEI MODULI
 
@@ -113,6 +113,7 @@ Il diagramma mostra il browser e il runtime Jakarta EE, i moduli applicativi, le
 
 ```mermaid
 flowchart TB
+  accTitle: Diagramma dei moduli di AEGIS
   accDescr: Browser e runtime si collegano ai moduli, alla persistenza e ai provider esterni tramite adattatori.
   Browser[Browser: Facelets, HTML, JavaScript accessibile]
   Runtime[Runtime Jakarta EE]
@@ -198,13 +199,13 @@ Il browser comunica con il nodo applicativo tramite HTTPS. Applicazione e worker
 
 In sviluppo è previsto Docker Compose con PostgreSQL 16/PostGIS 3.4, Redis e MinIO. Staging e produzione sono ambienti separati. In produzione l’applicazione usa WildFly 42, AWS S3, PostgreSQL e Redis. Segreti e credenziali sono forniti tramite configurazione esterna al repository.
 
-La pipeline di rilascio dovrà compilare e verificare gli artefatti applicativi, eseguire test e scansioni delle dipendenze, creare immagini versionate e distribuire progressivamente. Le migrazioni devono mantenere la compatibilità con le versioni applicative attive durante il rilascio. La configurazione applicativa dovrà essere versionata e distinta per ambiente. I segreti non dovranno essere inclusi nel repository.
+La pipeline di rilascio compila e verifica gli artefatti applicativi, esegue test e scansioni delle dipendenze, crea immagini versionate e distribuisce progressivamente. Le migrazioni mantengono la compatibilità con le versioni applicative attive durante il rilascio. La configurazione applicativa è versionata e distinta per ambiente. I segreti non sono inclusi nel repository.
 
 Le procedure operative per rilascio, migrazione, rollback, incidenti e ripristino seguono il [modello di runbook](template/RUNBOOK.md) e devono essere provate nell’ambiente di riferimento prima dell’esercizio. Log, metriche, allarmi, retry, backup e recupero degli esiti ambigui sono responsabilità del sottosistema Operations.
 
 ### 3.4 GESTIONE DEI DATI PERSISTENTI
 
-La persistenza relazionale proposta usa PostgreSQL e PostGIS. Le migrazioni dovranno essere versionate e rimanere compatibili con le versioni applicative durante il rilascio progressivo. Le entità di dominio non dovranno dipendere dal modello relazionale. Gli adattatori di persistenza le convertiranno nel modello dati.
+La persistenza relazionale usa PostgreSQL e PostGIS. Le migrazioni sono versionate e restano compatibili con le versioni applicative durante il rilascio progressivo. Le entità di dominio non dipendono dal modello relazionale. Gli adattatori di persistenza convertono le entità nel modello dati.
 
 #### 3.4.1 POSTGRESQL E STRUTTURA RELAZIONALE
 
@@ -246,7 +247,7 @@ La matrice seguente descrive il trattamento progettato. Le richieste di percorso
 | Immagine allegata | È mantenuta privata fino a verifica e associazione al report. I metadati non necessari sono rimossi prima della pubblicazione autorizzata. |
 | Log operativi | Escludono descrizioni personali, credenziali, token di tracking, coordinate, preferenze e richieste di percorso. L’accesso è limitato al personale operativo autorizzato. |
 
-La separazione tra identità, contenuto e cronologia è un confine architetturale, non una garanzia di anonimato. Descrizioni, coordinate, preferenze di percorso e immagini possono identificare una persona. I log applicativi escludono credenziali, token di tracking, descrizioni, coordinate e dati personali non necessari. Gli oggetti allegati sono privati e le risposte pubbliche omettono identità e contatti. Le richieste di percorso non sono persistite nel dominio dopo la risposta; al provider sono trasmessi solo i campi necessari. La pseudonimizzazione non è dichiarata anonimizzazione.
+La separazione tra identità, contenuto e cronologia è un confine architetturale, non una garanzia di anonimato. Descrizioni, coordinate, preferenze di percorso e immagini possono identificare una persona. I log applicativi escludono credenziali, token di tracking, descrizioni, coordinate e dati personali non necessari. Gli oggetti allegati sono privati e le risposte pubbliche omettono identità e contatti. Le richieste di percorso non sono persistite nel dominio dopo la risposta. Al provider sono trasmessi solo i campi necessari. La pseudonimizzazione non è dichiarata anonimizzazione.
 
 Le relazioni sono protette da chiavi esterne e vincoli. Le ricerche geografiche usano indici spaziali. Ulteriori indici sono definiti in base alle query validate. Le coordinate di dominio sono rappresentate da `GeoPoint`, value object immutabile con controlli di validità.
 
@@ -264,11 +265,11 @@ Se la scrittura, la scansione o la transazione database falliscono, l’oggetto 
 
 Worker asincroni importano i dataset GTFS ogni giorno tramite adattatori isolati. Ogni esecuzione ha un identificativo e registra fonte, versione, timestamp, esito, controlli di qualità e riferimento alla generazione in `source_sync`. La pubblicazione e la registrazione nello stesso record del lavoro di pulizia cache pendente avvengono nella stessa transazione. Il worker di pulizia recupera i lavori non completati da `source_sync` e ripete l’operazione in modo idempotente. Retry e replay dell’importazione non duplicano dati: la deduplicazione usa gli identificativi stabili del formato GTFS. Se i dati non superano i controlli, resta attiva la generazione precedente.
 
-I dati acquisiti sono scritti in una generazione candidata isolata dalle letture pubbliche. Il worker valida contratto e schema, chiavi, completezza secondo le regole concordate per la fonte e coerenza dei dati. Solo una generazione che supera tutti i controlli può diventare attiva tramite un passaggio atomico. L’attivazione della generazione e la registrazione dell’esito pubblicato avvengono nella stessa transazione. Un errore lascia attiva la generazione pubblicata in precedenza e registra l’esito fallito senza esporre dati parziali. La rappresentazione fisica delle generazioni dipende dal contratto della fonte e dal volume, ma deve preservare isolamento, pubblicazione atomica e recuperabilità.
+I dati acquisiti sono scritti in una generazione candidata isolata dalle letture pubbliche. Il worker valida contratto e schema, chiavi, completezza secondo le regole concordate per la fonte e coerenza dei dati. Solo una generazione che supera tutti i controlli può diventare attiva tramite un passaggio atomico. L’attivazione della generazione e la registrazione dell’esito pubblicato avvengono nella stessa transazione. Un errore lascia attiva la generazione pubblicata in precedenza e registra l’esito fallito senza esporre dati parziali. La rappresentazione fisica delle generazioni è definita per ogni contratto di fonte nel registro `data_source` e deve preservare isolamento, pubblicazione atomica e recuperabilità.
 
 I dati di accessibilità scadono 30 giorni dopo l’osservazione e oltre tale termine sono esposti come sconosciuti. La cache è solo un’ottimizzazione e non estende la validità: ogni lettura rivaluta la scadenza anche in caso di cache hit. Prima della cache, ogni lettura acquisisce dal repository autorevole, in una vista consistente, gli identificativi delle generazioni attive per tutte le fonti coinvolte. La chiave Redis include il vettore completo delle generazioni, l’area e i parametri normalizzati della query. In caso di cache miss, dati e provenienza sono letti usando lo stesso snapshot del vettore. Una pubblicazione concorrente non può comporre una risposta con dati riferiti a generazioni diverse da quelle della chiave. I risultati di routing composti non sono memorizzati in questa cache.
 
-Il worker elimina le chiavi delle generazioni non più attive dopo il commit. Un fallimento lascia il lavoro pendente e osservabile in `source_sync` per un tentativo successivo. La pulizia fisica è idempotente. La correttezza della lettura non dipende dalla sua conclusione, poiché una chiave obsoleta non corrisponde alla generazione attiva. Gli aggiornamenti della stessa fonte sono serializzati quando la versione non è confrontabile.
+Il worker elimina le chiavi delle generazioni non più attive dopo il commit. Un fallimento lascia il lavoro pendente e osservabile in `source_sync` per un tentativo successivo. La pulizia fisica è idempotente. La correttezza della lettura è garantita dal vettore di generazione attiva, anche prima del completamento della pulizia fisica, perché una chiave obsoleta non corrisponde alla generazione attiva. Gli aggiornamenti della stessa fonte sono serializzati quando la versione non è confrontabile.
 
 ### 3.5 CONTROLLO ACCESSI E SICUREZZA
 
@@ -276,7 +277,7 @@ Il controllo accessi è applicato lato server. Consultazione dei luoghi e tracki
 
 #### 3.5.1 AUTENTICAZIONE E IDENTITÀ
 
-Consultazione dei luoghi e tracking tramite codice non richiedono un account. L’invio di segnalazioni richiede un Utente registrato autenticato tramite UC-07. Il codice di tracking è un token casuale a 128 bit codificato in Base62, tratta solo lo stato consentito ed è memorizzato come digest; non viene registrato nei log. Preferiti, notifiche, storico personale e operazioni amministrative richiedono un’identità autenticata e un permesso verificato lato server. Le credenziali e i segreti non sono conservati nei log né nel codice applicativo.
+Consultazione dei luoghi e tracking tramite codice non richiedono un account. L’invio di segnalazioni richiede un Utente registrato autenticato tramite UC-07. Il codice di tracking è un token casuale a 128 bit codificato in Base62, tratta solo lo stato consentito ed è memorizzato come digest. Il token non viene registrato nei log. Preferiti, notifiche, storico personale e operazioni amministrative richiedono un’identità autenticata e un permesso verificato lato server. Le credenziali e i segreti non sono conservati nei log né nel codice applicativo.
 
 #### 3.5.2 CONTROLLO DEGLI ACCESSI AI DATI
 
@@ -354,7 +355,7 @@ Una segnalazione che descrive un caso già registrato può essere unita al repor
 
 #### 3.7.4 INVII RIPETUTI E DUPLICAZIONE DEI DATI IMPORTATI
 
-Retry della creazione e sincronizzazioni ripetute non devono creare segnalazioni o dati di trasporto duplicati. Per l’invio, una transazione prenota in `report_submission` una chiave univoca nello scope dell’Utente registrato e l’impronta canonica dell’intera richiesta prima degli effetti esterni. La stessa chiave e lo stesso payload recuperano una sola operazione; una chiave riusata con payload diverso è rifiutata e una richiesta in corso non viene eseguita in parallelo. Il replay restituisce il risultato solo all’account associato alla prenotazione. Le sincronizzazioni GTFS giornaliere usano identificativi stabili e sono idempotenti. Un codice di tracking inesistente o non valido non permette di enumerare segnalazioni.
+Retry della creazione e sincronizzazioni ripetute non devono creare segnalazioni o dati di trasporto duplicati. Per l’invio, una transazione prenota in `report_submission` una chiave univoca nello scope dell’Utente registrato e l’impronta canonica dell’intera richiesta prima degli effetti esterni. La stessa chiave e lo stesso payload recuperano una sola operazione. Una chiave riusata con payload diverso è rifiutata e una richiesta in corso non viene eseguita in parallelo. Il replay restituisce il risultato solo all’account associato alla prenotazione. Le sincronizzazioni GTFS giornaliere usano identificativi stabili e sono idempotenti. Un codice di tracking inesistente o non valido non permette di enumerare segnalazioni.
 
 #### 3.7.5 CARICAMENTO LENTO O ASSENZA DI RETE
 
@@ -384,11 +385,11 @@ Il sottosistema Accessibility recupera le caratteristiche associate ai luoghi e 
 
 ### 4.4 PIANIFICAZIONE DEI PERCORSI
 
-Il caso d’uso `PlanRouteControl` valida origine, destinazione e vincoli, invoca la porta sostituibile `RoutingProvider` e combina il risultato con le informazioni di accessibilità. L’adattatore invia solo i campi necessari al calcolo ed esclude identificativi dell’account e codici di tracking. La richiesta non è persistita nel dominio dopo la risposta. Ogni tratto è compatibile, incompatibile o sconosciuto sulla base di evidenze valide; il solo risultato del provider non prova l’accessibilità. Timeout, indisponibilità, risposta incompleta e profilo non supportato producono uno stato esplicito. Un eventuale fallback è marcato non verificato e non è presentato come equivalente a un percorso compatibile. Il provider è collegato tramite `RoutingProvider` e può essere sostituito senza modificare il dominio. Il servizio non modifica lo stato persistente di dominio.
+Il caso d’uso `PlanRouteControl` (mappato nel design a `PlanRoute`) valida origine, destinazione e vincoli, invoca la porta sostituibile `RoutingProvider` e combina il risultato con le informazioni di accessibilità. L’adattatore invia solo i campi necessari al calcolo ed esclude identificativi dell’account e codici di tracking. La richiesta non è persistita nel dominio dopo la risposta. Ogni tratto è compatibile, incompatibile o sconosciuto sulla base di evidenze valide. Il solo risultato del provider non prova l’accessibilità. Timeout, indisponibilità, risposta incompleta e profilo non supportato producono uno stato esplicito. Un eventuale fallback è marcato non verificato e non è presentato come equivalente a un percorso compatibile. Il provider è collegato tramite `RoutingProvider` e può essere sostituito senza modificare il dominio. Il servizio non modifica lo stato persistente di dominio.
 
 ### 4.5 SEGNALAZIONI E MODERAZIONE
 
-`CreateReportControl` è invocato solo dopo la verifica della sessione e del ruolo Utente registrato. Valida i dati e gestisce l’eventuale upload tramite intento durevole, storage privato e scansione ClamAV. Prima del primo effetto esterno registra una prenotazione durevole e univoca legata allo scope dell’account e all’impronta canonica di tutti i dati, compreso il digest verificato dell’allegato. La stessa chiave e lo stesso payload recuperano la stessa operazione; la stessa chiave con payload diverso è rifiutata; una richiesta in corso non viene avviata in parallelo. La chiave non concede accesso ai dati: il replay è consentito solo all’account proprietario. Quando l’immagine supera i controlli, una transazione database persiste segnalazione, evento iniziale, collegamento a `report_attachment`, intenzione autorizzata di notifica e completamento della prenotazione. La transazione non comprende object storage. Se fallisce, l’intento lascia l’oggetto privato e consente retry o pulizia idempotente. `TrackReportControl` tratta il token casuale a 128 bit come credenziale e restituisce solo i campi pubblici consentiti. `ModerateReportControl` verifica identità, ruolo, esistenza del report e transizione ammessa. Le transizioni sono In verifica verso Confermata, Rifiutata o Duplicata e Confermata verso Risolta, come stabilito da FR-09. Ogni transizione ammessa aggiorna stato ed evento append-only nella stessa transazione. Un comando non ammesso non modifica stato, evento o outbox. L’unione collega il duplicato a un report di riferimento e non cancella la segnalazione né la sua cronologia. Un worker elabora l’outbox dopo il commit; un errore di invio non annulla la segnalazione o la transizione persistita. Il sistema non garantisce consegna esattamente una volta.
+`CreateReportControl` (mappato nel design a `ReportSubmission`) è invocato solo dopo la verifica della sessione e del ruolo Utente registrato. Valida i dati e gestisce l’eventuale upload tramite intento durevole, storage privato e scansione ClamAV. Prima del primo effetto esterno registra una prenotazione durevole e univoca legata allo scope dell’account e all’impronta canonica di tutti i dati, compreso il digest verificato dell’allegato. La stessa chiave e lo stesso payload recuperano la stessa operazione. La stessa chiave con payload diverso è rifiutata. Una richiesta in corso non viene avviata in parallelo. La chiave non concede accesso ai dati: il replay è consentito solo all’account proprietario. Quando l’immagine supera i controlli, una transazione database persiste segnalazione, evento iniziale, collegamento a `report_attachment`, intenzione autorizzata di notifica e completamento della prenotazione. La transazione non comprende object storage. Se fallisce, l’intento lascia l’oggetto privato e consente retry o pulizia idempotente. `TrackReportControl` tratta il token casuale a 128 bit come credenziale e restituisce solo i campi pubblici consentiti. `ModerateReportControl` (mappato nel design a `ModerateReport`) verifica identità, ruolo, esistenza del report e transizione ammessa. Le transizioni sono In verifica verso Confermata, Rifiutata o Duplicata e Confermata verso Risolta, come stabilito da FR-09. Ogni transizione ammessa aggiorna stato ed evento append-only nella stessa transazione. Un comando non ammesso non modifica stato, evento o outbox. L’unione collega il duplicato a un report di riferimento e non cancella la segnalazione né la sua cronologia. Un worker elabora l’outbox dopo il commit. Un errore di invio non annulla la segnalazione o la transizione persistita. Il sistema non garantisce consegna esattamente una volta.
 
 Prima dell’upload, `CreateReportControl` inserisce in `report_submission` la prenotazione durevole con scope dell’account, digest della chiave e impronta canonica che include i campi normalizzati e il digest verificato dell’eventuale allegato. Un vincolo univoco serializza la prenotazione. Il report, l’evento iniziale, il collegamento dell’allegato, l’outbox autorizzato e il completamento della prenotazione vengono poi persistiti nella stessa transazione. Se il processo si interrompe tra prenotazione e completamento, un retry dello stesso account osserva lo stato pendente e il recupero usa l’intento durevole senza avviare in parallelo una seconda operazione.
 
@@ -400,7 +401,7 @@ La ricerca consente di usare coordinate quando disponibili e un inserimento test
 
 ### 5.1 DIAGRAMMA DELLE CLASSI DI DESIGN
 
-Il diagramma mostra package, visibilità, operazioni, porte applicative e adattatori. Il dominio non dipende dagli adattatori; i casi d’uso dipendono dalle interfacce delle porte.
+Il diagramma mostra package, visibilità, operazioni, porte applicative e adattatori. Il dominio non dipende dagli adattatori. I casi d’uso dipendono dalle interfacce delle porte. I nomi dei casi d’uso di design (`ReportSubmission`, `ModerateReport`, `PlanRoute`) corrispondono ai control di analisi RAD (`CreateReportControl`, `ModerateReportControl`, `PlanRouteControl`).
 
 ```mermaid
 classDiagram
@@ -488,7 +489,7 @@ classDiagram
     class OutboxNotificationWorker {
       +processPending() int
     }
-    class S3NotificationAdapter {
+    class NotificationChannelAdapter {
       +send(notification) DeliveryResult
     }
     class RoutingProviderAdapter {
@@ -507,7 +508,7 @@ classDiagram
   S3StorageAdapter ..|> StoragePort
   RoutingProviderAdapter ..|> RoutingProvider
   OutboxNotificationWorker --> NotificationPort
-  S3NotificationAdapter ..|> NotificationPort
+  NotificationChannelAdapter ..|> NotificationPort
   StorageScanAdapter --> S3StorageAdapter
   ReportSubmission --> StorageScanAdapter
   ReportRepository --> Report
@@ -585,7 +586,7 @@ La sequenza verifica identità e ruolo amministrativo, registra stato ed evento 
 ```mermaid
 sequenceDiagram
   accTitle: Sequenza di design UC-05
-  accDescr: L’amministratore autenticato esegue una transizione consentita. Report, evento e outbox sono persistiti in una transazione; un worker elabora la notifica dopo il commit.
+  accDescr: L’amministratore autenticato esegue una transizione consentita. Report, evento e outbox sono persistiti in una transazione. Un worker elabora la notifica dopo il commit.
   actor A as Amministratore
   participant API as ModerationAPI
   participant ID as Identity
@@ -653,7 +654,7 @@ La cache usa Redis. I termini di cache e generazione descrivono invarianti del c
 | PostGIS | Estensione PostgreSQL per dati e interrogazioni geospaziali. |
 | Redis | Cache usata per risultati di lettura versionati per generazione e query. |
 | Pubblicazione atomica | Cambio della generazione attiva e registrazione del lavoro di pulizia nella stessa transazione. |
-| Pulizia cache | Rimozione ripetibile delle chiavi riferite a generazioni superate. La correttezza delle letture non dipende dal completamento della rimozione. |
+| Pulizia cache | Rimozione ripetibile delle chiavi riferite a generazioni superate. La correttezza delle letture è garantita dal vettore di generazione attiva anche prima del completamento della rimozione. |
 | Chiave di idempotenza | Identificativo che riconosce i retry della stessa richiesta e impedisce effetti duplicati. È univoco nello scope dell’account e non concede accesso al risultato, restituito solo allo stesso account. |
 | Impronta del payload | Digest del contenuto canonico della richiesta, inclusi i byte verificati dell’eventuale allegato. Consente di rifiutare il riuso della chiave con contenuto diverso. |
 | Prenotazione della richiesta | Record persistito prima degli effetti esterni per coordinare retry, concorrenza, recupero e associazione al report completato. |
