@@ -179,14 +179,14 @@ Il diagramma di deployment mostra i nodi runtime e i protocolli usati tra browse
 flowchart LR
   accTitle: Deployment UML di AEGIS
   accDescr: Nodi device ed execution environment ospitano gli artifact client e server. I collegamenti indicano HTTPS, JDBC, RESP e API S3.
-  Client["<<device>> Dispositivo client<br/><<artifact>> Browser"]
-  Ingress["<<device>> Ingress e distribuzione<br/>Terminazione TLS / CDN"]
-  App["<<device>> Nodo applicativo<br/><<executionEnvironment>> WildFly 42 / Java 21<br/><<artifact>> aegis.war: Jakarta Faces, Facelets, Jakarta REST"]
-  Worker["<<device>> Nodo worker<br/><<executionEnvironment>> Java 21 / WildFly 42<br/><<artifact>> aegis-worker.jar"]
-  DB["<<device>> Nodo database<br/><<executionEnvironment>> PostgreSQL 16<br/><<artifact>> PostGIS 3.4"]
-  Redis["<<device>> Cache<br/><<executionEnvironment>> Redis"]
-  S3["<<device>> Object storage<br/><<executionEnvironment>> MinIO locale / AWS S3 produzione"]
-  External["<<device>> Sistemi esterni<br/><<artifact>> GTFS, routing, ClamAV, notifiche"]
+  Client["«device» Dispositivo client<br/>«artifact» Browser"]
+  Ingress["«device» Ingress e distribuzione<br/>Terminazione TLS / CDN"]
+  App["«device» Nodo applicativo<br/>«executionEnvironment» WildFly 42 / Java 21<br/>«artifact» aegis.war: Jakarta Faces, Facelets, Jakarta REST"]
+  Worker["«device» Nodo worker<br/>«executionEnvironment» Java 21 / WildFly 42<br/>«artifact» aegis-worker.jar"]
+  DB["«device» Nodo database<br/>«executionEnvironment» PostgreSQL 16<br/>«artifact» PostGIS 3.4"]
+  Redis["«device» Cache<br/>«executionEnvironment» Redis"]
+  S3["«device» Object storage<br/>«executionEnvironment» MinIO locale / AWS S3 produzione"]
+  External["«device» Sistemi esterni<br/>«artifact» GTFS, routing, ClamAV, notifiche"]
   Client -->|HTTPS| Ingress
   Ingress -->|HTTPS| App
   App -->|JDBC| DB
