@@ -374,7 +374,7 @@ Una segnalazione che descrive un caso già registrato può essere unita al repor
 
 #### 3.7.4 INVII RIPETUTI E DUPLICAZIONE DEI DATI IMPORTATI
 
-Retry della creazione e sincronizzazioni ripetute non devono creare segnalazioni o dati di trasporto duplicati. Per l’invio, una transazione prenota in `report_submission` una chiave univoca nello scope dell’Utente registrato e l’impronta canonica dell’intera richiesta prima degli effetti esterni. La stessa chiave e lo stesso payload recuperano una sola operazione; una chiave riusata con payload diverso è rifiutata e una richiesta in corso non viene eseguita in parallelo. Il replay restituisce il risultato solo all’account associato alla prenotazione. Le sincronizzazioni GTFS giornaliere usano identificativi stabili e sono idempotenti. Un codice di tracking inesistente o non valido non permette di enumerare segnalazioni.
+Retry della creazione e sincronizzazioni ripetute non devono creare segnalazioni o dati di trasporto duplicati. Per l’invio, una transazione prenota in `report_submission` una chiave univoca nello scope dell’Utente registrato e l’impronta canonica dell’intera richiesta prima degli effetti esterni. La stessa chiave e lo stesso payload recuperano una sola operazione. Una chiave riusata con payload diverso è rifiutata e una richiesta in corso non viene eseguita in parallelo. Il replay restituisce il risultato solo all’account associato alla prenotazione. Le sincronizzazioni GTFS giornaliere usano identificativi stabili e sono idempotenti. Un codice di tracking inesistente o non valido non permette di enumerare segnalazioni.
 
 #### 3.7.5 CARICAMENTO LENTO O ASSENZA DI RETE
 
@@ -404,7 +404,7 @@ Il sottosistema `accessibility`, tramite `GetPlaceAccessibilityControl`, recuper
 
 ### 4.4 PIANIFICAZIONE DEI PERCORSI
 
-Il caso d’uso `PlanRouteControl` valida origine, destinazione e vincoli, invoca la porta sostituibile `RoutingProvider` e combina il risultato con le informazioni di accessibilità. L’adattatore invia solo i campi necessari al calcolo ed esclude identificativi dell’account e codici di tracking. La richiesta non è persistita nel dominio dopo la risposta. Ogni tratto è compatibile, incompatibile o sconosciuto sulla base di evidenze valide; il solo risultato del provider non prova l’accessibilità. Timeout, indisponibilità, risposta incompleta e profilo non supportato producono uno stato esplicito. Un eventuale fallback è marcato non verificato e non è presentato come equivalente a un percorso compatibile. Il provider è collegato tramite `RoutingProvider` e può essere sostituito senza modificare il dominio. Il servizio non modifica lo stato persistente di dominio.
+Il caso d’uso `PlanRouteControl` (mappato nel design a `PlanRoute`) valida origine, destinazione e vincoli, invoca la porta sostituibile `RoutingProvider` e combina il risultato con le informazioni di accessibilità. L’adattatore invia solo i campi necessari al calcolo ed esclude identificativi dell’account e codici di tracking. La richiesta non è persistita nel dominio dopo la risposta. Ogni tratto è compatibile, incompatibile o sconosciuto sulla base di evidenze valide. Il solo risultato del provider non prova l’accessibilità. Timeout, indisponibilità, risposta incompleta e profilo non supportato producono uno stato esplicito. Un eventuale fallback è marcato non verificato e non è presentato come equivalente a un percorso compatibile. Il provider è collegato tramite `RoutingProvider` e può essere sostituito senza modificare il dominio. Il servizio non modifica lo stato persistente di dominio.
 
 ### 4.5 SEGNALAZIONI E MODERAZIONE
 
@@ -605,7 +605,7 @@ La sequenza verifica identità e ruolo amministrativo, registra stato ed evento 
 ```mermaid
 sequenceDiagram
   accTitle: Sequenza di design UC-05
-  accDescr: L’amministratore autenticato esegue una transizione consentita. Report, evento e outbox sono persistiti in una transazione; un worker elabora la notifica dopo il commit.
+  accDescr: L’amministratore autenticato esegue una transizione consentita. Report, evento e outbox sono persistiti in una transazione. Un worker elabora la notifica dopo il commit.
   actor A as Amministratore
   participant API as ModerationAPI
   participant ID as Identity

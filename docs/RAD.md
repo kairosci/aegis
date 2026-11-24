@@ -110,8 +110,8 @@ La piattaforma offre consultazione pubblica con ricerca per area, mappa interatt
 |---|---|---|---|---|
 | FR-01 | Sistema | Mostrare su mappa e in elenco i luoghi e le informazioni di accessibilità per l’area richiesta. | Must | UC-02 |
 | FR-02 | Sistema | Mostrare caratteristiche quali ascensori, rampe, percorsi tattili e annunci sonori con stato, fonte, aggiornamento e validità. | Must | UC-01, UC-02 |
-| FR-03 | Sistema | Classificare come sconosciuti i dati assenti, incoerenti o con data di aggiornamento più vecchia di 30 giorni, senza inferire accessibilità. | Must | UC-01, UC-02 |
-| FR-04 | Ospite o utente registrato e sistema | Acquisire origine, destinazione ed esigenze di accessibilità; calcolare e restituire percorsi alternativi. | Must | UC-01 |
+| FR-03 | Sistema | Classificare come sconosciuti i dati assenti, incoerenti o con data di aggiornamento più vecchia di 30 giorni, senza inferire accessibilità. La soglia di 30 giorni è una proposta di progetto da confermare con il responsabile dei dati prima del pilota. | Must | UC-01, UC-02 |
+| FR-04 | Ospite o utente registrato e sistema | Acquisire origine, destinazione ed esigenze di accessibilità e calcolare e restituire percorsi alternativi. | Must | UC-01 |
 | FR-05 | Sistema | Distinguere nei percorsi barriere note, tratti compatibili e non verificati. | Must | UC-01 |
 | FR-06 | Ospite o utente registrato e sistema | Consentire la selezione di un luogo e mostrare dettagli di accessibilità e provenienza. | Must | UC-02 |
 | FR-07 | Utente registrato | Inserire luogo, categoria, descrizione e data di osservazione del problema, allegando facoltativamente una foto di dimensione non superiore a 5 MB. La data di invio è registrata dal sistema. | Must | UC-03 |
@@ -150,21 +150,21 @@ La piattaforma offre consultazione pubblica con ricerca per area, mappa interatt
 
 ### 3.3 REQUISITI NON FUNZIONALI
 
-La baseline di accessibilità del prodotto è **[WCAG 2.1 livello AA](https://www.w3.org/TR/WCAG21/)**. La verifica copre pagine, componenti, stati dinamici e flussi completi, inclusi gli errori; per ogni criterio applicabile di livello A e AA registra esito, metodo, ambiente ed evidenza. Strumenti automatici, revisione manuale, tastiera, zoom, contrasto, tecnologie assistive e confronto tra mappa e vista testuale hanno risultati distinti. Le sessioni con utenti sono registrate separatamente dai risultati di conformità e usabilità. Gli strumenti automatici non dimostrano da soli la conformità. Eventuali dichiarazioni di conformità richiedono la verifica di tutti i criteri applicabili nel perimetro dichiarato. ISO 9241-110 resta il riferimento complementare per l’usabilità.
+La baseline di accessibilità del prodotto è **[WCAG 2.1 livello AA](https://www.w3.org/TR/WCAG21/)**. La verifica copre pagine, componenti, stati dinamici e flussi completi, inclusi gli errori. Per ogni criterio applicabile di livello A e AA registra esito, metodo, ambiente ed evidenza. Strumenti automatici, revisione manuale, tastiera, zoom, contrasto, tecnologie assistive e confronto tra mappa e vista testuale hanno risultati distinti. Le sessioni con utenti sono registrate separatamente dai risultati di conformità e usabilità. Gli strumenti automatici non dimostrano da soli la conformità. Eventuali dichiarazioni di conformità richiedono la verifica di tutti i criteri applicabili nel perimetro dichiarato. ISO 9241-110 resta il riferimento complementare per l’usabilità.
 
 | ID | Qualità | Azione richiesta | Criterio di verifica | Responsabile |
 |---|---|---|---|---|
-| NFR-01 | Accessibilità | Consentire di completare i flussi essenziali da tastiera e con screen reader secondo **WCAG 2.1 livello AA**. | Per ogni criterio WCAG 2.1 A e AA applicabile, registrare esito ed evidenza; il requisito è superato se tutti i criteri applicabili risultano conformi. | Team di sviluppo / QA |
+| NFR-01 | Accessibilità | Consentire di completare i flussi essenziali da tastiera e con screen reader secondo **WCAG 2.1 livello AA**. | Per ogni criterio WCAG 2.1 A e AA applicabile, registrare esito ed evidenza. Il requisito è superato se tutti i criteri applicabili risultano conformi. | Team di sviluppo / QA |
 | NFR-02 | Accessibilità | Fornire una vista testuale equivalente alle informazioni presentate sulla mappa. | Verifica di parità informativa tra vista mappa e vista elenco testuale per le medesime ricerche. | Team di sviluppo / QA |
 | NFR-03 | Accessibilità | Garantire contrasto cromatico adeguato e leggibilità con zoom fino al 200%. | Verificare un rapporto di contrasto ≥ 4.5:1 per il testo standard e l’assenza di perdita di contenuto allo zoom secondo WCAG 2.1 livello AA. | Team di sviluppo / QA |
 | NFR-04 | Privacy | Minimizzare i dati personali e separare l’identità dell’autore dai contenuti pubblici delle segnalazioni. | Verifica che endpoint pubblici e pagine di tracking non espongano email o identificativi dell’utente (conformità GDPR). | Responsabile tecnico |
 | NFR-05 | Sicurezza | Proteggere le comunicazioni con HTTPS/TLS e applicare il controllo degli accessi basato sui ruoli (RBAC). | Verifica del protocollo HTTPS su tutti gli endpoint e rifiuto lato server delle operazioni riservate per ruoli non autorizzati. | Responsabile tecnico |
 | NFR-06 | Sicurezza | Applicare validazione server-side degli input, rate limiting e protezione da injection. | Test con input malformati e tentativi di injection verificando il rifiuto senza effetti sui dati. | Responsabile tecnico |
-| NFR-07 | Sicurezza | Accettare solo file immagine non superiori a 5 MB e verificarne tipo, integrità e sicurezza prima della pubblicazione. | Accettare file immagine validi fino a 5 MB; rifiutare file più grandi o con estensione, tipo MIME e firma del contenuto discordanti. Rifiutare o mantenere in quarantena i file se la scansione fallisce o non è disponibile. | Responsabile tecnico |
-| NFR-08 | Qualità dei dati | Esporre provenienza e freschezza di ogni dato di accessibilità. | Ispezione di un campione di luoghi, in cui ogni caratteristica riporta fonte e data di osservazione. | Team di sviluppo / QA |
+| NFR-07 | Sicurezza | Accettare solo file immagine non superiori a 5 MB e verificarne tipo, integrità e sicurezza prima della pubblicazione. | Accettare file immagine validi fino a 5 MB. Rifiutare file più grandi o con estensione, tipo MIME e firma del contenuto discordanti. Rifiutare o mantenere in quarantena i file se la scansione fallisce o non è disponibile. | Responsabile tecnico |
+| NFR-08 | Qualità dei dati | Esporre provenienza e freschezza di ogni dato di accessibilità. | Ispezione di un campione di luoghi, in cui ogni caratteristica riporta fonte e data di osservazione. La regola di scadenza applicata è quella definita in FR-03. | Team di sviluppo / QA |
 | NFR-09 | Affidabilità | Mantenere consultabili i dati validi precedenti quando l’importazione di una fonte fallisce. | Indurre un errore di importazione e verificare che la versione pubblicata non cambi e che il dataset precedente resti consultabile senza pubblicazioni parziali. | Team di sviluppo / QA |
-| NFR-10 | Performance | Rispondere rapidamente alle richieste di caricamento della mappa, dei luoghi e dei percorsi. | In un ambiente di test documentato, misurare il p95 per ciascuno dei tre flussi; il p95 deve essere inferiore a 2 secondi. | Team di sviluppo / QA |
-| NFR-11 | Usabilità | Consentire agli utenti di completare autonomamente i flussi principali e registrare tempi ed errori. | In una prova con 5 partecipanti del target, ognuno svolge i 4 compiti della Tabella 4.2; almeno 17 dei 20 tentativi devono essere completati senza aiuto (≥85%). | Team di sviluppo / QA |
+| NFR-10 | Performance | Rispondere rapidamente alle richieste di caricamento della mappa, dei luoghi e dei percorsi. | In un ambiente di test documentato, misurare il p95 per ciascuno dei tre flussi. Il p95 deve essere inferiore a 2 secondi. La soglia è una proposta di progetto da confermare con il responsabile tecnico prima del pilota. | Team di sviluppo / QA |
+| NFR-11 | Usabilità | Consentire agli utenti di completare autonomamente i flussi principali e registrare tempi ed errori. | In una prova con 5 partecipanti del target, ognuno svolge i 4 compiti della Tabella 4.2. Almeno 17 dei 20 tentativi devono essere completati senza aiuto (≥85%). Il campione e la soglia sono una proposta di verifica da confermare prima della prova. | Team di sviluppo / QA |
 | NFR-12 | Manutenibilità | Mantenere separati dominio, casi d’uso e adattatori, documentando le API. | Revisione dell’architettura a livelli e documentazione completa degli endpoint REST tramite specifica OpenAPI. | Responsabile tecnico |
 | NFR-13 | Portabilità | Garantire la fruibilità dell’interfaccia web su browser desktop e dispositivi mobili (*responsive design*). | Test di compatibilità su Chrome, Firefox, Safari ed Edge sia su desktop che su smartphone. | Team di sviluppo / QA |
 
@@ -179,7 +179,7 @@ La baseline di accessibilità del prodotto è **[WCAG 2.1 livello AA](https://ww
 | Struttura software | Architettura disaccoppiata tra presentazione, casi d’uso, dominio e adattatori esterni, documentata con OpenAPI. |
 | Accesso e ruoli | Consultazione dei luoghi e tracking tramite codice pubblici. Invio di segnalazioni riservato all’Utente registrato autenticato. Autenticazione e controllo dei ruoli per preferiti, notifiche, storico personale e moderazione. |
 | Qualità dei dati | Ogni proprietà di accessibilità registra fonte e timestamp. Dati assenti o con data di aggiornamento più vecchia di 30 giorni sono classificati come *Sconosciuti*. |
-| Normativa | I trattamenti di dati personali seguono il GDPR. Esigenze di percorso, descrizioni e immagini delle segnalazioni possono rivelare, se associate a una persona, informazioni sulla disabilità o sulla salute (art. 9 GDPR): minimizzazione dei dati e valutazione d’impatto sono a cura del responsabile del trattamento. WCAG 2.1 livello AA è il target tecnico del prodotto e non costituisce una dichiarazione di conformità legale; gli obblighi applicabili dipendono dal soggetto erogatore. |
+| Normativa | I trattamenti di dati personali seguono il GDPR. Esigenze di percorso, descrizioni e immagini delle segnalazioni possono rivelare, se associate a una persona, informazioni sulla disabilità o sulla salute (art. 9 GDPR). Minimizzazione dei dati e valutazione d’impatto sono a cura del responsabile del trattamento. WCAG 2.1 livello AA è il target tecnico del prodotto e non costituisce una dichiarazione di conformità legale. Gli obblighi applicabili dipendono dal soggetto erogatore. |
 
 *Tabella 3.4: Vincoli di progetto*
 
@@ -222,7 +222,7 @@ Gli scenari seguenti, inventati a scopo illustrativo, rappresentano una validazi
 
 ##### Diagramma globale
 
-Il confine di sistema separa i casi d’uso di AEGIS dagli attori umani e dai sistemi esterni. Ospite e Utente registrato sono specializzazioni dell’attore Utente della piattaforma. L’Ospite partecipa a UC-01, UC-02 e UC-04 e può registrarsi con UC-09. L’Utente registrato partecipa a UC-01, UC-02, UC-03 e UC-04. UC-03, UC-05, UC-06 e UC-08 includono UC-07 perché richiedono autenticazione. UC-06 descrive l’aggiornamento manuale avviato dall’Amministratore; la sincronizzazione schedulata è un processo interno automatico. I flussi alternativi e di errore sono descritti nelle specifiche dei casi d’uso.
+Il confine di sistema separa i casi d’uso di AEGIS dagli attori umani e dai sistemi esterni. Ospite e Utente registrato sono specializzazioni dell’attore Utente della piattaforma. L’Ospite partecipa a UC-01, UC-02 e UC-04 e può registrarsi con UC-09. L’Utente registrato partecipa a UC-01, UC-02, UC-03 e UC-04. UC-03, UC-05, UC-06 e UC-08 includono UC-07 perché richiedono autenticazione. UC-06 descrive l’aggiornamento manuale avviato dall’Amministratore. La sincronizzazione schedulata è un processo interno automatico. I flussi alternativi e di errore sono descritti nelle specifiche dei casi d’uso.
 
 ```mermaid
 usecase-beta
@@ -303,7 +303,7 @@ UC08 ..> : include UC07
 | Campo | Specifica |
 |---|---|
 | Attori partecipanti | Utente registrato |
-| Condizioni d’ingresso | Utente autenticato tramite UC-07; campi obbligatori compilati correttamente e informativa sul trattamento dei dati accettata. |
+| Condizioni d’ingresso | Utente autenticato tramite UC-07. Campi obbligatori compilati correttamente e informativa sul trattamento dei dati accettata. |
 | Condizioni d’uscita | Segnalazione ed evento iniziale salvati, codice di tracking univoco restituito all’utente. |
 | Requisiti qualitativi | Nessun dato identificativo dell’utente è esposto pubblicamente (NFR-04). L’eventuale foto è JPEG, PNG o WebP e non supera 5 MB (NFR-07). L’operazione richiede autenticazione e autorizzazione lato server (NFR-05). |
 | Flusso degli eventi | 1. L’utente inserisce luogo, categoria, descrizione, data di osservazione e allega facoltativamente una foto.<br>2. Il sistema valida i campi e controlla formato e sicurezza dell’eventuale immagine.<br>3. Il sistema salva in un’unica transazione la segnalazione e l’evento iniziale, e genera un codice di tracking non enumerabile.<br>4. Il sistema restituisce il codice di tracking. |
@@ -336,7 +336,7 @@ UC08 ..> : include UC07
 | Campo | Specifica |
 |---|---|
 | Attori partecipanti | Amministratore, Fonte dati autorizzata |
-| Condizioni d’ingresso | Fonte configurata e abilitata; Amministratore autenticato e autorizzato a gestire le fonti. |
+| Condizioni d’ingresso | Fonte configurata e abilitata. Amministratore autenticato e autorizzato a gestire le fonti. |
 | Condizioni d’uscita | Versione, timestamp, controlli ed esito registrati, solo un pacchetto completo e validato diventa visibile. |
 | Requisiti qualitativi | In caso di errore mantengono validità i dati precedenti, senza pubblicazioni parziali (NFR-09). |
 | Flusso degli eventi | 1. L’Amministratore avvia la sincronizzazione dalla dashboard.<br>2. Il sistema acquisisce i dati dalla Fonte dati autorizzata.<br>3. Il sistema verifica formato, chiavi e coerenza geografica.<br>4. Se i controlli sono superati, il sistema pubblica i nuovi dati in un’unica operazione atomica e registra l’esito positivo. |
@@ -385,7 +385,7 @@ UC08 ..> : include UC07
 |---|---|---|
 | Place | Rappresenta un luogo, una fermata o una stazione consultabile con posizione geografica. | UC-01, UC-02, UC-06 |
 | AccessibilityFeature | Rappresenta una caratteristica di accessibilità associata a un luogo, con stato (Disponibile, Non disponibile, Sconosciuto), fonte, data di osservazione e validità. | UC-01, UC-02, UC-06 |
-| Report | Rappresenta una segnalazione georeferenziata con categoria, descrizione, data di osservazione, stato, codice di tracking e autore registrato obbligatorio; per i duplicati conserva il riferimento alla segnalazione originale. | UC-03, UC-04, UC-05, UC-08 |
+| Report | Rappresenta una segnalazione georeferenziata con categoria, descrizione, data di osservazione, stato, codice di tracking e autore registrato obbligatorio. Per i duplicati conserva il riferimento alla segnalazione originale. | UC-03, UC-04, UC-05, UC-08 |
 | ReportAttachment | Rappresenta la foto allegata a una segnalazione, con chiave di archiviazione ed esito della scansione. | UC-03, UC-05 |
 | ReportEvent | Registra in modo append-only tipo di evento, autore, motivazione e data relativi a una segnalazione. | UC-03, UC-05 |
 | UserAccount | Rappresenta l’identità e i ruoli applicativi di un utente autenticato. | UC-05, UC-06, UC-07, UC-08, UC-09 |
@@ -436,6 +436,11 @@ Il diagramma rappresenta la struttura statica concettuale del dominio: classi, a
 
 ```mermaid
 classDiagram
+  accTitle: Diagramma UML delle classi del dominio di AEGIS
+  accDescr {
+    Classi Entity del dominio con attributi principali, enumerazioni e associazioni.
+    Mostra Place, AccessibilityFeature, Report, ReportEvent, UserAccount, DataSource, TransitLine e TransitStop con le relative molteplicità.
+  }
   class Place {
     <<entity>>
     PlaceId id
@@ -481,12 +486,32 @@ classDiagram
     String mimeType
     ScanResult scanResult
   }
+  class ScanResult {
+    <<enumeration>>
+    PENDING
+    CLEAN
+    REJECTED
+    UNAVAILABLE
+  }
   class ReportEvent {
     <<entity>>
     ReportEventId id
     ReportEventType type
     String motivation
     Instant occurredAt
+  }
+  class ReportEventType {
+    <<enumeration>>
+    CREATED
+    CONFIRMED
+    REJECTED
+    MARKED_DUPLICATE
+    RESOLVED
+  }
+  class GeoPoint {
+    <<value object>>
+    double latitude
+    double longitude
   }
   class UserAccount {
     <<entity>>
@@ -556,6 +581,10 @@ I diagrammi descrivono le interazioni dinamiche tra attori, oggetti Boundary, Co
 
 ```mermaid
 sequenceDiagram
+  accTitle: Diagramma di sequenza per UC-01 Pianificare un viaggio
+  accDescr {
+    L’utente richiede un percorso. Il controllo valida l’input, invoca il provider di routing, arricchisce i risultati con lo stato di accessibilità e gestisce input non valido, provider non disponibile o nessun percorso.
+  }
   actor U as Ospite / Utente registrato
   participant UI as WebInterface
   participant API as RoutesAPI
@@ -593,6 +622,10 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
+  accTitle: Diagramma di sequenza per UC-02 Consultare un luogo
+  accDescr {
+    L’utente seleziona un luogo. Il controllo recupera dettaglio e caratteristiche di accessibilità, applica la valutazione di freschezza e gestisce luogo non trovato.
+  }
   actor U as Ospite / Utente registrato
   participant UI as WebInterface
   participant API as PlacesAccessibilityAPI
@@ -624,6 +657,10 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
+  accTitle: Diagramma di sequenza per UC-03 Inviare una segnalazione
+  accDescr {
+    L’utente autenticato invia una segnalazione. Il sistema verifica sessione, valida dati, controlla l’eventuale allegato, salva segnalazione ed evento iniziale in transazione e restituisce il codice di tracking.
+  }
   actor U as Utente registrato
   participant UI as WebInterface
   participant API as ReportsTrackingAPI
@@ -672,6 +709,10 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
+  accTitle: Diagramma di sequenza per UC-04 Seguire una segnalazione
+  accDescr {
+    L’utente inserisce un codice di tracking. Il controllo verifica il codice e restituisce solo lo stato pubblico consentito o un messaggio generico di codice non valido.
+  }
   actor U as Ospite / Utente registrato
   participant UI as WebInterface
   participant API as ReportsTrackingAPI
@@ -702,6 +743,10 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
+  accTitle: Diagramma di sequenza per UC-05 Moderare una segnalazione
+  accDescr {
+    L’amministratore autorizzato seleziona una decisione. Il controllo verifica ruolo e transizione, aggiorna stato ed evento in transazione e pianifica la notifica autorizzata.
+  }
   actor A as Amministratore
   participant UI as WebInterface
   participant API as ModerationAPI
@@ -728,8 +773,10 @@ sequenceDiagram
         UC->>E: <<create>> appendEvent(reportId, decision, motivation, adminId)
         E-->>UC: Evento registrato
         opt Utenti con consenso alle notifiche
-          UC-)N: sendStatusUpdateAsync(reportId, decision)
+          UC->>N: enqueueStatusUpdate(reportId, decision)
+          N-->>UC: Intenzione registrata
         end
+        Note over N: Invio asincrono dopo il commit
         UC-->>API: Conferma moderazione
         API-->>UI: Esito positivo
         UI-->>A: Aggiorna coda e mostra conferma
@@ -755,6 +802,10 @@ La sequenza rappresenta l’aggiornamento manuale di una fonte da parte dell’A
 
 ```mermaid
 sequenceDiagram
+  accTitle: Diagramma di sequenza per UC-06 Aggiornare una fonte
+  accDescr {
+    L’amministratore avvia la sincronizzazione. Il controllo acquisisce il dataset, esegue i controlli di qualità, pubblica atomicamente i dati validi o registra l’errore mantenendo i dati precedenti.
+  }
   actor A as Amministratore
   participant UI as WebInterface
   participant API as SourceAdminAPI
@@ -806,6 +857,10 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
+  accTitle: Diagramma di sequenza per UC-07 Autenticarsi
+  accDescr {
+    L’utente inserisce le credenziali. Il controllo verifica l’identità e avvia la sessione con i ruoli oppure restituisce un errore generico.
+  }
   actor U as Utente registrato / Amministratore
   participant UI as WebInterface
   participant API as AccountAPI
@@ -834,6 +889,10 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
+  accTitle: Diagramma di sequenza per UC-08 Gestire preferiti e storico
+  accDescr {
+    L’utente autenticato consulta preferiti e storico delle proprie segnalazioni. Può aggiornare preferiti e consensi, con verifica della sessione e gestione degli errori di salvataggio.
+  }
   actor U as Utente registrato
   participant UI as WebInterface
   participant API as AccountAPI
@@ -874,6 +933,10 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
+  accTitle: Diagramma di sequenza per UC-09 Registrarsi
+  accDescr {
+    L’ospite richiede la registrazione. Il controllo valida i dati, crea l’account se l’email è disponibile e restituisce conferma o errore di validazione.
+  }
   actor G as Ospite
   participant UI as WebInterface
   participant API as AccountAPI
@@ -900,10 +963,14 @@ sequenceDiagram
 
 ##### Diagramma degli stati di Report
 
-La macchina a stati applica le transizioni di FR-09. Solo l’Amministratore autenticato può confermare, rifiutare, risolvere una segnalazione confermata o associarla come duplicata; ogni transizione registra autore e timestamp. Gli stati Rifiutata, Duplicata e Risolta sono terminali. La transizione a Duplicata richiede il riferimento alla segnalazione principale.
+La macchina a stati applica le transizioni di FR-09. Solo l’Amministratore autenticato può confermare, rifiutare, risolvere una segnalazione confermata o associarla come duplicata. Ogni transizione registra autore e timestamp. Gli stati Rifiutata, Duplicata e Risolta sono terminali. La transizione a Duplicata richiede il riferimento alla segnalazione principale.
 
 ```mermaid
 stateDiagram-v2
+  accTitle: Diagramma degli stati della segnalazione Report
+  accDescr {
+    Stati e transizioni ammesse per una segnalazione. Da In verifica può passare a Confermata, Rifiutata o Duplicata. Da Confermata può passare a Risolta. Rifiutata, Duplicata e Risolta sono terminali.
+  }
   state "In verifica" as InVerifica
   state "Confermata" as Confermata
   state "Rifiutata" as Rifiutata
