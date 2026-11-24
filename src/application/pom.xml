@@ -11,13 +11,13 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>aegis-application</artifactId>
+  <artifactId>application</artifactId>
   <name>AEGIS Application</name>
 
   <dependencies>
     <dependency>
       <groupId>it.aegis</groupId>
-      <artifactId>aegis-domain</artifactId>
+      <artifactId>domain</artifactId>
     </dependency>
   </dependencies>
 </project>

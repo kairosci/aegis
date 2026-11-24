@@ -162,14 +162,14 @@ La struttura versionata è una proposta di scheletro, non una dichiarazione di f
 
 | Modulo Maven | Percorso | Contenuto | Responsabilità |
 |---|---|---|---|
-| `aegis-config` | `src/config` | Caricamento tipizzato da `config/data/`. | Valori di policy e percorsi dei messaggi esterni al codice. |
-| `aegis-domain` | `src/domain` | `places`, `accessibility`, `routing`, `reports`, `identity`. | Entità, value object e regole di dominio. |
-| `aegis-application` | `src/application` | `port` e `usecase`. | Porte e casi d'uso senza API Jakarta EE. |
-| `aegis-adapter-inmemory` | `src/adapters/inmemory` | Implementazioni in memoria delle porte. | Sviluppo locale, non produzione. |
-| `aegis-adapter-rest` | `src/adapters/rest` | Risorse Jakarta REST e DTO HTTP. | Confine HTTP. |
-| `aegis-adapter-web` | `src/adapters/web` | Bean Jakarta Faces e accesso al bundle esterno. | Confine delle viste. |
-| `aegis-adapter-worker` | `src/adapters/worker` | `OutboxNotificationWorker`. | Lavoro asincrono dopo il commit. |
-| `aegis-app` | `src/bootstrap` | Assemblaggio WAR. | Packaging. |
+| `config` | `src/config` | Caricamento tipizzato da `config/data/`. | Valori di policy e percorsi dei messaggi esterni al codice. |
+| `domain` | `src/domain` | `places`, `accessibility`, `routing`, `reports`, `identity`. | Entità, value object e regole di dominio. |
+| `application` | `src/application` | `port` e `usecase`. | Porte e casi d'uso senza API Jakarta EE. |
+| `inmemory` | `src/adapters/inmemory` | Implementazioni in memoria delle porte. | Sviluppo locale, non produzione. |
+| `rest` | `src/adapters/rest` | Risorse Jakarta REST e DTO HTTP. | Confine HTTP. |
+| `web` | `src/adapters/web` | Bean Jakarta Faces e accesso al bundle esterno. | Confine delle viste. |
+| `worker` | `src/adapters/worker` | `OutboxNotificationWorker`. | Lavoro asincrono dopo il commit. |
+| `bootstrap` | `src/bootstrap` | Assemblaggio WAR. | Packaging. |
 
 Tutti i dati applicativi risiedono in `config/data/`. Il file `application.properties` contiene i valori di policy configurabili e il percorso del bundle dei messaggi. Il file `it/aegis/adapter/web/messages.properties` contiene i testi localizzati della vista. `ConfigLoader` richiede la variabile `AEGIS_DATA_DIR` e non applica default silenziosi. `MessageSource` legge il bundle dalla directory dati. Nessun dato di configurazione o testo dell'interfaccia è presente in `src/`. Le regole di transizione, gli invarianti e i valori di protocollo, come i limiti delle coordinate geografiche, restano nel dominio come costanti esplicite o valori derivati. I byte massimi dell'allegato, la lunghezza dell'impronta, l'esito di verifica dei tratti e la dimensione del token Base62 sono calcolati dalla configurazione, dai parametri dell'algoritmo e dallo stato canonico. I messaggi diagnostici delle eccezioni e gli identificatori di chiave restano nel codice come riferimenti di protocollo, non come dati configurabili.
 
@@ -206,7 +206,7 @@ flowchart LR
   Client["<<device>> Dispositivo client<br/><<artifact>> Browser"]
   Ingress["<<device>> Ingress e distribuzione<br/>Terminazione TLS / CDN"]
   App["<<device>> Nodo applicativo<br/><<executionEnvironment>> WildFly 42 / Java 21<br/><<artifact>> aegis.war: Jakarta Faces, Facelets, Jakarta REST"]
-  Worker["<<device>> Nodo worker<br/><<executionEnvironment>> Java 21 / WildFly 42<br/><<artifact>> aegis-worker.jar"]
+  Worker["<<device>> Nodo worker<br/><<executionEnvironment>> Java 21 / WildFly 42<br/><<artifact>> worker.jar"]
   DB["<<device>> Nodo database<br/><<executionEnvironment>> PostgreSQL 16<br/><<artifact>> PostGIS 3.4"]
   Redis["<<device>> Cache<br/><<executionEnvironment>> Redis"]
   S3["<<device>> Object storage<br/><<executionEnvironment>> MinIO locale / AWS S3 produzione"]
