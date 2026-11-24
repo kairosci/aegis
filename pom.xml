@@ -13,6 +13,7 @@
   <modules>
     <module>src/config</module>
     <module>src/domain</module>
+    <module>src/application</module>
   </modules>
 
   <properties>
