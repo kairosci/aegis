@@ -11,6 +11,6 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>aegis-config</artifactId>
+  <artifactId>config</artifactId>
   <name>AEGIS Configuration</name>
 </project>

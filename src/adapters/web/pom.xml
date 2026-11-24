@@ -11,17 +11,17 @@
     <relativePath>../../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>aegis-adapter-web</artifactId>
+  <artifactId>web</artifactId>
   <name>AEGIS Web adapter</name>
 
   <dependencies>
     <dependency>
       <groupId>it.aegis</groupId>
-      <artifactId>aegis-application</artifactId>
+      <artifactId>application</artifactId>
     </dependency>
     <dependency>
       <groupId>it.aegis</groupId>
-      <artifactId>aegis-config</artifactId>
+      <artifactId>config</artifactId>
     </dependency>
     <dependency>
       <groupId>jakarta.faces</groupId>
