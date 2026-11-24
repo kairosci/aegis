@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Segnalazione privata di vulnerabilità
+    url: https://github.com/kairosci/aegis/security/advisories/new
+    about: Non pubblicare dettagli di vulnerabilità nelle issue.

@@ -1,0 +1,11 @@
+{
+  "name": "aegis-documentation-tools",
+  "private": true,
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "12.2.0",
+    "puppeteer": "25.17.0"
+  }
+}
