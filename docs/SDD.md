@@ -211,7 +211,7 @@ Il browser comunica con il nodo applicativo tramite HTTPS. Applicazione e worker
 
 In sviluppo è previsto Docker Compose con PostgreSQL 16/PostGIS 3.4, Redis e MinIO. Staging e produzione sono ambienti separati. In produzione l’applicazione usa WildFly 42, AWS S3, PostgreSQL e Redis. Segreti e credenziali sono forniti tramite configurazione esterna al repository.
 
-La pipeline di rilascio dovrà compilare e verificare gli artefatti applicativi, eseguire test e scansioni delle dipendenze, creare immagini versionate e distribuire progressivamente. Le migrazioni devono mantenere la compatibilità con le versioni applicative attive durante il rilascio. La configurazione applicativa dovrà essere versionata e distinta per ambiente. I segreti non dovranno essere inclusi nel repository.
+La pipeline di rilascio compila e verifica gli artefatti applicativi, esegue test e scansioni delle dipendenze, crea immagini versionate e distribuisce progressivamente. Le migrazioni mantengono la compatibilità con le versioni applicative attive durante il rilascio. La configurazione applicativa è versionata e distinta per ambiente. I segreti non sono inclusi nel repository.
 
 Le procedure operative per rilascio, migrazione, rollback, incidenti e ripristino devono essere redatte e provate nell'ambiente di riferimento prima dell'esercizio. Log, metriche, allarmi, retry, backup e recupero degli esiti ambigui sono responsabilità del sottosistema Operations.
 
