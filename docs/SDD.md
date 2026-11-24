@@ -63,7 +63,6 @@ Le altre definizioni sono raccolte nel [glossario](#6-glossario).
 | Riferimento | Ruolo nel progetto |
 |---|---|
 | [RAD: Documento di Analisi dei Requisiti](RAD.md) | Requisiti, attori, casi d’uso e vincoli. |
-| [Template SDD convertito](template/SDD.md) | Struttura accademica di riferimento. |
 | [Jakarta EE 11](https://jakarta.ee/release/11/) | Piattaforma applicativa di riferimento. |
 | [Compatibilità WildFly 42](https://www.wildfly.org/news/2026/10/22/WildFly-42-is-released/) | Profili EE 11 supportati e combinazioni Java dichiarate dal progetto WildFly. |
 | [Roadmap di supporto Java SE di Oracle](https://www.oracle.com/java/technologies/java-se-support-roadmap.html) | Versioni Java classificate LTS da Oracle. Il supporto dipende dalla distribuzione scelta. |
@@ -87,7 +86,7 @@ Il progetto è di tipo **greenfield** (sviluppo ex novo): non esiste un sistema 
 
 AEGIS è una web app responsive per consultare l’accessibilità di luoghi e servizi di trasporto, pianificare spostamenti e inviare segnalazioni. L’Ospite può consultare luoghi, pianificare percorsi, seguire segnalazioni tramite codice e registrarsi. Solo l’Utente registrato autenticato può inviare segnalazioni. Le viste server-side usano Jakarta Faces e Facelets. Le API REST usano Jakarta REST. I worker eseguono le sincronizzazioni e le attività asincrone.
 
-La baseline applicativa è Java 21 LTS, Jakarta EE 11 e WildFly 42. PostgreSQL 16 con PostGIS 3.4 conserva i dati relazionali e geografici. Redis fornisce la cache. Gli allegati sono conservati in object storage compatibile con S3, con MinIO in locale e AWS S3 in produzione. Le integrazioni esterne sono isolate dietro porte applicative. Le versioni e i prodotti elencati sono proposte di progetto, da approvare da parte del proprietario del progetto prima dell'implementazione.
+La baseline applicativa è Java 21 LTS, Jakarta EE 11 e WildFly 42. PostgreSQL 16 con PostGIS 3.4 conserva i dati relazionali e geografici. Redis fornisce la cache. Gli allegati sono conservati in object storage compatibile con S3, con MinIO in locale e AWS S3 in produzione. Le integrazioni esterne sono isolate dietro porte applicative. Queste versioni e questi prodotti sono proposte non approvate. Il Responsabile tecnico deve confermarli nella configurazione dell'ambiente di riferimento prima dell'implementazione.
 
 Il browser riceve HTML per le viste e JSON per le API. La mappa usa una libreria cartografica client-side, mentre i dati di luoghi e accessibilità provengono dall’API. Consultazione dei luoghi e tracking tramite codice sono pubblici. UC-03, preferiti, notifiche, storico personale e operazioni amministrative richiedono autenticazione e autorizzazione. I ruoli sono Utente registrato e Amministratore. Le transizioni di moderazione sono quelle definite in FR-09 del RAD.
 
@@ -246,9 +245,9 @@ La matrice seguente descrive il trattamento progettato. Le richieste di percorso
 | Identità e ruoli | Identificativo account, credenziali gestite dal componente Identity e ruoli applicativi Utente registrato o Amministratore. | Utente registrato e amministratore autenticati. |
 | Richieste di percorso e geolocalizzazione | Origine e destinazione testuali o coordinate, preferenze e vincoli per calcolare un percorso. Sono elaborati durante la richiesta e non persistiti nel dominio dopo la risposta. L’adattatore invia al provider solo i campi necessari al calcolo. | Ospite, utente registrato e servizi applicativi. |
 | Segnalazione | Luogo, categoria, descrizione, data e stato per moderare e comunicare informazioni sulle barriere. Testo e posizione possono identificare una persona. | Amministratori autorizzati e viste pubbliche limitate ai campi approvati. |
-| Eventi di moderazione | Riferimento all’autore, data, decisione, motivazione e segnalazione per mantenere la cronologia append-only. Le note pubbliche approvate sono incluse nelle viste consentite. | Amministratori autorizzati e ruoli operativi autorizzati. |
+| Eventi di moderazione | Riferimento all’autore, data, decisione, motivazione e segnalazione per mantenere la cronologia append-only. Le note pubbliche registrate nella decisione di moderazione sono incluse nelle viste consentite. | Amministratori autorizzati e ruoli operativi autorizzati. |
 | Credenziale di tracking | Codice non enumerabile restituito all’autore per consultare lo stato pubblico consentito. La proposta di progetto prevede 128 bit di entropia codificati in Base62, con il solo digest memorizzato e nessuna registrazione nei log. | Possessore del codice. La risposta non include dati personali. |
-| Immagine allegata | File, metadati necessari, intento durevole e stato della scansione per documentare una barriera e supportare la moderazione. | Oggetto privato prima dell’associazione autorizzata al report. Pubblicazione secondo policy approvata. |
+| Immagine allegata | File, metadati necessari, intento durevole e stato della scansione per documentare una barriera e supportare la moderazione. | Oggetto privato prima dell’associazione autorizzata al report. Pubblicazione solo dopo scansione ClamAV valida, associazione autorizzata al report e rimozione dei metadati non necessari. |
 | Log operativi | Eventi tecnici e identificativi necessari per diagnosi, sicurezza e misurazione operativa. | Personale operativo autorizzato. |
 
 *Tabella 3.3: Categorie di dati, uso previsto e accesso progettato*
@@ -257,7 +256,7 @@ La matrice seguente descrive il trattamento progettato. Le richieste di percorso
 |---|---|
 | Identità e ruoli | Credenziali gestite dal componente Identity. L’accesso è revocato alla disattivazione dell’account. I ruoli applicativi sono Utente registrato e Amministratore. |
 | Richieste di percorso e geolocalizzazione | Elaborate per la singola richiesta e non persistite nel dominio. Sono trasmessi al provider solo i campi necessari al calcolo. |
-| Segnalazione | I campi pubblici comprendono luogo, categoria, descrizione autorizzata, stato, data e note pubbliche approvate. Autore e dati di contatto non sono esposti nelle risposte pubbliche. |
+| Segnalazione | I campi pubblici comprendono luogo, categoria, descrizione autorizzata, stato, data e note pubbliche registrate nella decisione di moderazione. Autore e dati di contatto non sono esposti nelle risposte pubbliche. |
 | Eventi di moderazione | Conservano identificativo del caso, tipo di transizione, esito, motivazione, timestamp e riferimento all’attore. Non copiano descrizioni, credenziali, codici di tracking o dati di contatto. |
 | Intenzioni di notifica | Sono create solo per destinatari autorizzati e consenzienti. Contengono i riferimenti tecnici necessari all’invio e al recupero. |
 | Credenziale di tracking | È memorizzata come digest, esclusa dai log e usata solo per consultare lo stato pubblico consentito. |
@@ -296,7 +295,7 @@ Il controllo accessi è applicato lato server. Consultazione dei luoghi e tracki
 
 #### 3.5.1 AUTENTICAZIONE E IDENTITÀ
 
-Consultazione dei luoghi e tracking tramite codice non richiedono un account. L’invio di segnalazioni richiede un Utente registrato autenticato tramite UC-07. Il codice di tracking è una credenziale non enumerabile che tratta solo lo stato consentito. La proposta di progetto prevede 128 bit di entropia codificati in Base62, con il solo digest memorizzato e nessuna registrazione nei log. La dimensione resta da approvare. Preferiti, notifiche, storico personale e operazioni amministrative richiedono un’identità autenticata e un permesso verificato lato server. Le credenziali e i segreti non sono conservati nei log né nel codice applicativo.
+Consultazione dei luoghi e tracking tramite codice non richiedono un account. L’invio di segnalazioni richiede un Utente registrato autenticato tramite UC-07. Il codice di tracking è una credenziale non enumerabile che tratta solo lo stato consentito. La proposta di progetto prevede 128 bit di entropia codificati in Base62, con il solo digest memorizzato e nessuna registrazione nei log. Il Responsabile tecnico deve approvare entropia e codifica prima dell'implementazione. La chiusura della decisione richiede una prova di enumerazione sul codice generato. Preferiti, notifiche, storico personale e operazioni amministrative richiedono un’identità autenticata e un permesso verificato lato server. Le credenziali e i segreti non sono conservati nei log né nel codice applicativo.
 
 #### 3.5.2 CONTROLLO DEGLI ACCESSI AI DATI
 
@@ -312,14 +311,14 @@ Gli upload accettano JPEG, PNG o WebP fino a 5 MB. Il sistema registra un intent
 
 #### 3.5.4 PROTEZIONE DA ABUSI
 
-- **Rate limiting:** applicato sull’ingresso e sulle API per l’invio di segnalazioni da parte dell’Utente registrato e per l’endpoint di tracking pubblico. Le soglie numeriche non sono approvate e restano da definire secondo NFR-06 del RAD.
+- **Rate limiting:** applicato sull’ingresso e sulle API per l’invio di segnalazioni da parte dell’Utente registrato e per l’endpoint di tracking pubblico. Il Responsabile tecnico fissa le soglie numeriche per questi due endpoint prima del pilota, secondo NFR-06 del RAD. La chiusura della decisione richiede un test di carico sugli endpoint.
 - **Risposte uniformi:** l’endpoint di tracking restituisce il medesimo errore generico `404 Not Found` sia per codici inesistenti sia per codici formalmente malformati, evitando qualsiasi leak informativo.
 
 **Analisi delle minacce.** La seguente valutazione descrive i controlli previsti dal progetto e le evidenze richieste prima del rilascio.
 
 | Scenario di minaccia | Bene e impatto | Controllo progettato | Verifica richiesta |
 |---|---|---|---|
-| Enumerazione dei codici di tracking | Esposizione dello stato o di informazioni personali di segnalazioni altrui. | Usare un codice casuale non sequenziale con entropia adeguata al rischio. Limitare le richieste e rendere uniformi gli esiti per codice inesistente e non autorizzato. Non registrare il codice nei log. | Prove di autorizzazione, enumerazione e analisi dei log prima del pilota. |
+| Enumerazione dei codici di tracking | Esposizione dello stato o di informazioni personali di segnalazioni altrui. | Usare il codice di tracking proposto con 128 bit di entropia codificati in Base62, soggetto ad approvazione del Responsabile tecnico. Limitare le richieste e rendere uniformi gli esiti per codice inesistente e non autorizzato. Non registrare il codice nei log. | Prove di autorizzazione, enumerazione e analisi dei log prima del pilota. |
 | Accesso o transizione di moderazione non autorizzati | Modifica fraudolenta di stato e cronologia delle segnalazioni. | Verificare identità e ruolo sul server per ogni operazione. Applicare transizioni ammesse in modo atomico e registrare gli eventi in audit append-only. | Prove negative per ruolo e stato, incluse chiamate dirette alle API e richieste ripetute. |
 | Upload malevolo o non conforme | Esecuzione o diffusione di contenuti ostili, esposizione di dati o abuso dello storage. | Accettare JPEG, PNG o WebP fino a 5 MB. Verificare firma MIME e contenuto, tenere privato l’oggetto e sottoporlo a ClamAV prima dell’associazione al report. Riconciliare o pulire in modo idempotente gli intenti incompleti. | Prove con file non ammessi, oltre 5 MB, firma discordante, scansione fallita o indisponibile, interruzione durante upload e accesso non autorizzato. Verificare che il file non diventi pubblico. |
 | Dati di fonte errati, alterati o scaduti | Percorsi o descrizioni di accessibilità che inducono decisioni non sicure. | Importare solo fonti autorizzate, validare schema e qualità, conservare provenienza e validità. Mostrare come sconosciuti i dati assenti o scaduti. | Test di schema, duplicati, aggiornamento fallito, fonte scaduta e propagazione dello stato sconosciuto. |
@@ -328,18 +327,18 @@ Gli upload accettano JPEG, PNG o WebP fino a 5 MB. Il sistema registra un intent
 
 *Tabella 3.5: Analisi delle minacce e controlli progettati*
 
-**Sicurezza d'uso e pericoli operativi.** Questa analisi riguarda i danni che possono derivare dall'uso delle informazioni del servizio. È distinta dall'analisi delle minacce informatiche. I controlli descritti sono requisiti di progetto e non risultano implementati o validati. La valutazione del rischio residuo richiede area pilota, fonti e profili d'uso approvati.
+**Sicurezza d'uso e pericoli operativi.** Questa analisi riguarda i danni che possono derivare dall'uso delle informazioni del servizio. È distinta dall'analisi delle minacce informatiche. I controlli descritti sono requisiti di progetto e non risultano implementati o validati. La valutazione del rischio residuo richiede un'area pilota, fonti autorizzate e profili d'uso approvati dal responsabile del trattamento.
 
 | Pericolo | Possibile danno | Controllo progettato | Evidenza richiesta |
 |---|---|---|---|
 | Una caratteristica di accessibilità assente, scaduta o incoerente viene interpretata come disponibile. | La persona sceglie un luogo o un tratto che non può utilizzare. | Propagare lo stato sconosciuto senza convertirlo in accessibile. Mostrare fonte e validità quando disponibili. Escludere il dato incerto dalle dichiarazioni di compatibilità. | Test end-to-end per dato assente, scaduto, incoerente e aggiornamento fallito. Revisione dei testi con persone del profilo pilota. |
-| Un percorso include un tratto non verificato o un fallback del provider. | La persona incontra una barriera o non riesce a completare il tragitto. | Etichettare i tratti non verificati. Rendere visibili le limitazioni e l'origine del percorso. Fornire un esito esplicito quando non è possibile stabilire la compatibilità. | Prove con provider indisponibile, dati parziali e profili approvati. Verifica dell'equivalenza tra mappa e descrizione testuale. |
+| Un percorso include un tratto non verificato o un fallback del provider. | La persona incontra una barriera o non riesce a completare il tragitto. | Etichettare i tratti non verificati. Rendere visibili le limitazioni e l'origine del percorso. Fornire un esito esplicito quando non è possibile stabilire la compatibilità. | Prove con provider indisponibile, dati parziali e profili d'uso approvati dal responsabile del trattamento. Verifica dell'equivalenza tra mappa e descrizione testuale. |
 | Una sincronizzazione incompleta, duplicata o fuori ordine pubblica uno stato non coerente. | La persona pianifica sulla base di informazioni obsolete o contraddittorie. | Isolare le generazioni candidate, validare contratto e completezza, attivare in modo atomico, preservare la generazione precedente in caso di errore e ordinare le pubblicazioni concorrenti. Rendere osservabili esito e ritardo. | Prove di retry, interruzione in ogni fase, duplicati, pubblicazioni durante una query, coerenza del vettore cache, errore di pubblicazione e ripristino. Confronto tra fonte e dati attivi. |
 | Un avviso o un errore non è percepibile o comprensibile con la modalità d'interazione usata. | La persona non nota l'incertezza o non riesce a scegliere un'alternativa. | Esporre avvisi nel contenuto e nella struttura accessibile, senza affidarsi al solo colore, alla sola mappa o a notifiche temporanee. Mantenere il messaggio disponibile nella vista. | Verifica con tastiera e tecnologie assistive, prove con utenti e controllo che gli stati equivalenti siano disponibili in forma testuale. |
 
 *Tabella 3.6: Pericoli d’uso e controlli progettati*
 
-Gli esiti delle verifiche, le limitazioni note e l'accettazione del rischio residuo devono essere registrati prima del pilota, rispetto ai criteri WCAG 2.1 livello AA e ai flussi definiti nel RAD.
+Gli esiti delle verifiche, le limitazioni note e l'accettazione del rischio residuo devono essere registrati dal responsabile del trattamento prima del pilota, rispetto ai criteri WCAG 2.1 livello AA e ai flussi definiti nel RAD.
 
 ### 3.6 DECISIONI SUL FLUSSO DI CONTROLLO GLOBALE
 
@@ -688,7 +687,7 @@ La cache usa Redis. I termini di cache e generazione descrivono invarianti del c
 | Snapshot consistente | Vista del repository che usa gli stessi riferimenti di generazione per selezionare i dati e la loro provenienza durante una lettura. |
 | SourceSync | Registrazione dell’esito, della versione e dei controlli di una sincronizzazione. |
 | SRID | Identificatore del riferimento spaziale di una geometria. |
-| Codice di tracking | Credenziale non enumerabile usata per consultare lo stato consentito di una segnalazione. La proposta di progetto prevede 128 bit di entropia codificati in Base62, con il solo digest memorizzato e nessuna registrazione nei log. La dimensione resta da approvare. |
+| Codice di tracking | Credenziale non enumerabile usata per consultare lo stato consentito di una segnalazione. La proposta di progetto prevede 128 bit di entropia codificati in Base62, con il solo digest memorizzato e nessuna registrazione nei log. Il Responsabile tecnico deve approvare entropia e codifica prima dell'implementazione. La chiusura della decisione richiede una prova di enumerazione sul codice generato. |
 | TransitDataProvider | Porta verso una fonte di dati di trasporto. |
 | Utente registrato | Persona autenticata che usa le funzioni consentite dal proprio account. |
 | Value object | Oggetto immutabile definito dal valore e dalle proprie invarianti. |
