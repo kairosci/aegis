@@ -14,6 +14,7 @@
     <module>src/config</module>
     <module>src/domain</module>
     <module>src/application</module>
+    <module>src/adapters/inmemory</module>
   </modules>
 
   <properties>
