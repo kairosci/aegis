@@ -3,7 +3,7 @@ __pycache__/
 *.py[cod]
 credentials.json
 .google_docs/
-docs/GOOGLE_DOCS_SYNC.md
+
 build/
 exports/
 config/documentation/node_modules/
