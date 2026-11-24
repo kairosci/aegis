@@ -12,6 +12,7 @@
 
   <modules>
     <module>src/config</module>
+    <module>src/domain</module>
   </modules>
 
   <properties>
