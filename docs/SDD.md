@@ -14,8 +14,9 @@
 
 | Sezione | Contenuto |
 |---|---|
-| [Introduzione](#introduzione) | Scopo, obiettivi, definizioni, riferimenti e panoramica |
-| [Sistema corrente](#sistema-corrente) | Stato attuale e contesto |
+| [Introduzione](#1-introduzione) | Scopo, obiettivi, definizioni, riferimenti e panoramica |
+| [Sistema corrente](#2-sistema-corrente) | Stato attuale e contesto |
+| [Sistema proposto](#3-sistema-proposto) | Architettura, moduli, persistenza, sicurezza e flusso di controllo |
 | [Panoramica](#31-panoramica) | Architettura generale |
 | [Decomposizione del sistema](#32-decomposizione-del-sistema) | Moduli e responsabilità |
 | [Diagramma dei moduli](#321-diagramma-dei-moduli) | Relazioni tra componenti e dipendenze |
@@ -24,11 +25,11 @@
 | [Controllo accessi e sicurezza](#35-controllo-accessi-e-sicurezza) | [Identità](#351-autenticazione-e-identità), [accesso ai dati](#352-controllo-degli-accessi-ai-dati), [immagini](#353-gestione-delle-immagini), [abusi](#354-protezione-da-abusi) |
 | [Flusso di controllo globale](#36-decisioni-sul-flusso-di-controllo-globale) | [Sessione](#361-gestione-della-sessione-utente), [navigazione](#362-navigazione-tra-viste), [asincronia](#363-gestione-asincrona-ed-eventi), [errori](#364-gestione-degli-errori) |
 | [Condizioni limite](#37-condizioni-limite) | Identità, luoghi, segnalazioni duplicate, rete, input e geolocalizzazione |
-| [Servizi del sottosistema](#servizi-del-sottosistema) | [Identità](#41-autenticazione-utente), [luoghi](#42-gestione-dei-luoghi), [accessibilità](#43-informazioni-di-accessibilità), [percorsi](#44-pianificazione-dei-percorsi), [segnalazioni](#45-segnalazioni-e-moderazione), [geolocalizzazione e aggiornamenti](#46-geolocalizzazione-sincronizzazione-e-notifiche) |
+| [Servizi del sottosistema](#4-servizi-del-sottosistema) | [Identità](#41-autenticazione-utente), [luoghi](#42-gestione-dei-luoghi), [accessibilità](#43-informazioni-di-accessibilità), [percorsi](#44-pianificazione-dei-percorsi), [segnalazioni](#45-segnalazioni-e-moderazione), [geolocalizzazione e aggiornamenti](#46-geolocalizzazione-sincronizzazione-e-notifiche) |
 | [Diagrammi UML di progettazione](#5-diagrammi-uml-di-progettazione) | Classi di design e sequenze dei flussi critici |
 | [Glossario](#6-glossario) | Termini architetturali e di dominio |
 
-## INTRODUZIONE
+## 1. INTRODUZIONE
 
 ### 1.1 SCOPO DEL SISTEMA
 
@@ -53,6 +54,8 @@ Questo documento descrive l’architettura software proposta per AEGIS e dettagl
 |---|---|
 | API | Interfaccia di programmazione applicativa esposta via HTTP. |
 
+*Tabella 1.2: Definizioni e acronimi usati nel documento*
+
 Le altre definizioni sono raccolte nel [glossario](#6-glossario).
 
 ### 1.4 RIFERIMENTI
@@ -60,29 +63,31 @@ Le altre definizioni sono raccolte nel [glossario](#6-glossario).
 | Riferimento | Ruolo nel progetto |
 |---|---|
 | [RAD: Documento di Analisi dei Requisiti](RAD.md) | Requisiti, attori, casi d’uso e vincoli. |
-| [Template RAD/SDD convertito](template.md) | Struttura accademica di riferimento. |
-| [Jakarta EE 11](https://jakarta.ee/release/11/) | Piattaforma e versione minima Java supportata. |
+| [Template SDD convertito](template/SDD.md) | Struttura accademica di riferimento. |
+| [Jakarta EE 11](https://jakarta.ee/release/11/) | Piattaforma applicativa di riferimento. |
 | [Compatibilità WildFly 42](https://www.wildfly.org/news/2026/10/22/WildFly-42-is-released/) | Profili EE 11 supportati e combinazioni Java dichiarate dal progetto WildFly. |
-| [Roadmap di supporto Java SE di Oracle](https://www.oracle.com/java/technologies/java-se-support-roadmap.html) | Versioni Java classificate LTS da Oracle; il supporto dipende dalla distribuzione scelta. |
+| [Roadmap di supporto Java SE di Oracle](https://www.oracle.com/java/technologies/java-se-support-roadmap.html) | Versioni Java classificate LTS da Oracle. Il supporto dipende dalla distribuzione scelta. |
 | [WCAG 2.1 livello AA](https://www.w3.org/TR/WCAG21/) | Baseline di accessibilità del RAD. |
 | Specifica OpenAPI | Da generare e versionare insieme all’API. |
 | Documentazione Jakarta EE e PostGIS | Riferimenti tecnici da associare alle versioni selezionate. |
+
+*Tabella 1.3: Riferimenti normativi e tecnici del documento*
 
 ### 1.5 PANORAMICA
 
 Il documento è organizzato in 6 capitoli: il Capitolo 1 definisce scopo e obiettivi di progettazione; il Capitolo 2 inquadra l’assenza di sistemi preesistenti (*greenfield*); il Capitolo 3 descrive l’architettura proposta, la decomposizione in moduli, il mapping hardware/software, la persistenza, la sicurezza e il flusso di controllo; il Capitolo 4 specifica i servizi dei sottosistemi; il Capitolo 5 presenta i diagrammi UML di design (classi e sequenze); il Capitolo 6 raccoglie il glossario tecnico.
 
-## SISTEMA CORRENTE
+## 2. SISTEMA CORRENTE
 
 Il progetto è di tipo **greenfield** (sviluppo ex novo): non esiste un sistema preesistente da migrare o integrare come legacy. L’architettura viene progettata da zero per acquisire i feed ufficiali GTFS del trasporto pubblico locale dell’area metropolitana di Napoli e affiancarli alle segnalazioni georeferenziate degli utenti.
 
-## SISTEMA PROPOSTO
+## 3. SISTEMA PROPOSTO
 
 ### 3.1 PANORAMICA
 
 AEGIS è una web app responsive per consultare l’accessibilità di luoghi e servizi di trasporto, pianificare spostamenti e inviare segnalazioni. L’Ospite può consultare luoghi, pianificare percorsi, seguire segnalazioni tramite codice e registrarsi. Solo l’Utente registrato autenticato può inviare segnalazioni. Le viste server-side usano Jakarta Faces e Facelets. Le API REST usano Jakarta REST. I worker eseguono le sincronizzazioni e le attività asincrone.
 
-La baseline applicativa è Java 21 LTS, Jakarta EE 11 e WildFly 42. PostgreSQL 16 con PostGIS 3.4 conserva i dati relazionali e geografici. Redis fornisce la cache. Gli allegati sono conservati in object storage compatibile con S3, con MinIO in locale e AWS S3 in produzione. Le integrazioni esterne sono isolate dietro porte applicative.
+La baseline applicativa è Java 21 LTS, Jakarta EE 11 e WildFly 42. PostgreSQL 16 con PostGIS 3.4 conserva i dati relazionali e geografici. Redis fornisce la cache. Gli allegati sono conservati in object storage compatibile con S3, con MinIO in locale e AWS S3 in produzione. Le integrazioni esterne sono isolate dietro porte applicative. Le versioni e i prodotti elencati sono proposte di progetto, da approvare da parte del proprietario del progetto prima dell'implementazione.
 
 Il browser riceve HTML per le viste e JSON per le API. La mappa usa una libreria cartografica client-side, mentre i dati di luoghi e accessibilità provengono dall’API. Consultazione dei luoghi e tracking tramite codice sono pubblici. UC-03, preferiti, notifiche, storico personale e operazioni amministrative richiedono autenticazione e autorizzazione. I ruoli sono Utente registrato e Amministratore. Le transizioni di moderazione sono quelle definite in FR-09 del RAD.
 
@@ -100,7 +105,7 @@ La tabella seguente mappa i moduli architetturali sui requisiti funzionali, non 
 | Identity | Gestire autenticazione, registrazione, ruoli e separazione dei dati identificativi. | FR-13 (UC-03, UC-05–UC-08), FR-14 (UC-07–UC-09), FR-15 (UC-08) | NFR-04, NFR-05 |
 | Integrations | Implementare adattatori per fonti di trasporto, routing, notifiche e storage. | FR-10 (UC-06), FR-12 (UC-05, UC-08) | NFR-07, NFR-12 |
 | Worker | Eseguire sincronizzazioni schedulate, riconciliare upload e inviare notifiche in modo asincrono e recuperabile. | FR-07 (UC-03), FR-10, FR-11, UC-06, FR-12 (UC-05, UC-08) | NFR-07, NFR-09, NFR-10 |
-| Web | Fornire viste accessibili in Facelets con mappa, alternative testuali, moduli e pannello di moderazione. | FR-01–FR-09, FR-13–FR-15, UC-01–UC-09 | NFR-01, NFR-02, NFR-03, NFR-10, NFR-13 |
+| Web | Fornire viste accessibili in Facelets con mappa, alternative testuali, moduli, pannello di moderazione e monitoraggio delle sincronizzazioni. | FR-01–FR-15, UC-01–UC-09 | NFR-01, NFR-02, NFR-03, NFR-10, NFR-13 |
 | Runtime e Operations | Gestire configurazione, distribuzione, osservabilità, migrazioni e ripristino. | Nessun caso d’uso diretto | NFR-05, NFR-09, NFR-10, NFR-12 |
 
 *Tabella 3.1: Decomposizione del sistema in moduli e tracciabilità verso il RAD*
@@ -115,6 +120,8 @@ Internamente, ciascun dominio applicativo è organizzato in tre package:
 
 ```mermaid
 flowchart TB
+  accTitle: Diagramma dei moduli di AEGIS
+  accDescr: Il browser raggiunge viste Facelets e API REST tramite ingress. I moduli Places, Routing, Reports e Identity usano database, storage e cache. Worker e adattatori di integrazione collegano fonti GTFS, provider di routing e canali di notifica.
   Browser[Browser: Facelets, HTML/ARIA, JS]
   Ingress[Reverse Proxy / Terminazione TLS]
   Faces[Modulo Web: Jakarta Faces e Facelets]
@@ -125,7 +132,7 @@ flowchart TB
   Identity[Identity]
   Worker[Worker Asincroni]
   Integrations[Adapters di Integrazione]
-  Database[(PostgreSQL 16 + PostGIS)]
+  Database[(PostgreSQL 16 + PostGIS 3.4)]
   Storage[(Object Storage S3)]
   Cache[(Cache Redis)]
   Transit[Fonti ufficiali GTFS]
@@ -183,7 +190,7 @@ flowchart LR
   Ingress["«device» Ingress e distribuzione<br/>Terminazione TLS / CDN"]
   App["«device» Nodo applicativo<br/>«executionEnvironment» WildFly 42 / Java 21<br/>«artifact» aegis.war: Jakarta Faces, Facelets, Jakarta REST"]
   Worker["«device» Nodo worker<br/>«executionEnvironment» Java 21 / WildFly 42<br/>«artifact» aegis-worker.jar"]
-  DB["«device» Nodo database<br/>«executionEnvironment» PostgreSQL 16<br/>«artifact» PostGIS 3.4"]
+  DB["«device» Nodo database<br/>«executionEnvironment» PostgreSQL 16 con PostGIS 3.4"]
   Redis["«device» Cache<br/>«executionEnvironment» Redis"]
   S3["«device» Object storage<br/>«executionEnvironment» MinIO locale / AWS S3 produzione"]
   External["«device» Sistemi esterni<br/>«artifact» GTFS, routing, ClamAV, notifiche"]
@@ -199,13 +206,15 @@ flowchart LR
   App -->|HTTPS| External
 ```
 
+*Figura 3.2: Diagramma di deployment dei nodi di sistema*
+
 Il browser comunica con il nodo applicativo tramite HTTPS. Applicazione e worker usano JDBC per PostgreSQL, RESP per Redis e API S3 per gli allegati. I worker raggiungono fonti GTFS, ClamAV e servizi integrati tramite HTTPS.
 
 In sviluppo è previsto Docker Compose con PostgreSQL 16/PostGIS 3.4, Redis e MinIO. Staging e produzione sono ambienti separati. In produzione l’applicazione usa WildFly 42, AWS S3, PostgreSQL e Redis. Segreti e credenziali sono forniti tramite configurazione esterna al repository.
 
 La pipeline di rilascio dovrà compilare e verificare gli artefatti applicativi, eseguire test e scansioni delle dipendenze, creare immagini versionate e distribuire progressivamente. Le migrazioni devono mantenere la compatibilità con le versioni applicative attive durante il rilascio. La configurazione applicativa dovrà essere versionata e distinta per ambiente. I segreti non dovranno essere inclusi nel repository.
 
-Le procedure operative per rilascio, migrazione, rollback, incidenti e ripristino seguono il [modello di runbook](template/RUNBOOK.md) e devono essere provate nell'ambiente di riferimento prima dell'esercizio. Log, metriche, allarmi, retry, backup e recupero degli esiti ambigui sono responsabilità del sottosistema Operations.
+Le procedure operative per rilascio, migrazione, rollback, incidenti e ripristino devono essere redatte e provate nell'ambiente di riferimento prima dell'esercizio. Log, metriche, allarmi, retry, backup e recupero degli esiti ambigui sono responsabilità del sottosistema Operations.
 
 ### 3.4 GESTIONE DEI DATI PERSISTENTI
 
@@ -222,11 +231,13 @@ La persistenza relazionale utilizza **PostgreSQL 16 con PostGIS 3.4**. Le migraz
 | `transit_stop` | Fermate, geometrie e relazioni con le linee e la fonte. |
 | `report_submission` | Prenotazione durevole con scope dell’utente autenticato, digest della chiave, impronta dell’intera richiesta, stato e riferimento al report completato. Un vincolo di unicità su scope e digest impedisce prenotazioni concorrenti duplicate. La prenotazione è persistita prima di effetti esterni. |
 | `report` | Geometria o luogo, categoria, descrizione, stato e date. È collegato alla prenotazione che ne ha originato la creazione. Dati identificativi separati. |
-| `report_event` | Eventi append-only con autore, data, decisione e riferimento a eventuale duplicato. |
+| `report_event` | Eventi append-only con autore, data, decisione, motivazione e riferimento a eventuale duplicato. |
 | `report_attachment` | Intento durevole di upload correlato alla prenotazione della richiesta, chiave opaca di un oggetto privato, esiti di validazione e scansione, stato di associazione al report e lavoro di recupero o pulizia. Sono ammessi JPEG, PNG e WebP fino a 5 MB. |
 | `notification_outbox` | Intenzioni di notifica registrate nella stessa transazione della creazione o moderazione. Contiene stato, tentativi e riferimenti tecnici necessari al recupero, senza credenziali o contenuti non necessari. |
 | `user_account` | Riferimento d’identità e ruoli con accesso limitato. |
 | `source_sync` | Fonte, versione, timestamp, esito, controlli di qualità, generazione pubblicata, generazione precedente e stato del lavoro durevole di pulizia cache. |
+
+*Tabella 3.2: Schema relazionale e geospaziale*
 
 La matrice seguente descrive il trattamento progettato. Le richieste di percorso non sono persistite nel dominio dopo la risposta. Dati di accessibilità e pacchetti GTFS sono considerati scaduti 30 giorni dopo l’osservazione. Le segnalazioni conservano un autore registrato e non espongono l’identità nelle viste pubbliche.
 
@@ -235,23 +246,27 @@ La matrice seguente descrive il trattamento progettato. Le richieste di percorso
 | Identità e ruoli | Identificativo account, credenziali gestite dal componente Identity e ruoli applicativi Utente registrato o Amministratore. | Utente registrato e amministratore autenticati. |
 | Richieste di percorso e geolocalizzazione | Origine e destinazione testuali o coordinate, preferenze e vincoli per calcolare un percorso. Sono elaborati durante la richiesta e non persistiti nel dominio dopo la risposta. L’adattatore invia al provider solo i campi necessari al calcolo. | Ospite, utente registrato e servizi applicativi. |
 | Segnalazione | Luogo, categoria, descrizione, data e stato per moderare e comunicare informazioni sulle barriere. Testo e posizione possono identificare una persona. | Amministratori autorizzati e viste pubbliche limitate ai campi approvati. |
-| Eventi di moderazione | Riferimento all’autore, data, decisione e segnalazione per mantenere la cronologia append-only. | Amministratori autorizzati e ruoli operativi autorizzati. |
-| Credenziale di tracking | Token casuale a 128 bit codificato in Base62, restituito all’autore per consultare lo stato pubblico consentito. Il token è memorizzato come digest e non va registrato nei log. | Possessore del token. La risposta non include dati personali. |
+| Eventi di moderazione | Riferimento all’autore, data, decisione, motivazione e segnalazione per mantenere la cronologia append-only. Le note pubbliche approvate sono incluse nelle viste consentite. | Amministratori autorizzati e ruoli operativi autorizzati. |
+| Credenziale di tracking | Codice non enumerabile restituito all’autore per consultare lo stato pubblico consentito. La proposta di progetto prevede 128 bit di entropia codificati in Base62, con il solo digest memorizzato e nessuna registrazione nei log. | Possessore del codice. La risposta non include dati personali. |
 | Immagine allegata | File, metadati necessari, intento durevole e stato della scansione per documentare una barriera e supportare la moderazione. | Oggetto privato prima dell’associazione autorizzata al report. Pubblicazione secondo policy approvata. |
 | Log operativi | Eventi tecnici e identificativi necessari per diagnosi, sicurezza e misurazione operativa. | Personale operativo autorizzato. |
+
+*Tabella 3.3: Categorie di dati, uso previsto e accesso progettato*
 
 | Categoria | Decisioni di ciclo di vita |
 |---|---|
 | Identità e ruoli | Credenziali gestite dal componente Identity. L’accesso è revocato alla disattivazione dell’account. I ruoli applicativi sono Utente registrato e Amministratore. |
 | Richieste di percorso e geolocalizzazione | Elaborate per la singola richiesta e non persistite nel dominio. Sono trasmessi al provider solo i campi necessari al calcolo. |
-| Segnalazione | I campi pubblici comprendono luogo, categoria, descrizione autorizzata, stato e data. Autore e dati di contatto non sono esposti nelle risposte pubbliche. |
-| Eventi di moderazione | Conservano identificativo del caso, tipo di transizione, esito, timestamp e riferimento all’attore. Non copiano descrizioni, credenziali, codici di tracking o dati di contatto. |
+| Segnalazione | I campi pubblici comprendono luogo, categoria, descrizione autorizzata, stato, data e note pubbliche approvate. Autore e dati di contatto non sono esposti nelle risposte pubbliche. |
+| Eventi di moderazione | Conservano identificativo del caso, tipo di transizione, esito, motivazione, timestamp e riferimento all’attore. Non copiano descrizioni, credenziali, codici di tracking o dati di contatto. |
 | Intenzioni di notifica | Sono create solo per destinatari autorizzati e consenzienti. Contengono i riferimenti tecnici necessari all’invio e al recupero. |
 | Credenziale di tracking | È memorizzata come digest, esclusa dai log e usata solo per consultare lo stato pubblico consentito. |
 | Immagine allegata | È mantenuta privata fino a verifica e associazione al report. I metadati non necessari sono rimossi prima della pubblicazione autorizzata. |
-| Log operativi | Escludono descrizioni personali, credenziali, token di tracking, coordinate, preferenze e richieste di percorso. L’accesso è limitato al personale operativo autorizzato. |
+| Log operativi | Escludono descrizioni personali, credenziali, codice di tracking, coordinate, preferenze e richieste di percorso. L’accesso è limitato al personale operativo autorizzato. |
 
-La separazione tra identità, contenuto e cronologia è un confine architetturale, non una garanzia di anonimato. Descrizioni, coordinate, preferenze di percorso e immagini possono identificare una persona. I log applicativi escludono credenziali, token di tracking, descrizioni, coordinate e dati personali non necessari. Gli oggetti allegati sono privati e le risposte pubbliche omettono identità e contatti. Le richieste di percorso non sono persistite nel dominio dopo la risposta; al provider sono trasmessi solo i campi necessari. La pseudonimizzazione non è dichiarata anonimizzazione.
+*Tabella 3.4: Decisioni di ciclo di vita per categoria di dati*
+
+La separazione tra identità, contenuto e cronologia è un confine architetturale, non una garanzia di anonimato. Descrizioni, coordinate, preferenze di percorso e immagini possono identificare una persona. I log applicativi escludono credenziali, codice di tracking, descrizioni, coordinate e dati personali non necessari. Gli oggetti allegati sono privati e le risposte pubbliche omettono identità e contatti. Le richieste di percorso non sono persistite nel dominio dopo la risposta; al provider sono trasmessi solo i campi necessari. La pseudonimizzazione non è dichiarata anonimizzazione.
 
 Le relazioni sono protette da chiavi esterne e vincoli. Le ricerche geografiche usano indici spaziali. Ulteriori indici sono definiti in base alle query validate. Le coordinate di dominio sono rappresentate da `GeoPoint`, value object immutabile con controlli di validità.
 
@@ -281,7 +296,7 @@ Il controllo accessi è applicato lato server. Consultazione dei luoghi e tracki
 
 #### 3.5.1 AUTENTICAZIONE E IDENTITÀ
 
-Consultazione dei luoghi e tracking tramite codice non richiedono un account. L’invio di segnalazioni richiede un Utente registrato autenticato tramite UC-07. Il codice di tracking è un token casuale a 128 bit codificato in Base62, tratta solo lo stato consentito ed è memorizzato come digest; non viene registrato nei log. Preferiti, notifiche, storico personale e operazioni amministrative richiedono un’identità autenticata e un permesso verificato lato server. Le credenziali e i segreti non sono conservati nei log né nel codice applicativo.
+Consultazione dei luoghi e tracking tramite codice non richiedono un account. L’invio di segnalazioni richiede un Utente registrato autenticato tramite UC-07. Il codice di tracking è una credenziale non enumerabile che tratta solo lo stato consentito. La proposta di progetto prevede 128 bit di entropia codificati in Base62, con il solo digest memorizzato e nessuna registrazione nei log. La dimensione resta da approvare. Preferiti, notifiche, storico personale e operazioni amministrative richiedono un’identità autenticata e un permesso verificato lato server. Le credenziali e i segreti non sono conservati nei log né nel codice applicativo.
 
 #### 3.5.2 CONTROLLO DEGLI ACCESSI AI DATI
 
@@ -297,19 +312,21 @@ Gli upload accettano JPEG, PNG o WebP fino a 5 MB. Il sistema registra un intent
 
 #### 3.5.4 PROTEZIONE DA ABUSI
 
-- **Rate limiting:** applicato al livello di ingresso e API (ad esempio massimo 10 invii di segnalazione/ora per indirizzo IP per utenti Ospite; massimo 20 richieste/minuto per IP sull’endpoint di tracking per impedire attacchi a dizionario sui codici).
+- **Rate limiting:** applicato sull’ingresso e sulle API per l’invio di segnalazioni da parte dell’Utente registrato e per l’endpoint di tracking pubblico. Le soglie numeriche non sono approvate e restano da definire secondo NFR-06 del RAD.
 - **Risposte uniformi:** l’endpoint di tracking restituisce il medesimo errore generico `404 Not Found` sia per codici inesistenti sia per codici formalmente malformati, evitando qualsiasi leak informativo.
 
 **Analisi delle minacce.** La seguente valutazione descrive i controlli previsti dal progetto e le evidenze richieste prima del rilascio.
 
 | Scenario di minaccia | Bene e impatto | Controllo progettato | Verifica richiesta |
 |---|---|---|---|
-| Enumerazione dei codici di tracking | Esposizione dello stato o di informazioni personali di segnalazioni altrui. | Usare un token casuale non sequenziale con entropia adeguata al rischio. Limitare le richieste e rendere uniformi gli esiti per codice inesistente e non autorizzato. Non registrare il token nei log. | Prove di autorizzazione, enumerazione e analisi dei log prima del pilota. |
+| Enumerazione dei codici di tracking | Esposizione dello stato o di informazioni personali di segnalazioni altrui. | Usare un codice casuale non sequenziale con entropia adeguata al rischio. Limitare le richieste e rendere uniformi gli esiti per codice inesistente e non autorizzato. Non registrare il codice nei log. | Prove di autorizzazione, enumerazione e analisi dei log prima del pilota. |
 | Accesso o transizione di moderazione non autorizzati | Modifica fraudolenta di stato e cronologia delle segnalazioni. | Verificare identità e ruolo sul server per ogni operazione. Applicare transizioni ammesse in modo atomico e registrare gli eventi in audit append-only. | Prove negative per ruolo e stato, incluse chiamate dirette alle API e richieste ripetute. |
 | Upload malevolo o non conforme | Esecuzione o diffusione di contenuti ostili, esposizione di dati o abuso dello storage. | Accettare JPEG, PNG o WebP fino a 5 MB. Verificare firma MIME e contenuto, tenere privato l’oggetto e sottoporlo a ClamAV prima dell’associazione al report. Riconciliare o pulire in modo idempotente gli intenti incompleti. | Prove con file non ammessi, oltre 5 MB, firma discordante, scansione fallita o indisponibile, interruzione durante upload e accesso non autorizzato. Verificare che il file non diventi pubblico. |
 | Dati di fonte errati, alterati o scaduti | Percorsi o descrizioni di accessibilità che inducono decisioni non sicure. | Importare solo fonti autorizzate, validare schema e qualità, conservare provenienza e validità. Mostrare come sconosciuti i dati assenti o scaduti. | Test di schema, duplicati, aggiornamento fallito, fonte scaduta e propagazione dello stato sconosciuto. |
 | Injection o consumo eccessivo di risorse | Compromissione dei dati o indisponibilità di API e database. | Usare query parametrizzate, validare input, applicare limiti di dimensione e rate limiting agli endpoint e rendere le operazioni ripetibili in sicurezza. | Analisi statica, prove di input ostile e test di carico sugli endpoint. |
 | Divulgazione di dati personali o segreti | Violazione di riservatezza attraverso log, backup, configurazione, oggetti non collegati o risposta API. | Minimizzare i dati, escludere segreti e identificativi dai log, mantenere privati gli upload non collegati, limitare accessi e definire conservazione e cancellazione prima del lancio. Configurazione e segreti sono separati dal codice. | Revisione di log e permessi, controlli di segreti in CI e prove di accesso, recupero e cancellazione di upload interrotti. |
+
+*Tabella 3.5: Analisi delle minacce e controlli progettati*
 
 **Sicurezza d'uso e pericoli operativi.** Questa analisi riguarda i danni che possono derivare dall'uso delle informazioni del servizio. È distinta dall'analisi delle minacce informatiche. I controlli descritti sono requisiti di progetto e non risultano implementati o validati. La valutazione del rischio residuo richiede area pilota, fonti e profili d'uso approvati.
 
@@ -319,6 +336,8 @@ Gli upload accettano JPEG, PNG o WebP fino a 5 MB. Il sistema registra un intent
 | Un percorso include un tratto non verificato o un fallback del provider. | La persona incontra una barriera o non riesce a completare il tragitto. | Etichettare i tratti non verificati. Rendere visibili le limitazioni e l'origine del percorso. Fornire un esito esplicito quando non è possibile stabilire la compatibilità. | Prove con provider indisponibile, dati parziali e profili approvati. Verifica dell'equivalenza tra mappa e descrizione testuale. |
 | Una sincronizzazione incompleta, duplicata o fuori ordine pubblica uno stato non coerente. | La persona pianifica sulla base di informazioni obsolete o contraddittorie. | Isolare le generazioni candidate, validare contratto e completezza, attivare in modo atomico, preservare la generazione precedente in caso di errore e ordinare le pubblicazioni concorrenti. Rendere osservabili esito e ritardo. | Prove di retry, interruzione in ogni fase, duplicati, pubblicazioni durante una query, coerenza del vettore cache, errore di pubblicazione e ripristino. Confronto tra fonte e dati attivi. |
 | Un avviso o un errore non è percepibile o comprensibile con la modalità d'interazione usata. | La persona non nota l'incertezza o non riesce a scegliere un'alternativa. | Esporre avvisi nel contenuto e nella struttura accessibile, senza affidarsi al solo colore, alla sola mappa o a notifiche temporanee. Mantenere il messaggio disponibile nella vista. | Verifica con tastiera e tecnologie assistive, prove con utenti e controllo che gli stati equivalenti siano disponibili in forma testuale. |
+
+*Tabella 3.6: Pericoli d’uso e controlli progettati*
 
 Gli esiti delle verifiche, le limitazioni note e l'accettazione del rischio residuo devono essere registrati prima del pilota, rispetto ai criteri WCAG 2.1 livello AA e ai flussi definiti nel RAD.
 
@@ -370,11 +389,11 @@ Richieste di percorso, moduli e identificativi sono validati prima di produrre e
 
 Se la persona nega il permesso di geolocalizzazione, il sistema non blocca ricerca e pianificazione. L’interfaccia consente di inserire manualmente origine, destinazione o luogo e non conserva la posizione oltre quanto necessario alla richiesta.
 
-## SERVIZI DEL SOTTOSISTEMA
+## 4. SERVIZI DEL SOTTOSISTEMA
 
 ### 4.1 AUTENTICAZIONE UTENTE
 
-Il sottosistema Identity gestisce autenticazione e autorizzazione delle funzioni protette. L’amministratore deve essere autenticato e avere il permesso di moderazione o gestione della fonte richiesto dall’operazione. UC-03 richiede un Utente registrato autenticato. Il tracking pubblico usa il token Base62 come credenziale e restituisce solo lo stato consentito. I dati identificativi restano separati dai contenuti pubblici delle segnalazioni.
+Il sottosistema Identity gestisce autenticazione e autorizzazione delle funzioni protette. L’amministratore deve essere autenticato e avere il permesso di moderazione o gestione della fonte richiesto dall’operazione. UC-03 richiede un Utente registrato autenticato. Il tracking pubblico usa il codice di tracking come credenziale e restituisce solo lo stato consentito. I dati identificativi restano separati dai contenuti pubblici delle segnalazioni.
 
 ### 4.2 GESTIONE DEI LUOGHI
 
@@ -390,7 +409,7 @@ Il caso d’uso `PlanRouteControl` valida origine, destinazione e vincoli, invoc
 
 ### 4.5 SEGNALAZIONI E MODERAZIONE
 
-`CreateReportControl` è invocato solo dopo la verifica della sessione e del ruolo Utente registrato. Valida i dati e gestisce l’eventuale upload tramite intento durevole, storage privato e scansione ClamAV. Prima del primo effetto esterno registra una prenotazione durevole e univoca legata allo scope dell’account e all’impronta canonica di tutti i dati, compreso il digest verificato dell’allegato. La stessa chiave e lo stesso payload recuperano la stessa operazione; la stessa chiave con payload diverso è rifiutata; una richiesta in corso non viene avviata in parallelo. La chiave non concede accesso ai dati: il replay è consentito solo all’account proprietario. Quando l’immagine supera i controlli, una transazione database persiste segnalazione, evento iniziale, collegamento a `report_attachment`, intenzione autorizzata di notifica e completamento della prenotazione. La transazione non comprende object storage. Se fallisce, l’intento lascia l’oggetto privato e consente retry o pulizia idempotente. `TrackReportControl` tratta il token casuale a 128 bit come credenziale e restituisce solo i campi pubblici consentiti. `ModerateReportControl` verifica identità, ruolo, esistenza del report e transizione ammessa. Le transizioni sono In verifica verso Confermata, Rifiutata o Duplicata e Confermata verso Risolta, come stabilito da FR-09. Ogni transizione ammessa aggiorna stato ed evento append-only nella stessa transazione. Un comando non ammesso non modifica stato, evento o outbox. L’unione collega il duplicato a un report di riferimento e non cancella la segnalazione né la sua cronologia. Un worker elabora l’outbox dopo il commit; un errore di invio non annulla la segnalazione o la transizione persistita. Il sistema non garantisce consegna esattamente una volta.
+`CreateReportControl` è invocato solo dopo la verifica della sessione e del ruolo Utente registrato. Valida i dati e gestisce l’eventuale upload tramite intento durevole, storage privato e scansione ClamAV. Prima del primo effetto esterno registra una prenotazione durevole e univoca legata allo scope dell’account e all’impronta canonica di tutti i dati, compreso il digest verificato dell’allegato. La stessa chiave e lo stesso payload recuperano la stessa operazione; la stessa chiave con payload diverso è rifiutata; una richiesta in corso non viene avviata in parallelo. La chiave non concede accesso ai dati: il replay è consentito solo all’account proprietario. Quando l’immagine supera i controlli, una transazione database persiste segnalazione, evento iniziale, collegamento a `report_attachment`, intenzione autorizzata di notifica e completamento della prenotazione. La transazione non comprende object storage. Se fallisce, l’intento lascia l’oggetto privato e consente retry o pulizia idempotente. `TrackReportControl` tratta il codice di tracking come credenziale e restituisce solo i campi pubblici consentiti. `ModerateReportControl` verifica identità, ruolo, esistenza del report e transizione ammessa. Le transizioni sono In verifica verso Confermata, Rifiutata o Duplicata e Confermata verso Risolta, come stabilito da FR-09. Ogni transizione ammessa aggiorna stato ed evento append-only nella stessa transazione e registra la motivazione nell'evento. Un comando non ammesso non modifica stato, evento o outbox. L’unione collega il duplicato a un report di riferimento e non cancella la segnalazione né la sua cronologia. Un worker elabora l’outbox dopo il commit; un errore di invio non annulla la segnalazione o la transizione persistita. Il sistema non garantisce consegna esattamente una volta.
 
 Prima dell’upload, `CreateReportControl` inserisce in `report_submission` la prenotazione durevole con scope dell’account, digest della chiave e impronta canonica che include i campi normalizzati e il digest verificato dell’eventuale allegato. Un vincolo univoco serializza la prenotazione. Il report, l’evento iniziale, il collegamento dell’allegato, l’outbox autorizzato e il completamento della prenotazione vengono poi persistiti nella stessa transazione. Se il processo si interrompe tra prenotazione e completamento, un retry dello stesso account osserva lo stato pendente e il recupero usa l’intento durevole senza avviare in parallelo una seconda operazione.
 
@@ -402,12 +421,12 @@ La ricerca consente di usare coordinate quando disponibili e un inserimento test
 
 ### 5.1 DIAGRAMMA DELLE CLASSI DI DESIGN
 
-Il diagramma mostra package, visibilità, operazioni, porte applicative e adattatori. Il dominio non dipende dagli adattatori; i casi d’uso dipendono dalle interfacce delle porte.
+Il diagramma mostra package, visibilità, operazioni, porte applicative e adattatori. Il dominio non dipende dagli adattatori e i casi d’uso dipendono dalle interfacce delle porte. `ReportSubmission`, `ModerateReport` e `PlanRoute` corrispondono rispettivamente a `CreateReportControl`, `ModerateReportControl` e `PlanRouteControl` descritti nel capitolo 4.
 
 ```mermaid
 classDiagram
   accTitle: Classi di design di AEGIS
-  accDescr: Package domain, application e adapter. I casi d’uso dipendono dalle porte repository, routing, storage e notifiche implementate dagli adattatori JPA, S3 e worker.
+  accDescr: Package domain, application e adapter. I casi d’uso dipendono dalle porte repository, routing, storage e notifiche implementate dagli adattatori JPA, S3, canale di notifica e worker.
   namespace domain {
     class Report {
       -ReportId id
@@ -490,7 +509,7 @@ classDiagram
     class OutboxNotificationWorker {
       +processPending() int
     }
-    class S3NotificationAdapter {
+    class NotificationChannelAdapter {
       +send(notification) DeliveryResult
     }
     class RoutingProviderAdapter {
@@ -509,7 +528,7 @@ classDiagram
   S3StorageAdapter ..|> StoragePort
   RoutingProviderAdapter ..|> RoutingProvider
   OutboxNotificationWorker --> NotificationPort
-  S3NotificationAdapter ..|> NotificationPort
+  NotificationChannelAdapter ..|> NotificationPort
   StorageScanAdapter --> S3StorageAdapter
   ReportSubmission --> StorageScanAdapter
   ReportRepository --> Report
@@ -526,7 +545,7 @@ Il flusso separa il controllo di sessione, la prenotazione idempotente, la scans
 ```mermaid
 sequenceDiagram
   accTitle: Sequenza di design UC-03
-  accDescr: L’identità autorizza l’utente registrato. Il caso d’uso prenota la richiesta, verifica e scansiona l’allegato, salva report ed evento in transazione e affida la notifica all’outbox dopo il commit.
+  accDescr: L’identità autorizza l’utente registrato. Il caso d’uso prenota la richiesta, verifica e scansiona l’allegato, salva report, evento e intenzione di notifica nella stessa transazione. Il worker invia la notifica dopo il commit.
   actor U as Utente registrato
   participant API as ReportsAPI
   participant ID as Identity
@@ -648,6 +667,7 @@ La cache usa Redis. I termini di cache e generazione descrivono invarianti del c
 | ClamAV | Scanner antivirus usato per verificare gli allegati prima dell’associazione al report. |
 | GTFS | Formato standard usato per i dataset di trasporto pubblico importati ogni giorno. |
 | MinIO | Object storage compatibile con API S3 impiegato nell’ambiente locale. |
+| NotificationChannelAdapter | Adattatore che inoltra le notifiche autorizzate al canale esterno, email o push, e registra l’esito di invio. |
 | NotificationPort | Porta applicativa per l’invio di notifiche tramite un adattatore sostituibile. |
 | Ospite | Persona senza account che può consultare luoghi, pianificare percorsi, seguire segnalazioni tramite codice e registrarsi. Per inviare una segnalazione deve autenticarsi come Utente registrato. |
 | Outbox di notifica | Archivio durevole delle intenzioni di invio persistite nella stessa transazione dell’operazione che le ha generate. |
@@ -668,10 +688,11 @@ La cache usa Redis. I termini di cache e generazione descrivono invarianti del c
 | Snapshot consistente | Vista del repository che usa gli stessi riferimenti di generazione per selezionare i dati e la loro provenienza durante una lettura. |
 | SourceSync | Registrazione dell’esito, della versione e dei controlli di una sincronizzazione. |
 | SRID | Identificatore del riferimento spaziale di una geometria. |
-| Tracking code | Codice non enumerabile usato per consultare lo stato consentito di una segnalazione. |
-| Token di tracking | Valore casuale a 128 bit codificato in Base62. Il database conserva il digest e il valore non è registrato nei log. |
+| Codice di tracking | Credenziale non enumerabile usata per consultare lo stato consentito di una segnalazione. La proposta di progetto prevede 128 bit di entropia codificati in Base62, con il solo digest memorizzato e nessuna registrazione nei log. La dimensione resta da approvare. |
 | TransitDataProvider | Porta verso una fonte di dati di trasporto. |
 | Utente registrato | Persona autenticata che usa le funzioni consentite dal proprio account. |
 | Value object | Oggetto immutabile definito dal valore e dalle proprie invarianti. |
 | Vettore delle generazioni | Insieme dei riferimenti alle generazioni attive delle fonti coinvolte in una query. Identifica la versione dei dati usata per costruire la chiave cache. |
 | Worker | Processo asincrono che esegue sincronizzazioni o attività lente fuori dalle richieste interattive. |
+
+*Tabella 6.1: Glossario dei termini architetturali e di dominio*
