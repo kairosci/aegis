@@ -15,6 +15,7 @@ Il repository contiene la documentazione, gli strumenti per esportare RAD e SDD 
 | `config/data/` | Unica radice versionata dei dati applicativi. |
 | `config/data/application.properties` | Valori di policy e percorso del bundle messaggi letti dal caricamento tipizzato. |
 | `config/data/it/aegis/adapter/web/messages.properties` | Testi localizzati della vista di tracking. |
+| `config/data/it/aegis/adapter/rest/messages.properties` | Testi localizzati degli errori HTTP. |
 | `mise.toml` | Versioni bloccate di JDK, Maven, Node.js, Pandoc e Tomcat. |
 | `Makefile` | Comandi per toolchain, build Java ed export DOCX. |
 | `pom.xml` | Reactor Maven dei moduli Java. |
@@ -99,3 +100,20 @@ AEGIS_DATA_DIR=config/data make package
 ```
 
 Il reactor separa i moduli in `src/`, con gli adattatori in `src/adapters/` e l'assemblaggio in `src/bootstrap/`. Non sono presenti test applicativi e la build non ne esegue.
+
+## API REST
+
+L'adattatore REST espone le seguenti operazioni sotto il prefisso `/api/v1`.
+
+| Metodo | Percorso | Operazione |
+|---|---|---|
+| `GET` | `/api/v1/places` | Ricerca luoghi per coordinate e raggio. |
+| `GET` | `/api/v1/places/{id}` | Dettaglio di un luogo. |
+| `POST` | `/api/v1/reports` | Invio di una segnalazione da utente registrato. |
+| `GET` | `/api/v1/reports/{code}` | Stato pubblico tramite codice di tracking. |
+| `POST` | `/api/v1/reports/{id}/decision` | Decisione di moderazione da amministratore. |
+| `GET` | `/api/v1/routes?origin={id}&destination={id}` | Pianificazione tra due luoghi censiti. |
+
+Le risposte di errore usano il contratto uniforme `ErrorResponse`, con codice stabile e messaggio localizzato letto da `config/data/it/aegis/adapter/rest/messages.properties`. Il percorso del bundle REST è configurato da `aegis.rest.messages.base-path`. I dettagli interni e i dati personali non sono restituiti al client.
+
+Il wiring del provider di sicurezza e la generazione della specifica OpenAPI restano aperti. La demarcazione transazionale è dichiarata sulla decisione di moderazione, mentre gli altri casi d'uso restano da completare.

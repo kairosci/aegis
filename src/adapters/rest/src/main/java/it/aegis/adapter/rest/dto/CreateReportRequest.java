@@ -1,13 +1,15 @@
 package it.aegis.adapter.rest.dto;
 
-import java.util.Objects;
+import it.aegis.adapter.rest.error.ApiErrorType;
+import it.aegis.adapter.rest.error.ApiException;
 
 /**
  * Corpo della richiesta di creazione segnalazione, validato al confine HTTP.
  *
  * <p>I campi restano testi grezzi: la conversione nei tipi del dominio è
  * responsabilità del caso d'uso. Il compattatore del record respinge i valori
- * assenti o vuoti prima che raggiungano la logica applicativa.</p>
+ * assenti o vuoti prima che raggiungano la logica applicativa, senza inserire
+ * testi di errore nel codice.</p>
  *
  * @param key chiave di idempotenza fornita dal client
  * @param category categoria dichiarata della segnalazione
@@ -18,15 +20,12 @@ public record CreateReportRequest(String key, String category, String descriptio
     /**
      * Verifica che tutti i campi della richiesta siano presenti e significativi.
      *
-     * @throws NullPointerException se {@code key}, {@code category} o {@code description} sono null
-     * @throws IllegalArgumentException se uno dei campi è vuoto o contiene solo spazi
+     * @throws ApiException se un campo è assente, vuoto o contiene solo spazi
      */
     public CreateReportRequest {
-        Objects.requireNonNull(key, "key");
-        Objects.requireNonNull(category, "category");
-        Objects.requireNonNull(description, "description");
-        if (key.isBlank() || category.isBlank() || description.isBlank()) {
-            throw new IllegalArgumentException("request fields must not be blank");
+        if (key == null || category == null || description == null
+                || key.isBlank() || category.isBlank() || description.isBlank()) {
+            throw ApiException.of(ApiErrorType.BAD_REQUEST);
         }
     }
 }

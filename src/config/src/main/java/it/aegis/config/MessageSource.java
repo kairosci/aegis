@@ -34,6 +34,37 @@ public record MessageSource(Path dataDirectory, String bundleBasePath) {
     }
 
     /**
+     * Crea una sorgente di messaggi per il percorso indicato, leggendo la directory dati
+     * dalla configurazione caricata dall'ambiente.
+     *
+     * @param basePath percorso del bundle relativo alla directory dati, senza suffisso e lingua
+     * @return sorgente che legge il bundle indicato dalla directory dati configurata
+     * @throws NullPointerException se {@code basePath} è {@code null}
+     * @throws IllegalArgumentException se {@code basePath} è vuoto
+     * @throws IllegalStateException se la configurazione non è leggibile o completa
+     */
+    public static MessageSource at(String basePath) {
+        return at(ConfigLoader.load(), basePath);
+    }
+
+    /**
+     * Crea una sorgente di messaggi per il percorso indicato usando una configurazione già caricata.
+     *
+     * <p>Il metodo evita una seconda lettura del file di configurazione quando
+     * il chiamante dispone già del record tipizzato.</p>
+     *
+     * @param config configurazione applicativa tipizzata
+     * @param basePath percorso del bundle relativo alla directory dati, senza suffisso e lingua
+     * @return sorgente che legge il bundle indicato dalla directory dati configurata
+     * @throws NullPointerException se {@code config} o {@code basePath} è {@code null}
+     * @throws IllegalArgumentException se {@code basePath} è vuoto
+     */
+    public static MessageSource at(AegisConfig config, String basePath) {
+        Objects.requireNonNull(config, "config");
+        return new MessageSource(config.dataDirectory(), basePath);
+    }
+
+    /**
      * Compattatore del record. Verifica che la directory e il percorso del bundle siano presenti.
      *
      * @throws NullPointerException se la directory o il percorso del bundle è {@code null}
