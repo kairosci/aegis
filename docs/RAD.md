@@ -102,7 +102,7 @@ La piattaforma offre consultazione pubblica con ricerca per area, mappa interatt
 
 **Provenienza dei dati.** Le fermate, le linee e le informazioni di accessibilità di base (ad esempio l’accessibilità alla salita in carrozzina, ascensori e percorsi di collegamento) provengono dai dataset ufficiali in formato GTFS. Le caratteristiche non coperte dal GTFS (ad esempio percorsi tattili e annunci sonori) e i guasti temporanei derivano dalle segnalazioni confermate dagli amministratori. Ogni dato conserva fonte e data di osservazione.
 
-**Accesso.** La consultazione, l’invio di una segnalazione e il tracking sono disponibili anche all’Ospite senza registrazione (l’invio è protetto da rate limiting). L’autenticazione è richiesta per le funzioni dell’Utente registrato (preferiti, notifiche, storico delle proprie segnalazioni) e per tutte le operazioni amministrative.
+**Accesso.** L’Ospite può pianificare percorsi, consultare luoghi, seguire segnalazioni tramite codice e registrarsi. L’invio di segnalazioni è riservato all’Utente registrato autenticato. Le funzioni personali e le operazioni amministrative richiedono autenticazione e autorizzazione.
 
 ### 3.2 REQUISITI FUNZIONALI
 
@@ -114,13 +114,13 @@ La piattaforma offre consultazione pubblica con ricerca per area, mappa interatt
 | FR-04 | Ospite o utente registrato e sistema | Acquisire origine, destinazione ed esigenze di accessibilità; calcolare e restituire percorsi alternativi. | Must | UC-01 |
 | FR-05 | Sistema | Distinguere nei percorsi barriere note, tratti compatibili e non verificati. | Must | UC-01 |
 | FR-06 | Ospite o utente registrato e sistema | Consentire la selezione di un luogo e mostrare dettagli di accessibilità e provenienza. | Must | UC-02 |
-| FR-07 | Ospite o utente registrato | Inserire luogo, categoria, descrizione e data di osservazione del problema, allegando facoltativamente una foto di dimensione non superiore a 5 MB. La data di invio è registrata dal sistema. | Must | UC-03 |
+| FR-07 | Utente registrato | Inserire luogo, categoria, descrizione e data di osservazione del problema, allegando facoltativamente una foto di dimensione non superiore a 5 MB. La data di invio è registrata dal sistema. | Must | UC-03 |
 | FR-08 | Sistema | Generare e restituire un codice di tracking univoco per consultare lo stato della segnalazione senza esporre dati personali. | Must | UC-03, UC-04 |
 | FR-09 | Amministratore e sistema | Consentire conferma, rifiuto, risoluzione o unione di duplicati, registrando ogni decisione nello storico. | Must | UC-05 |
 | FR-10 | Amministratore e sistema | Importare dataset ufficiali (formato GTFS) e registrare versione, esito e timestamp della sincronizzazione. | Should | UC-06 |
 | FR-11 | Sistema | Aggiornare i dati visibili dell’area interessata al termine di ogni sincronizzazione validata. | Should | UC-06 |
 | FR-12 | Sistema | Inviare notifiche agli utenti registrati che hanno dato il consenso (autori delle segnalazioni e utenti che seguono un luogo) al cambio di stato di una segnalazione. | Could | UC-05, UC-08 |
-| FR-13 | Sistema | Autenticare gli utenti e verificare i ruoli per le operazioni riservate, mantenendo pubblici consultazione, invio e tracking. | Must | UC-05, UC-06, UC-07, UC-08 |
+| FR-13 | Sistema | Autenticare gli utenti e verificare i ruoli per le operazioni riservate, mantenendo pubblici consultazione dei luoghi e tracking tramite codice. | Must | UC-03, UC-05, UC-06, UC-07, UC-08 |
 | FR-14 | Ospite e sistema | Consentire la registrazione e l’accesso con credenziali personali e la gestione dei luoghi preferiti e dei consensi per le notifiche. | Should | UC-07, UC-08, UC-09 |
 | FR-15 | Utente registrato e sistema | Consentire la consultazione dello storico delle proprie segnalazioni con il relativo stato. | Should | UC-08 |
 
@@ -136,13 +136,13 @@ La piattaforma offre consultazione pubblica con ricerca per area, mappa interatt
 | FR-04 | Una richiesta valida restituisce zero o più percorsi alternativi con tempi di percorrenza, cambi e stato di verifica. |
 | FR-05 | Ogni tratto del percorso distingue barriere note, compatibilità nota e stato non verificato. |
 | FR-06 | La selezione di un luogo mostra scheda di dettaglio, caratteristiche note, fonte e validità. |
-| FR-07 | L’invio valido salva segnalazione ed evento iniziale in modo atomico, un errore impedisce salvataggi parziali. La foto allegata entro 5 MB è pubblicata solo dopo la verifica di formato e sicurezza. Per l’Ospite si applica il rate limiting. |
+| FR-07 | Solo un Utente registrato autenticato può inviare una segnalazione. L’invio valido salva segnalazione ed evento iniziale in modo atomico, un errore impedisce salvataggi parziali. La foto allegata entro 5 MB è pubblicata solo dopo la verifica di formato e sicurezza. |
 | FR-08 | La creazione riuscita restituisce un codice di tracking non enumerabile, la pagina di consultazione mostra esclusivamente lo stato pubblico consentito. |
 | FR-09 | Solo le transizioni di stato ammesse (`In verifica` → `Confermata` / `Rifiutata` / `Duplicata`, `Confermata` → `Risolta`) aggiornano lo stato e aggiungono un evento immutabile con autore e timestamp. Un duplicato è associato alla segnalazione di riferimento. |
 | FR-10 | Solo un pacchetto dati completo e validato viene pubblicato, in caso di errore restano attivi i dati precedenti. |
 | FR-11 | Alla pubblicazione di un aggiornamento validato i nuovi dati risultano immediatamente consultabili sulle viste di mappa ed elenco. |
 | FR-12 | Le notifiche sono inviate in modo asincrono solo agli utenti che hanno espresso consenso, un errore del canale non annulla la decisione di moderazione. |
-| FR-13 | La consultazione pubblica, l’invio e il tracking non richiedono autenticazione, le operazioni riservate sono bloccate lato server (HTTP 401/403) per utenti non autenticati o non autorizzati. |
+| FR-13 | La consultazione dei luoghi e il tracking tramite codice non richiedono autenticazione. L’invio e le altre operazioni riservate sono bloccati lato server (HTTP 401/403) per utenti non autenticati o non autorizzati. |
 | FR-14 | Un utente può creare un account, accedere, disconnettersi, aggiungere o rimuovere luoghi preferiti e attivare o revocare il consenso alle notifiche. |
 | FR-15 | L’utente registrato vede solo le proprie segnalazioni, con codice di tracking e stato corrente. |
 
@@ -177,7 +177,7 @@ La baseline di accessibilità del prodotto è **[WCAG 2.1 livello AA](https://ww
 | Piattaforma applicativa | Backend sviluppato in Java LTS / Jakarta EE per API REST e worker asincroni, frontend web responsive. |
 | Persistenza e file | Database relazionale PostgreSQL con estensione spaziale PostGIS e storage dedicato per le immagini allegate. |
 | Struttura software | Architettura disaccoppiata tra presentazione, casi d’uso, dominio e adattatori esterni, documentata con OpenAPI. |
-| Accesso e ruoli | Consultazione, invio di segnalazioni e tracking liberi anche per l’Ospite. Autenticazione e controllo dei ruoli (Utente registrato, Amministratore) per preferiti, notifiche, storico personale e moderazione. |
+| Accesso e ruoli | Consultazione dei luoghi e tracking tramite codice pubblici. Invio di segnalazioni riservato all’Utente registrato autenticato. Autenticazione e controllo dei ruoli per preferiti, notifiche, storico personale e moderazione. |
 | Qualità dei dati | Ogni proprietà di accessibilità registra fonte e timestamp. Dati assenti o con data di aggiornamento più vecchia di 30 giorni sono classificati come *Sconosciuti*. |
 | Normativa | I trattamenti di dati personali seguono il GDPR. Esigenze di percorso, descrizioni e immagini delle segnalazioni possono rivelare, se associate a una persona, informazioni sulla disabilità o sulla salute (art. 9 GDPR): minimizzazione dei dati e valutazione d’impatto sono a cura del responsabile del trattamento. WCAG 2.1 livello AA è il target tecnico del prodotto e non costituisce una dichiarazione di conformità legale; gli obblighi applicabili dipendono dal soggetto erogatore. |
 
@@ -189,8 +189,8 @@ La baseline di accessibilità del prodotto è **[WCAG 2.1 livello AA](https://ww
 
 | Utente | Obiettivi | Contesto d’uso |
 |---|---|---|
-| **Ospite** | Consultare luoghi, pianificare percorsi accessibili, inviare segnalazioni e seguirne lo stato tramite codice di tracking. | Utilizza la consultazione pubblica senza account, prevalentemente da smartphone in mobilità (in stazione o alla fermata). |
-| **Utente registrato** | Dispone di tutte le funzionalità dell’Ospite, con in più la possibilità di salvare luoghi preferiti, ricevere notifiche personalizzate e consultare lo storico delle proprie segnalazioni. | Pendolare abituale o cittadino con disabilità che utilizza quotidianamente il trasporto pubblico da smartphone o desktop. |
+| **Ospite** | Consultare luoghi, pianificare percorsi, seguire segnalazioni tramite codice e registrarsi. Non può inviare segnalazioni. | Utilizza le funzioni pubbliche senza account, prevalentemente da smartphone in mobilità (in stazione o alla fermata). |
+| **Utente registrato** | Può usare le funzioni pubbliche, inviare segnalazioni, salvare luoghi preferiti, ricevere notifiche personalizzate e consultare lo storico delle proprie segnalazioni. | Pendolare abituale o cittadino con disabilità che utilizza quotidianamente il trasporto pubblico da smartphone o desktop. |
 | **Amministratore** | Moderare le segnalazioni ricevute (conferma, rifiuto, risoluzione, unione duplicati) e gestire la sincronizzazione delle fonti dati autorizzate. | Operatore dell’ente di trasporto o amministratore della piattaforma che opera da postazione desktop tramite pannello riservato. |
 
 *Tabella 3.5: Utenti del sistema e ruoli*
@@ -210,7 +210,7 @@ Gli scenari seguenti, inventati a scopo illustrativo, rappresentano una validazi
 |---|---|---|---|
 | **Pianificazione di un percorso** | Ospite, Provider di routing | Confrontare percorsi senza presentare dati incerti come verificati. | Giorgio si muove in carrozzina e deve raggiungere l’ospedale. Dallo smartphone apre aegis senza registrarsi, indica origine, destinazione e l’esigenza di percorso senza barriere. Il sistema propone due alternative: una è compatibile, l’altra contiene un tratto contrassegnato come “non verificato” perché l’ultimo dato sull’ascensore è scaduto. Giorgio sceglie la prima. |
 | **Consultazione di un luogo** | Ospite | Conoscere caratteristiche, stato e provenienza dei dati di una stazione. | Elena è non vedente e usa uno screen reader. Cerca la stazione dalla vista elenco testuale, naviga da tastiera fino alla scheda di dettaglio e ascolta per ogni caratteristica (ascensore, percorso tattile, annunci sonori) lo stato, la fonte e la data di aggiornamento. Il percorso tattile risulta “sconosciuto”: Elena sa che non è confermato. |
-| **Invio di una segnalazione** | Ospite | Comunicare un guasto e ottenere un riferimento per seguirlo. | Sara trova fuori servizio l’ascensore di una fermata. Apre il modulo di segnalazione, seleziona il luogo, la categoria “ascensore guasto”, descrive il problema e allega una foto. Il sistema valida i dati e le mostra un codice di tracking, che lei salva. |
+| **Invio di una segnalazione** | Utente registrato | Comunicare un guasto e ottenere un riferimento per seguirlo. | Sara accede al proprio account e apre il modulo di segnalazione. Seleziona la fermata, indica la categoria “ascensore guasto”, descrive il problema e allega una foto. Il sistema valida i dati e le mostra un codice di tracking, che lei salva. |
 | **Tracking di una segnalazione** | Ospite | Verificare lo stato senza esporre dati riservati. | Dopo due giorni Sara inserisce il codice nella pagina di tracking e vede che la sua segnalazione è passata da “In verifica” a “Confermata”, con una nota pubblica dell’operatore. Non vede alcun dato personale, né altre segnalazioni. |
 | **Registrazione e preferiti** | Ospite, Utente registrato | Creare un account e seguire i luoghi usati abitualmente. | Giorgio si registra con UC-09. Dopo l’accesso con UC-07, aggiunge ai preferiti la fermata sotto casa e attiva il consenso alle notifiche con UC-08. Quando una segnalazione su quella fermata viene confermata, riceve un avviso. Dall’area personale consulta lo storico delle sue segnalazioni. |
 | **Moderazione di una segnalazione** | Amministratore | Valutare le segnalazioni in modo autorizzato e tracciabile. | Davide, operatore dell’ente di trasporto, accede al pannello di moderazione, apre la segnalazione di Sara con la foto e la cronologia e la conferma indicando la motivazione. Un’altra segnalazione sullo stesso guasto viene unita come duplicato. Ogni decisione resta nello storico. |
@@ -222,7 +222,7 @@ Gli scenari seguenti, inventati a scopo illustrativo, rappresentano una validazi
 
 ##### Diagramma globale
 
-Il confine di sistema separa i casi d’uso di aegis dagli attori umani e dai sistemi esterni. L’Ospite e l’Utente registrato sono specializzazioni dell’attore Utente della piattaforma e partecipano entrambi a UC-01, UC-02, UC-03 e UC-04. UC-09 è eseguibile solo dall’Ospite; l’Utente registrato non lo esegue. UC-05, UC-06 e UC-08 includono UC-07 perché richiedono l’autenticazione. UC-06 descrive l’aggiornamento manuale avviato dall’Amministratore; la sincronizzazione schedulata è un processo interno automatico. I flussi alternativi e di errore sono descritti nelle specifiche dei casi d’uso.
+Il confine di sistema separa i casi d’uso di aegis dagli attori umani e dai sistemi esterni. Ospite e Utente registrato sono specializzazioni dell’attore Utente della piattaforma. L’Ospite partecipa a UC-01, UC-02 e UC-04 e può registrarsi con UC-09. L’Utente registrato partecipa a UC-01, UC-02, UC-03 e UC-04. UC-03, UC-05, UC-06 e UC-08 includono UC-07 perché richiedono autenticazione. UC-06 descrive l’aggiornamento manuale avviato dall’Amministratore; la sincronizzazione schedulata è un processo interno automatico. I flussi alternativi e di errore sono descritti nelle specifiche dei casi d’uso.
 
 ```mermaid
 usecase-beta
@@ -232,7 +232,7 @@ accDescr {
   Attori umani e sistemi esterni interagiscono con i nove casi d’uso di AEGIS.
   Ospite e Utente registrato specializzano Utente della piattaforma.
   Solo Ospite è associato a UC-09 Registrarsi.
-  UC-05, UC-06 e UC-08 includono l’autenticazione UC-07.
+  UC-03, UC-05, UC-06 e UC-08 includono l’autenticazione UC-07.
   La sincronizzazione schedulata è un processo interno automatico.
 }
 actor G("Ospite")
@@ -256,7 +256,7 @@ G --|> U
 R --|> U
 U --> UC01
 U --> UC02
-U --> UC03
+R --> UC03
 U --> UC04
 G --> UC09
 R --> UC07
@@ -268,6 +268,7 @@ RP --> UC01
 DS --> UC06
 UC05 ..> : include UC07
 UC06 ..> : include UC07
+UC03 ..> : include UC07
 UC08 ..> : include UC07
 ```
 
@@ -301,10 +302,10 @@ UC08 ..> : include UC07
 
 | Campo | Specifica |
 |---|---|
-| Attori partecipanti | Ospite, Utente registrato |
-| Condizioni d’ingresso | Campi obbligatori compilati correttamente, informativa sul trattamento dei dati accettata. |
+| Attori partecipanti | Utente registrato |
+| Condizioni d’ingresso | Utente autenticato tramite UC-07; campi obbligatori compilati correttamente e informativa sul trattamento dei dati accettata. |
 | Condizioni d’uscita | Segnalazione ed evento iniziale salvati, codice di tracking univoco restituito all’utente. |
-| Requisiti qualitativi | Nessun dato identificativo dell’utente è esposto pubblicamente (NFR-04). L’eventuale foto è JPEG o PNG e non supera 5 MB (NFR-07). Si applica il rate limiting sugli invii dell’Ospite (NFR-06). |
+| Requisiti qualitativi | Nessun dato identificativo dell’utente è esposto pubblicamente (NFR-04). L’eventuale foto è JPEG, PNG o WebP e non supera 5 MB (NFR-07). L’operazione richiede autenticazione e autorizzazione lato server (NFR-05). |
 | Flusso degli eventi | 1. L’utente inserisce luogo, categoria, descrizione, data di osservazione e allega facoltativamente una foto.<br>2. Il sistema valida i campi e controlla formato e sicurezza dell’eventuale immagine.<br>3. Il sistema salva in un’unica transazione la segnalazione e l’evento iniziale, e genera un codice di tracking non enumerabile.<br>4. Il sistema restituisce il codice di tracking. |
 | Flussi alternativi e di errore | • Campi mancanti o file non valido: il sistema rifiuta l’invio evidenziando l’errore, senza salvare dati parziali.<br>• Errore di persistenza: il sistema annulla la transazione e invita a riprovare.<br>• Limite di invii superato: il sistema rifiuta la richiesta e invita a riprovare più tardi. |
 
@@ -384,7 +385,7 @@ UC08 ..> : include UC07
 |---|---|---|
 | Place | Rappresenta un luogo, una fermata o una stazione consultabile con posizione geografica. | UC-01, UC-02, UC-06 |
 | AccessibilityFeature | Rappresenta una caratteristica di accessibilità associata a un luogo, con stato (Disponibile, Non disponibile, Sconosciuto), fonte, data di osservazione e validità. | UC-01, UC-02, UC-06 |
-| Report | Rappresenta una segnalazione georeferenziata con categoria, descrizione, data di osservazione, stato, codice di tracking, eventuale autore e, per i duplicati, la segnalazione di riferimento. | UC-03, UC-04, UC-05, UC-08 |
+| Report | Rappresenta una segnalazione georeferenziata con categoria, descrizione, data di osservazione, stato, codice di tracking e autore registrato obbligatorio; per i duplicati conserva il riferimento alla segnalazione originale. | UC-03, UC-04, UC-05, UC-08 |
 | ReportAttachment | Rappresenta la foto allegata a una segnalazione, con chiave di archiviazione ed esito della scansione. | UC-03, UC-05 |
 | ReportEvent | Registra in modo append-only tipo di evento, autore, motivazione e data relativi a una segnalazione. | UC-03, UC-05 |
 | UserAccount | Rappresenta l’identità e i ruoli applicativi di un utente autenticato. | UC-05, UC-06, UC-07, UC-08, UC-09 |
@@ -533,7 +534,7 @@ classDiagram
   Report "0..*" -- "0..1" Place : riguarda
   Report "1" *-- "0..1" ReportAttachment : allega
   Report "0..*" -- "0..1" Report : duplicato di
-  Report "0..*" -- "0..1" UserAccount : inviata da
+  Report "0..*" -- "1" UserAccount : inviata da
   ReportEvent "0..*" -- "0..1" UserAccount : eseguito da
   UserAccount "1" *-- "0..*" FavoritePlace : segue
   FavoritePlace "0..*" -- "1" Place : riferito a
@@ -545,7 +546,7 @@ classDiagram
 
 *Figura 3.2: Diagramma UML delle classi del sistema*
 
-La relazione tra `Report` e `UserAccount` (autore) è facoltativa, perché un Ospite non ha account. L’identità dell’autore è visibile solo all’autore e agli amministratori, mai nelle risposte pubbliche (NFR-04). Il tipo `ReportEventType` comprende l’evento iniziale (CREATED) e le decisioni di moderazione (CONFIRMED, REJECTED, MARKED_DUPLICATE, RESOLVED).
+Ogni `Report` ha un autore `UserAccount` obbligatorio, perché UC-03 è riservato all’Utente registrato autenticato. L’identità dell’autore è visibile solo all’autore e agli amministratori, mai nelle risposte pubbliche (NFR-04). Il tipo `ReportEventType` comprende l’evento iniziale (CREATED) e le decisioni di moderazione (CONFIRMED, REJECTED, MARKED_DUPLICATE, RESOLVED).
 
 #### 3.5.6 DIAGRAMMI DI SEQUENZA
 
@@ -623,38 +624,44 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-  actor U as Ospite / Utente registrato
+  actor U as Utente registrato
   participant UI as WebInterface
   participant API as ReportsTrackingAPI
   participant UC as CreateReportControl
   participant ST as StorageScanAdapter
   participant R as Report
   participant E as ReportEvent
-  U->>UI: Compila modulo ed eventuale foto
+  U->>UI: Accede e compila il modulo con eventuale foto
   UI->>API: Invia segnalazione
-  API->>UC: createReport(reportData, attachment)
-  alt Campi obbligatori mancanti o limite di invii superato
-    UC-->>API: Errore di validazione
-    API-->>UI: 400 Bad Request / 429 Too Many Requests
-    UI-->>U: Evidenzia i campi da correggere
-  else Campi validi
-    opt Foto allegata
-      UC->>ST: uploadAndScan(attachment)
-      ST-->>UC: Esito scansione (storageKey oppure errore)
-    end
-    alt Allegato non valido
-      UC-->>API: Rifiuta segnalazione
-      API-->>UI: Errore allegato non valido
-      UI-->>U: Mostra messaggio di errore
-    else Allegato assente o valido
-      Note over UC,E: Transazione atomica
-      UC->>R: <<create>> save(reportData, storageKey)
-      R-->>UC: reportId, trackingCode
-      UC->>E: <<create>> appendInitialEvent(reportId)
-      E-->>UC: Evento salvato
-      UC-->>API: trackingCode
-      API-->>UI: Conferma invio e trackingCode
-      UI-->>U: Mostra conferma e codice di tracking
+  API->>API: Verifica sessione
+  alt Sessione assente o non valida
+    API-->>UI: 401 Unauthorized
+    UI-->>U: Richiede l’accesso
+  else Sessione valida
+    API->>UC: createReport(reportData, attachment, userId)
+    alt Campi obbligatori mancanti
+      UC-->>API: Errore di validazione
+      API-->>UI: 400 Bad Request
+      UI-->>U: Evidenzia i campi da correggere
+    else Campi validi
+      opt Foto allegata
+        UC->>ST: uploadAndScan(attachment)
+        ST-->>UC: Esito scansione (storageKey oppure errore)
+      end
+      alt Allegato non valido
+        UC-->>API: Rifiuta segnalazione
+        API-->>UI: Errore allegato non valido
+        UI-->>U: Mostra messaggio di errore
+      else Allegato assente o valido
+        Note over UC,E: Transazione database per segnalazione ed evento iniziale
+        UC->>R: <<create>> save(reportData, storageKey, userId)
+        R-->>UC: reportId, trackingCode
+        UC->>E: <<create>> appendInitialEvent(reportId)
+        E-->>UC: Evento salvato
+        UC-->>API: trackingCode
+        API-->>UI: Conferma invio e trackingCode
+        UI-->>U: Mostra conferma e codice di tracking
+      end
     end
   end
 ```
@@ -1007,8 +1014,8 @@ Nel repository non sono presenti allegati di test. Questionari, griglie di osser
 | **RBAC** | *Role-Based Access Control*, controllo degli accessi basato sui ruoli. |
 | **MoSCoW** | Tecnica di prioritizzazione dei requisiti (Must, Should, Could, Won’t). |
 | **Crowdsourcing** | Modello collaborativo in cui gli utenti contribuiscono ad aggiornare lo stato delle infrastrutture. |
-| **Ospite** | Utente che consulta la piattaforma e invia o traccia segnalazioni senza effettuare la registrazione. |
-| **Utente registrato** | Utente autenticato che può salvare luoghi preferiti, ricevere notifiche e consultare lo storico delle proprie segnalazioni. |
+| **Ospite** | Persona senza account che può consultare luoghi, pianificare percorsi, seguire segnalazioni tramite codice e registrarsi. Per inviare segnalazioni deve autenticarsi come Utente registrato. |
+| **Utente registrato** | Utente autenticato che può inviare segnalazioni, salvare luoghi preferiti, ricevere notifiche e consultare lo storico delle proprie segnalazioni. |
 | **Amministratore** | Operatore autorizzato a moderare le segnalazioni e gestire la sincronizzazione delle fonti dati ufficiali. |
 | **Luogo** | Stazione, fermata o altro punto di interesse del trasporto pubblico per cui sono consultabili le caratteristiche di accessibilità. |
 | **Segnalazione (Report)** | Comunicazione con cui un utente informa il sistema di una barriera architettonica o di un guasto, soggetta a moderazione. |
