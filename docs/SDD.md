@@ -32,7 +32,7 @@
 
 ### 1.1 SCOPO DEL SISTEMA
 
-Questo documento descrive l’architettura software proposta per AEGIS e dettaglia i componenti, i dati, le interfacce e le decisioni operative che realizzano i requisiti definiti nel [RAD](RAD.md).
+Questo documento definisce l’architettura software di AEGIS e dettaglia i componenti, i dati, le interfacce e le decisioni operative che realizzano i requisiti definiti nel [RAD](RAD.md).
 
 ### 1.2 OBIETTIVI DI PROGETTAZIONE
 
@@ -61,14 +61,14 @@ Le altre definizioni sono raccolte nel [glossario](#6-glossario).
 | [Template RAD/SDD convertito](template.md) | Struttura accademica di riferimento. |
 | [Jakarta EE 11](https://jakarta.ee/release/11/) | Piattaforma e versione minima Java supportata. |
 | [Compatibilità WildFly 42](https://www.wildfly.org/news/2026/10/22/WildFly-42-is-released/) | Profili EE 11 supportati e combinazioni Java dichiarate dal progetto WildFly. |
-| [Roadmap di supporto Java SE di Oracle](https://www.oracle.com/java/technologies/java-se-support-roadmap.html) | Versioni Java classificate LTS da Oracle. Il supporto dipende dalla distribuzione scelta. |
+| [Roadmap di supporto Java SE di Oracle](https://www.oracle.com/java/technologies/java-se-support-roadmap.html) | Versioni Java classificate LTS da Oracle. La baseline di progetto adotta Java 21 LTS con supporto della distribuzione selezionata per l’ambiente. |
 | [WCAG 2.1 livello AA](https://www.w3.org/TR/WCAG21/) | Baseline di accessibilità del RAD. |
 | Specifica OpenAPI | Da generare e versionare insieme all’API. |
 | Documentazione Jakarta EE e PostGIS | Riferimenti tecnici da associare alle versioni selezionate. |
 
 ### 1.5 PANORAMICA
 
-Il documento descrive il contesto attuale, l’architettura proposta, la decomposizione dei moduli, la mappatura hardware/software, la persistenza, il controllo accessi, il flusso globale, le condizioni limite e i servizi dei sottosistemi.
+Il documento descrive il contesto attuale, l’architettura definita, la decomposizione dei moduli, la mappatura hardware/software, la persistenza, il controllo accessi, il flusso globale, le condizioni limite e i servizi dei sottosistemi.
 
 ## SISTEMA CORRENTE
 
@@ -103,9 +103,9 @@ La tabella collega i requisiti del [RAD](RAD.md#32-requisiti-funzionali) ai modu
 
 NFR-12 è trasversale: separazione tra dominio, casi d’uso e adattatori e documentazione delle API riguardano i moduli applicativi.
 
-La struttura applicativa proposta organizza il codice Java per domini e separa `domain`, `application` e `adapter`. Le entità e i value object dovranno contenere invarianti. I casi d’uso dovranno orchestrare le operazioni e dipendere da porte. Gli adattatori dovranno implementare accesso HTTP, persistenza e integrazioni. DTO HTTP, modello di dominio e modello di persistenza resteranno separati.
+La struttura applicativa organizza il codice Java per domini e separa `domain`, `application` e `adapter`. Le entità e i value object contengono invarianti. I casi d’uso orchestrano le operazioni e dipendono da porte. Gli adattatori implementano accesso HTTP, persistenza e integrazioni. DTO HTTP, modello di dominio e modello di persistenza restano separati.
 
-La struttura dei package proposta è `places`, `accessibility`, `routing`, `reports`, `identity`, `integrations` e `shared`, ciascuno articolato secondo le responsabilità effettive. La collocazione dettagliata dei componenti web e dei worker dipende dalla selezione del runtime e dal packaging applicativo.
+La struttura dei package è `places`, `accessibility`, `routing`, `reports`, `identity`, `integrations` e `shared`, ciascuno articolato secondo le responsabilità effettive. I componenti web sono collocati nei moduli `adapter/web` e `adapter/rest`. I worker sono collocati nel modulo `adapter/worker`, nel packaging applicativo definito dalla baseline WildFly/Jakarta EE.
 
 #### 3.2.1 DIAGRAMMA DEI MODULI
 
@@ -205,7 +205,7 @@ Le procedure operative per rilascio, migrazione, rollback, incidenti e ripristin
 
 ### 3.4 GESTIONE DEI DATI PERSISTENTI
 
-La persistenza relazionale proposta usa PostgreSQL e PostGIS. Le migrazioni dovranno essere versionate e rimanere compatibili con le versioni applicative durante il rilascio progressivo. Le entità di dominio non dovranno dipendere dal modello relazionale. Gli adattatori di persistenza le convertiranno nel modello dati.
+La persistenza relazionale usa PostgreSQL e PostGIS. Le migrazioni sono versionate e restano compatibili con le versioni applicative durante il rilascio progressivo. Le entità di dominio non dipendono dal modello relazionale. Gli adattatori di persistenza convertono le entità nel modello dati.
 
 #### 3.4.1 POSTGRESQL E STRUTTURA RELAZIONALE
 
@@ -265,11 +265,11 @@ Se la scrittura, la scansione o la transazione database falliscono, l’oggetto 
 
 Worker asincroni importano i dataset GTFS ogni giorno tramite adattatori isolati. Ogni esecuzione ha un identificativo e registra fonte, versione, timestamp, esito, controlli di qualità e riferimento alla generazione in `source_sync`. La pubblicazione e la registrazione nello stesso record del lavoro di pulizia cache pendente avvengono nella stessa transazione. Il worker di pulizia recupera i lavori non completati da `source_sync` e ripete l’operazione in modo idempotente. Retry e replay dell’importazione non duplicano dati: la deduplicazione usa gli identificativi stabili del formato GTFS. Se i dati non superano i controlli, resta attiva la generazione precedente.
 
-I dati acquisiti sono scritti in una generazione candidata isolata dalle letture pubbliche. Il worker valida contratto e schema, chiavi, completezza secondo le regole concordate per la fonte e coerenza dei dati. Solo una generazione che supera tutti i controlli può diventare attiva tramite un passaggio atomico. L’attivazione della generazione e la registrazione dell’esito pubblicato avvengono nella stessa transazione. Un errore lascia attiva la generazione pubblicata in precedenza e registra l’esito fallito senza esporre dati parziali. La rappresentazione fisica delle generazioni dipende dal contratto della fonte e dal volume, ma deve preservare isolamento, pubblicazione atomica e recuperabilità.
+I dati acquisiti sono scritti in una generazione candidata isolata dalle letture pubbliche. Il worker valida contratto e schema, chiavi, completezza secondo le regole concordate per la fonte e coerenza dei dati. Solo una generazione che supera tutti i controlli può diventare attiva tramite un passaggio atomico. L’attivazione della generazione e la registrazione dell’esito pubblicato avvengono nella stessa transazione. Un errore lascia attiva la generazione pubblicata in precedenza e registra l’esito fallito senza esporre dati parziali. La rappresentazione fisica delle generazioni è definita per ogni contratto di fonte nel registro `data_source` e deve preservare isolamento, pubblicazione atomica e recuperabilità.
 
 I dati di accessibilità scadono 30 giorni dopo l’osservazione e oltre tale termine sono esposti come sconosciuti. La cache è solo un’ottimizzazione e non estende la validità: ogni lettura rivaluta la scadenza anche in caso di cache hit. Prima della cache, ogni lettura acquisisce dal repository autorevole, in una vista consistente, gli identificativi delle generazioni attive per tutte le fonti coinvolte. La chiave Redis include il vettore completo delle generazioni, l’area e i parametri normalizzati della query. In caso di cache miss, dati e provenienza sono letti usando lo stesso snapshot del vettore. Una pubblicazione concorrente non può comporre una risposta con dati riferiti a generazioni diverse da quelle della chiave. I risultati di routing composti non sono memorizzati in questa cache.
 
-Il worker elimina le chiavi delle generazioni non più attive dopo il commit. Un fallimento lascia il lavoro pendente e osservabile in `source_sync` per un tentativo successivo. La pulizia fisica è idempotente. La correttezza della lettura non dipende dalla sua conclusione, poiché una chiave obsoleta non corrisponde alla generazione attiva. Gli aggiornamenti della stessa fonte sono serializzati quando la versione non è confrontabile.
+Il worker elimina le chiavi delle generazioni non più attive dopo il commit. Un fallimento lascia il lavoro pendente e osservabile in `source_sync` per un tentativo successivo. La pulizia fisica è idempotente. La correttezza della lettura è garantita dal vettore di generazione attiva, anche prima del completamento della pulizia fisica, perché una chiave obsoleta non corrisponde alla generazione attiva. Gli aggiornamenti della stessa fonte sono serializzati quando la versione non è confrontabile.
 
 ### 3.5 CONTROLLO ACCESSI E SICUREZZA
 
@@ -654,7 +654,7 @@ La cache usa Redis. I termini di cache e generazione descrivono invarianti del c
 | PostGIS | Estensione PostgreSQL per dati e interrogazioni geospaziali. |
 | Redis | Cache usata per risultati di lettura versionati per generazione e query. |
 | Pubblicazione atomica | Cambio della generazione attiva e registrazione del lavoro di pulizia nella stessa transazione. |
-| Pulizia cache | Rimozione ripetibile delle chiavi riferite a generazioni superate. La correttezza delle letture non dipende dal completamento della rimozione. |
+| Pulizia cache | Rimozione ripetibile delle chiavi riferite a generazioni superate. La correttezza delle letture è garantita dal vettore di generazione attiva anche prima del completamento della rimozione. |
 | Chiave di idempotenza | Identificativo che riconosce i retry della stessa richiesta e impedisce effetti duplicati. È univoco nello scope dell’account e non concede accesso al risultato, restituito solo allo stesso account. |
 | Impronta del payload | Digest del contenuto canonico della richiesta, inclusi i byte verificati dell’eventuale allegato. Consente di rifiutare il riuso della chiave con contenuto diverso. |
 | Prenotazione della richiesta | Record persistito prima degli effetti esterni per coordinare retry, concorrenza, recupero e associazione al report completato. |
