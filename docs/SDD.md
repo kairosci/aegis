@@ -20,7 +20,6 @@
 | [Decomposizione del sistema](#32-decomposizione-del-sistema) | Moduli e responsabilità |
 | [Diagramma dei moduli](#321-diagramma-dei-moduli) | Relazioni tra componenti e dipendenze |
 | [Hardware/software mapping](#33-hardwaresoftware-mapping) | Nodi e responsabilità |
-| [Diagrammi UML di progettazione](#5-diagrammi-uml-di-progettazione) | Classi di design e sequenze dei flussi critici |
 | [Gestione dei dati persistenti](#34-gestione-dei-dati-persistenti) | [Struttura relazionale](#341-postgresql-e-struttura-relazionale), [object storage](#342-object-storage), [sincronizzazione](#343-meccanismi-di-sincronizzazione) |
 | [Controllo accessi e sicurezza](#35-controllo-accessi-e-sicurezza) | [Identità](#351-autenticazione-e-identità), [accesso ai dati](#352-controllo-degli-accessi-ai-dati), [immagini](#353-gestione-delle-immagini), [abusi](#354-protezione-da-abusi) |
 | [Flusso di controllo globale](#36-decisioni-sul-flusso-di-controllo-globale) | [Sessione](#361-gestione-della-sessione-utente), [navigazione](#362-navigazione-tra-viste), [asincronia](#363-gestione-asincrona-ed-eventi), [errori](#364-gestione-degli-errori) |
@@ -51,14 +50,8 @@ Questo documento descrive l’architettura software proposta per aegis e dettagl
 | Termine | Significato |
 |---|---|
 | API | Interfaccia di programmazione applicativa esposta via HTTP. |
-| DTO | Oggetto di trasferimento usato ai confini applicativi. |
-| SRID | Identificatore del sistema di riferimento spaziale. |
-| PostGIS | Estensione spaziale di PostgreSQL. |
-| Jakarta EE | Piattaforma Enterprise Java adottata: Jakarta EE 11 con Java SE 21 LTS e WildFly 42. |
-| Jakarta Faces | Tecnologia Jakarta EE per interfacce server-side basate su componenti. |
-| Facelets | Tecnologia di viste XHTML usata da Jakarta Faces. |
-| Jakarta REST | API Jakarta EE per risorse HTTP REST. |
-| Dato sconosciuto | Informazione assente, scaduta o non valida che non permette di determinare l’accessibilità. |
+
+Le altre definizioni sono raccolte nel [glossario](#6-glossario).
 
 ### 1.4 RIFERIMENTI
 
@@ -85,9 +78,9 @@ Il progetto è greenfield: non è stato fornito un sistema esistente da descrive
 
 ### 3.1 PANORAMICA
 
-aegis è una web app responsive per consultare l’accessibilità di luoghi e servizi di trasporto, pianificare spostamenti e inviare segnalazioni. L’Ospite può consultare luoghi, pianificare percorsi, seguire segnalazioni tramite codice e registrarsi. Solo l’Utente registrato autenticato può inviare segnalazioni. Le viste server-side usano Jakarta Faces e Facelets. Le API REST usano Jakarta REST. La persistenza geografica usa PostgreSQL 16 con PostGIS 3.4. Le immagini sono archiviate in object storage S3-compatibile (MinIO in locale e AWS S3 in produzione), la cache usa Redis e le sincronizzazioni e attività lente sono svolte da worker.
+aegis è una web app responsive per consultare l’accessibilità di luoghi e servizi di trasporto, pianificare spostamenti e inviare segnalazioni. L’Ospite può consultare luoghi, pianificare percorsi, seguire segnalazioni tramite codice e registrarsi. Solo l’Utente registrato autenticato può inviare segnalazioni. Le viste server-side usano Jakarta Faces e Facelets. Le API REST usano Jakarta REST. I worker eseguono le sincronizzazioni e le attività asincrone.
 
-La baseline applicativa è Java 21 LTS, Jakarta EE 11 e WildFly 42. PostgreSQL 16 con PostGIS 3.4 conserva i dati relazionali e geografici, Redis fornisce la cache, MinIO è usato nell’ambiente locale e AWS S3 in produzione per gli allegati. Le integrazioni esterne sono isolate dietro porte applicative.
+La baseline applicativa è Java 21 LTS, Jakarta EE 11 e WildFly 42. PostgreSQL 16 con PostGIS 3.4 conserva i dati relazionali e geografici. Redis fornisce la cache. Gli allegati sono conservati in object storage compatibile con S3, con MinIO in locale e AWS S3 in produzione. Le integrazioni esterne sono isolate dietro porte applicative.
 
 Il browser riceve HTML per le viste e JSON per le API. La mappa usa una libreria cartografica client-side, mentre i dati di luoghi e accessibilità provengono dall’API. Consultazione dei luoghi e tracking tramite codice sono pubblici. UC-03, preferiti, notifiche, storico personale e operazioni amministrative richiedono autenticazione e autorizzazione. I ruoli sono Utente registrato e Amministratore. Le transizioni di moderazione sono quelle definite in FR-09 del RAD.
 
