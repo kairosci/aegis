@@ -5,5 +5,6 @@ credentials.json
 .google_docs/
 
 build/
+target/
 exports/
 config/documentation/node_modules/
