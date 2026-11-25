@@ -193,6 +193,8 @@ Nel bootstrap, `WEB-INF/beans.xml` attiva CDI e `BeanConfiguration` produce la c
 
 Il modulo JPA contiene `JpaPlaceRepository`, `JpaReportRepository` e `JpaSubmissionReservations`, oltre alle entità e ai mapper. Il primo implementa la lettura di luoghi e caratteristiche, il secondo persiste segnalazioni ed eventi e ricostruisce gli aggregati, il terzo registra le prenotazioni usando il digest della chiave e un lock pessimista sulla riga. `BeanConfiguration` continua a produrre repository e prenotazioni in memoria; gli adattatori JPA non sono selezionati dal wiring CDI corrente.
 
+Il modulo `routing` contiene `HttpRoutingProvider`, che invia origine e destinazione all'endpoint HTTP configurato usando la credenziale configurata. Il modulo `storage` contiene `S3CompatibleStorageAdapter`, che mette in staging gli allegati nell'endpoint e nel bucket configurati applicando il prefisso e i tipi di contenuto ammessi. Il modulo `gtfs` contiene `GtfsTransitDataProvider`, che legge le fermate dal file GTFS nella directory configurata. Questi adattatori sono implementati ma non sono selezionati da `BeanConfiguration`: il provider di routing attivo nel bootstrap segnala indisponibilità e le porte di storage e trasporto restano da collegare nel wiring di distribuzione.
+
 ### 3.3 HARDWARE/SOFTWARE MAPPING
 
 | Nodo | Ambiente e software | Responsabilità |
