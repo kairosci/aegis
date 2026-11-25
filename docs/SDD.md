@@ -191,6 +191,8 @@ Le versioni degli strumenti sono dichiarate in `mise.toml`. I target del Makefil
 
 Nel bootstrap, `WEB-INF/beans.xml` attiva CDI e `BeanConfiguration` produce la configurazione, la sorgente dei messaggi, le porte con adattatori in memoria e i casi d'uso. Le risorse REST hanno scope di richiesta e `OutboxNotificationWorker` scope applicativo. Il provider di routing prodotto dal bootstrap segnala l'indisponibilità del servizio e non calcola percorsi. `ReportResource.create` non dichiara `@Transactional`; la demarcazione transazionale resta da definire e verificare nel runtime scelto.
 
+Il modulo JPA contiene `JpaPlaceRepository`, `JpaReportRepository` e `JpaSubmissionReservations`, oltre alle entità e ai mapper. Il primo implementa la lettura di luoghi e caratteristiche, il secondo persiste segnalazioni ed eventi e ricostruisce gli aggregati, il terzo registra le prenotazioni usando il digest della chiave e un lock pessimista sulla riga. `BeanConfiguration` continua a produrre repository e prenotazioni in memoria; gli adattatori JPA non sono selezionati dal wiring CDI corrente.
+
 ### 3.3 HARDWARE/SOFTWARE MAPPING
 
 | Nodo | Ambiente e software | Responsabilità |
