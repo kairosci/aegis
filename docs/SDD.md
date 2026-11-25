@@ -189,6 +189,8 @@ Il reactor Maven in `pom.xml` coordina dodici moduli sotto `src/`. I moduli sepa
 
 Le versioni degli strumenti sono dichiarate in `mise.toml`. I target del Makefile passano tramite `mise exec`: `make compile` compila il reactor, `make package` produce gli artefatti, `make javadoc` genera e controlla la documentazione Java, `make docs` genera gli export DOCX in `build/docs/` e `make tomcat` avvia il container servlet locale. I prerequisiti per gli export sono elencati nel README.
 
+Nel bootstrap, `WEB-INF/beans.xml` attiva CDI e `BeanConfiguration` produce la configurazione, la sorgente dei messaggi, le porte con adattatori in memoria e i casi d'uso. Le risorse REST hanno scope di richiesta e `OutboxNotificationWorker` scope applicativo. Il provider di routing prodotto dal bootstrap segnala l'indisponibilità del servizio e non calcola percorsi. `ReportResource.create` non dichiara `@Transactional`; la demarcazione transazionale resta da definire e verificare nel runtime scelto.
+
 ### 3.3 HARDWARE/SOFTWARE MAPPING
 
 | Nodo | Ambiente e software | Responsabilità |
