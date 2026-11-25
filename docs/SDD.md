@@ -166,6 +166,29 @@ flowchart TB
 
 *Figura 3.1: Diagramma dei moduli e delle dipendenze architetturali*
 
+#### 3.2.2 STRUTTURA DEL CODICE SORGENTE
+
+Il reactor Maven in `pom.xml` coordina dodici moduli sotto `src/`. I moduli separano configurazione, dominio, casi d'uso, adattatori e assemblaggio dell'applicazione.
+
+| Modulo Maven | Percorso | Responsabilità |
+|---|---|---|
+| `config` | `src/config` | Carica configurazione tipizzata e bundle dei messaggi da `config/data/`. |
+| `domain` | `src/domain` | Definisce entità, value object e regole di dominio per luoghi, accessibilità, percorsi, segnalazioni e identità. |
+| `application` | `src/application` | Definisce porte e casi d'uso senza dipendenze dagli adattatori Jakarta EE. |
+| `inmemory` | `src/adapters/inmemory` | Fornisce implementazioni in memoria delle porte per gli ambienti che le configurano. |
+| `jpa` | `src/adapters/jpa` | Mappa luoghi, caratteristiche, segnalazioni, eventi e prenotazioni su PostgreSQL tramite JPA. |
+| `rest` | `src/adapters/rest` | Espone risorse HTTP, DTO, mapper e traduzione degli errori. |
+| `web` | `src/adapters/web` | Collega i flussi Jakarta Faces alle porte applicative. |
+| `worker` | `src/adapters/worker` | Esegue il lavoro asincrono dell'outbox dopo la transazione applicativa. |
+| `routing` | `src/adapters/routing` | Implementa la porta di routing tramite richieste HTTP al provider configurato. |
+| `storage` | `src/adapters/storage` | Implementa lo storage degli allegati tramite API compatibili con S3. |
+| `gtfs` | `src/adapters/gtfs` | Legge i dati di trasporto pubblico dal feed GTFS configurato. |
+| `bootstrap` | `src/bootstrap` | Assembla le dipendenze CDI e produce il WAR dell'applicazione. |
+
+`config/data/application.properties` contiene i valori di configurazione. `ConfigLoader` richiede `AEGIS_DATA_DIR` e converte gli input in impostazioni tipizzate; `MessageSource` carica i bundle dalla stessa directory. I testi localizzati e i valori dipendenti dall'ambiente non sono incorporati nei sorgenti Java.
+
+Le versioni degli strumenti sono dichiarate in `mise.toml`. I target del Makefile passano tramite `mise exec`: `make compile` compila il reactor, `make package` produce gli artefatti, `make javadoc` genera e controlla la documentazione Java, `make docs` genera gli export DOCX in `build/docs/` e `make tomcat` avvia il container servlet locale. I prerequisiti per gli export sono elencati nel README.
+
 ### 3.3 HARDWARE/SOFTWARE MAPPING
 
 | Nodo | Ambiente e software | Responsabilità |
