@@ -195,6 +195,9 @@ Il modulo JPA contiene `JpaPlaceRepository`, `JpaReportRepository` e `JpaSubmiss
 
 Il modulo `routing` contiene `HttpRoutingProvider`, che invia origine e destinazione all'endpoint HTTP configurato usando la credenziale configurata. Il modulo `storage` contiene `S3CompatibleStorageAdapter`, che mette in staging gli allegati nell'endpoint e nel bucket configurati applicando il prefisso e i tipi di contenuto ammessi. Il modulo `gtfs` contiene `GtfsTransitDataProvider`, che legge le fermate dal file GTFS nella directory configurata. Questi adattatori sono implementati ma non sono selezionati da `BeanConfiguration`: il provider di routing attivo nel bootstrap segnala indisponibilità e le porte di storage e trasporto restano da collegare nel wiring di distribuzione.
 
+
+L'applicazione JAX-RS espone le risorse sotto `/api/v1`: `GET /places` e `GET /places/{id}` consultano i luoghi, `POST /reports` invia una segnalazione, `GET /reports/{code}` restituisce lo stato pubblico, `POST /reports/{id}/decision` registra una decisione di moderazione e `GET /routes?origin=…&destination=…` richiede un percorso. Le risposte d'errore passano da `ApiExceptionMapper`, che restituisce il codice pubblico e il messaggio localizzato senza includere il testo originale dell'eccezione.
+
 ### 3.3 HARDWARE/SOFTWARE MAPPING
 
 | Nodo | Ambiente e software | Responsabilità |
