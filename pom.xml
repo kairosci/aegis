@@ -11,24 +11,27 @@
   <name>AEGIS</name>
 
   <modules>
-    <module>src/config</module>
-    <module>src/domain</module>
-    <module>src/application</module>
-    <module>src/adapters/inmemory</module>
-    <module>src/adapters/jpa</module>
-    <module>src/adapters/rest</module>
-    <module>src/adapters/web</module>
-    <module>src/adapters/worker</module>
-    <module>src/adapters/routing</module>
-    <module>src/adapters/storage</module>
-    <module>src/adapters/gtfs</module>
-    <module>src/bootstrap</module>
+    <module>backend/src/config</module>
+    <module>backend/src/domain</module>
+    <module>backend/src/application</module>
+    <module>backend/src/adapters/inmemory</module>
+    <module>backend/src/adapters/jpa</module>
+    <module>backend/src/adapters/rest</module>
+    <module>backend/src/adapters/web</module>
+    <module>backend/src/adapters/worker</module>
+    <module>backend/src/adapters/routing</module>
+    <module>backend/src/adapters/storage</module>
+    <module>backend/src/adapters/gtfs</module>
+    <module>backend/src/bootstrap</module>
   </modules>
 
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jakartaee.version>11.0.0</jakartaee.version>
+    <faces.version>4.1.21</faces.version>
+    <weld.version>6.0.4.Final</weld.version>
+    <jersey.version>4.0.3</jersey.version>
   </properties>
 
   <dependencyManagement>

@@ -1,0 +1,11 @@
+{
+  "name": "aegis-frontend-assets",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  },
+  "devDependencies": {
+    "bootstrap": "5.3.9"
+  }
+}

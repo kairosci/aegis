@@ -1,0 +1,116 @@
+:root {
+    color-scheme: light;
+    --aegis-ink: #172b3a;
+    --aegis-brand: #124c66;
+    --aegis-brand-hover: #0d3c52;
+    --aegis-canvas: #f3f7f9;
+    --aegis-border: #c4d2d9;
+    --aegis-status-bg: #e5f3ed;
+    --aegis-status-ink: #153d2d;
+    --aegis-content-width: 44rem;
+}
+
+body {
+    min-height: 100vh;
+    color: var(--aegis-ink);
+    background: var(--aegis-canvas);
+}
+
+.skip-link {
+    position: absolute;
+    z-index: 10;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: #fff;
+    background: var(--aegis-ink);
+    transform: translateY(-200%);
+}
+
+.skip-link:focus {
+    transform: translateY(0);
+}
+
+.site-header {
+    padding-block: 1rem;
+    background: #fff;
+    border-bottom: 1px solid var(--aegis-border);
+}
+
+.brand {
+    color: var(--aegis-brand);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+}
+
+.brand:hover {
+    color: var(--aegis-brand-hover);
+}
+
+.brand:focus-visible,
+.skip-link:focus-visible,
+.btn:focus-visible,
+.form-control:focus-visible {
+    outline: 3px solid #8a4b00;
+    outline-offset: 3px;
+}
+
+.page-shell {
+    display: grid;
+    justify-items: center;
+    padding-block: clamp(2rem, 8vh, 5rem);
+}
+
+.tracking-card,
+.privacy-note {
+    width: min(100%, var(--aegis-content-width));
+}
+
+.tracking-card {
+    border-radius: 1rem;
+}
+
+.eyebrow {
+    color: var(--aegis-brand);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.lead-copy {
+    max-width: 58ch;
+    color: #405462;
+}
+
+.form-control {
+    border-color: var(--aegis-border);
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--aegis-brand);
+    --bs-btn-border-color: var(--aegis-brand);
+    --bs-btn-hover-bg: var(--aegis-brand-hover);
+    --bs-btn-hover-border-color: var(--aegis-brand-hover);
+    --bs-btn-active-bg: var(--aegis-brand-hover);
+    --bs-btn-active-border-color: var(--aegis-brand-hover);
+}
+
+.field-error {
+    display: block;
+    margin-top: 0.35rem;
+    color: #842029;
+}
+
+.status-panel {
+    color: var(--aegis-status-ink);
+    background: var(--aegis-status-bg);
+    border: 1px solid #9fc8b2;
+}
+
+.privacy-note {
+    color: #405462;
+    font-size: 0.9rem;
+}
