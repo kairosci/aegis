@@ -1,6 +1,8 @@
 package it.aegis.domain.places;
 
 import it.aegis.domain.accessibility.AccessibilityFeature;
+import it.aegis.domain.accessibility.FreshnessWindow;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
@@ -73,5 +75,23 @@ public final class Place {
      */
     public List<AccessibilityFeature> features() {
         return features;
+    }
+
+    /**
+     * Restituisce il luogo con le osservazioni classificate rispetto alla loro validità.
+     *
+     * @param window finestra di validità configurata
+     * @param now istante comune di valutazione
+     * @return copia immutabile del luogo con stati scaduti o futuri resi sconosciuti
+     * @throws NullPointerException se {@code window} o {@code now} sono null
+     */
+    public Place withFreshness(FreshnessWindow window, Instant now) {
+        Objects.requireNonNull(window, "window");
+        Objects.requireNonNull(now, "now");
+        List<AccessibilityFeature> currentFeatures = features.stream()
+                .map(feature -> AccessibilityFeature.observed(
+                        feature.code(), feature.status(), feature.source(), feature.observedAt(), window, now))
+                .toList();
+        return new Place(id, name, position, currentFeatures);
     }
 }

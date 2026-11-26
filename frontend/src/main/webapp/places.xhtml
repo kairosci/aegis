@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="it"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:pt="jakarta.faces.passthrough">
+<h:head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>#{placeCatalogView.text('places.page-title')} | aegis</title>
+    <h:outputStylesheet library="vendor" name="bootstrap.min.css" />
+    <h:outputStylesheet library="css" name="app.css" />
+</h:head>
+<h:body>
+    <a class="skip-link" href="#contenuto">#{placeCatalogView.text('accessibility.skip')}</a>
+
+    <header class="site-header">
+        <div class="container">
+            <a class="brand" href="index.xhtml"
+               aria-label="#{placeCatalogView.text('accessibility.home-link')}">aegis</a>
+            <nav class="site-nav" aria-label="#{placeCatalogView.text('navigation.primary')}">
+                <a href="index.xhtml">#{placeCatalogView.text('navigation.tracking')}</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="contenuto" class="container page-shell place-page">
+        <section class="place-search-card card border-0 shadow-sm" aria-labelledby="page-heading">
+            <div class="card-body p-4 p-md-5">
+                <p class="eyebrow mb-2">#{placeCatalogView.text('places.section')}</p>
+                <h1 id="page-heading" class="h2 mb-3">#{placeCatalogView.text('places.heading')}</h1>
+                <p class="lead-copy mb-4">#{placeCatalogView.text('places.intro')}</p>
+
+                <h:form id="place-search-form">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-4">
+                            <h:outputLabel for="latitude" styleClass="form-label fw-semibold"
+                                           value="#{placeCatalogView.text('places.latitude')}" />
+                            <h:inputText id="latitude" value="#{placeCatalogView.latitude}"
+                                         styleClass="form-control" pt:inputmode="decimal"
+                                         required="true"
+                                         requiredMessage="#{placeCatalogView.text('places.latitude-required')}"
+                                         converterMessage="#{placeCatalogView.text('places.latitude-number')}"
+                                         validatorMessage="#{placeCatalogView.text('places.latitude-invalid')}">
+                                <f:validateDoubleRange minimum="-90" maximum="90" />
+                            </h:inputText>
+                            <h:message for="latitude" styleClass="field-error" pt:role="alert" />
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <h:outputLabel for="longitude" styleClass="form-label fw-semibold"
+                                           value="#{placeCatalogView.text('places.longitude')}" />
+                            <h:inputText id="longitude" value="#{placeCatalogView.longitude}"
+                                         styleClass="form-control" pt:inputmode="decimal"
+                                         required="true"
+                                         requiredMessage="#{placeCatalogView.text('places.longitude-required')}"
+                                         converterMessage="#{placeCatalogView.text('places.longitude-number')}"
+                                         validatorMessage="#{placeCatalogView.text('places.longitude-invalid')}">
+                                <f:validateDoubleRange minimum="-180" maximum="180" />
+                            </h:inputText>
+                            <h:message for="longitude" styleClass="field-error" pt:role="alert" />
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <h:outputLabel for="radius" styleClass="form-label fw-semibold"
+                                           value="#{placeCatalogView.text('places.radius')}" />
+                            <h:inputText id="radius" value="#{placeCatalogView.radiusMetres}"
+                                         styleClass="form-control" pt:inputmode="numeric"
+                                         required="true"
+                                         requiredMessage="#{placeCatalogView.text('places.radius-required')}"
+                                         converterMessage="#{placeCatalogView.text('places.radius-number')}"
+                                         validatorMessage="#{placeCatalogView.text('places.radius-invalid')}">
+                                <f:validateLongRange minimum="1" maximum="2147483647" />
+                            </h:inputText>
+                            <h:message for="radius" styleClass="field-error" pt:role="alert" />
+                        </div>
+                    </div>
+
+                    <h:commandButton action="#{placeCatalogView.search}"
+                                     value="#{placeCatalogView.text('places.search')}"
+                                     styleClass="btn btn-primary btn-lg mt-4" />
+
+                    <h:panelGroup layout="block" rendered="#{not empty placeCatalogView.errorMessage}"
+                                  styleClass="alert alert-danger mt-4" pt:role="alert">
+                        #{placeCatalogView.errorMessage}
+                    </h:panelGroup>
+                </h:form>
+            </div>
+        </section>
+
+        <h:panelGroup layout="block" rendered="#{placeCatalogView.searched}"
+                      styleClass="place-results mt-4" pt:role="status" pt:aria-live="polite">
+            <h2 class="h3 mb-3">#{placeCatalogView.text('places.results-heading')}</h2>
+            <h:panelGroup layout="block" rendered="#{empty placeCatalogView.results}"
+                          styleClass="alert alert-info">
+                <p class="mb-0">#{placeCatalogView.text('places.no-results')}</p>
+            </h:panelGroup>
+
+            <ui:repeat value="#{placeCatalogView.results}" var="place">
+                <article class="place-card card border-0 shadow-sm mb-3">
+                    <div class="card-body p-4">
+                        <h3 class="h4">#{place.name()}</h3>
+                        <p class="text-secondary">
+                            #{placeCatalogView.text('places.coordinates')}:
+                            #{place.position().latitude()}, #{place.position().longitude()}
+                        </p>
+                        <h4 class="h6">#{placeCatalogView.text('places.features-heading')}</h4>
+                        <h:panelGroup layout="block" rendered="#{empty place.features()}"
+                                      styleClass="text-secondary">
+                            #{placeCatalogView.text('places.no-features')}
+                        </h:panelGroup>
+                        <ul class="feature-list list-unstyled">
+                            <ui:repeat value="#{place.features()}" var="feature">
+                                <li class="feature-item">
+                                    <p class="mb-2">
+                                        <strong>#{placeCatalogView.text('places.feature-code')}:</strong>
+                                        <code>#{feature.code()}</code>
+                                        <span class="feature-status">#{placeCatalogView.featureStatus(feature)}</span>
+                                    </p>
+                                    <dl class="feature-metadata">
+                                        <dt>#{placeCatalogView.text('places.source')}</dt>
+                                        <dd>#{feature.source()}</dd>
+                                        <dt>#{placeCatalogView.text('places.observed-at')}</dt>
+                                        <dd>#{placeCatalogView.formatDate(feature.observedAt())}</dd>
+                                        <dt>#{placeCatalogView.text('places.valid-until')}</dt>
+                                        <dd>#{placeCatalogView.featureValidUntil(feature)}</dd>
+                                    </dl>
+                                </li>
+                            </ui:repeat>
+                        </ul>
+                    </div>
+                </article>
+            </ui:repeat>
+        </h:panelGroup>
+    </main>
+</h:body>
+</html>
