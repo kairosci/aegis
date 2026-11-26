@@ -37,6 +37,18 @@ body {
     border-bottom: 1px solid var(--aegis-border);
 }
 
+.site-header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.site-nav a {
+    color: var(--aegis-brand);
+    font-weight: 600;
+}
+
 .brand {
     color: var(--aegis-brand);
     font-size: 1.25rem;
@@ -113,4 +125,53 @@ body {
 .privacy-note {
     color: #405462;
     font-size: 0.9rem;
+}
+
+.place-page {
+    display: block;
+    width: min(100%, 64rem);
+    margin-inline: auto;
+}
+
+.place-search-card,
+.place-card {
+    border-radius: 1rem;
+}
+
+.feature-item {
+    padding-block: 1rem;
+    border-top: 1px solid var(--aegis-border);
+}
+
+.feature-status {
+    display: inline-block;
+    margin-inline-start: 0.5rem;
+    font-weight: 700;
+}
+
+.feature-metadata {
+    display: grid;
+    grid-template-columns: minmax(9rem, 0.35fr) 1fr;
+    gap: 0.35rem 1rem;
+    margin-bottom: 0;
+}
+
+.feature-metadata dt {
+    font-weight: 600;
+}
+
+.feature-metadata dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 575.98px) {
+    .feature-metadata {
+        grid-template-columns: 1fr;
+        gap: 0.15rem;
+    }
+
+    .feature-metadata dd:not(:last-child) {
+        margin-bottom: 0.5rem;
+    }
 }

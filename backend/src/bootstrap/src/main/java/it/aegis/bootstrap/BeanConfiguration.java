@@ -25,6 +25,7 @@ import it.aegis.application.usecase.TrackReport;
 import it.aegis.config.AegisConfig;
 import it.aegis.config.ConfigLoader;
 import it.aegis.config.MessageSource;
+import it.aegis.domain.accessibility.FreshnessWindow;
 import it.aegis.domain.identity.UserId;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.Dependent;
@@ -216,24 +217,28 @@ public class BeanConfiguration {
      * Produce il caso d'uso di dettaglio di un luogo.
      *
      * @param places repository dei luoghi iniettato nel costruttore
+     * @param config configurazione con la finestra di validità delle osservazioni
+     * @param clock orologio applicativo
      * @return caso d'uso con la porta di lettura già risolta
      */
     @Produces
     @Dependent
-    public FindPlace findPlace(PlaceRepository places) {
-        return new FindPlace(places);
+    public FindPlace findPlace(PlaceRepository places, AegisConfig config, Clock clock) {
+        return new FindPlace(places, new FreshnessWindow(config.freshnessWindow()), clock);
     }
 
     /**
      * Produce il caso d'uso di ricerca dei luoghi.
      *
      * @param places repository dei luoghi iniettato nel costruttore
+     * @param config configurazione con la finestra di validità delle osservazioni
+     * @param clock orologio applicativo
      * @return caso d'uso con la porta di lettura già risolta
      */
     @Produces
     @Dependent
-    public SearchPlaces searchPlaces(PlaceRepository places) {
-        return new SearchPlaces(places);
+    public SearchPlaces searchPlaces(PlaceRepository places, AegisConfig config, Clock clock) {
+        return new SearchPlaces(places, new FreshnessWindow(config.freshnessWindow()), clock);
     }
 
     /**

@@ -83,7 +83,7 @@ Il documento è organizzato in 6 capitoli: il Capitolo 1 definisce scopo e obiet
 
 Il progetto è di tipo **greenfield** (sviluppo ex novo): non esiste un sistema preesistente da migrare o integrare come legacy. L’architettura viene progettata da zero per acquisire i feed ufficiali GTFS del trasporto pubblico locale dell’area metropolitana di Napoli e affiancarli alle segnalazioni georeferenziate degli utenti.
 
-Il repository contiene inoltre un prototipo parziale di UC-04: vista Facelets in italiano, CSS Bootstrap locale, bean CDI e caso d’uso `TrackReport`. I repository selezionati dal bootstrap sono in memoria e non hanno dati iniziali. Il 26 novembre 2026 il WAR è stato distribuito su Tomcat 11.0.29 con Java 21 in una base locale isolata: la vista e i due fogli CSS hanno risposto `200` e i testi italiani sono stati renderizzati. Non è stato verificato il recupero positivo di una segnalazione né sono state svolte verifiche con utenti.
+Il repository contiene un prototipo parziale di UC-02 e UC-04. UC-02 offre una ricerca tramite coordinate e raggio, con risultati in elenco testuale, provenienza, data di osservazione, scadenza calcolata e stato localizzato. Coordinate non valide sono rifiutate e le osservazioni presenti con stato assente, data futura o scadute sono mostrate come sconosciute. Un luogo senza caratteristiche mostra che l’assenza di dati non indica accessibilità. UC-04 offre una vista per il tracking pubblico. I repository selezionati dal bootstrap sono in memoria e non hanno dati iniziali. Il 26 novembre 2026 il WAR è stato distribuito su Tomcat 11.0.29 con Java 21 in una base locale isolata: le due viste e i fogli CSS hanno risposto `200`. La validazione di una latitudine fuori intervallo ha mostrato il messaggio italiano e una ricerca valida ha mostrato lo stato senza risultati. `GET /api/v1/places` con parametri validi ha risposto `200` con elenco vuoto, mentre una latitudine fuori intervallo ha restituito `400` e il messaggio italiano. Non è stato verificato il rendering di un luogo con caratteristiche né il recupero positivo di una segnalazione. Non sono state svolte verifiche con utenti. La mappa e la ricerca per nome non sono implementate.
 
 ## 3. SISTEMA PROPOSTO
 
@@ -183,7 +183,7 @@ Il reactor Maven in `pom.xml` coordina dodici moduli sotto `backend/src/`. I mod
 | `inmemory` | `backend/src/adapters/inmemory` | Fornisce implementazioni in memoria delle porte usate dal wiring corrente. |
 | `jpa` | `backend/src/adapters/jpa` | Contiene adattatori JPA per luoghi, caratteristiche, segnalazioni, eventi e prenotazioni. Il wiring corrente non li seleziona. |
 | `rest` | `backend/src/adapters/rest` | Espone risorse HTTP, DTO, mapper e traduzione degli errori. |
-| `web` | `backend/src/adapters/web` | Collega il tracking Jakarta Faces al caso d'uso e localizza le etichette degli stati. |
+| `web` | `backend/src/adapters/web` | Collega le viste Jakarta Faces di tracking e ricerca luoghi ai casi d'uso e localizza messaggi e stati. |
 | `worker` | `backend/src/adapters/worker` | Contiene l'elaboratore dell'outbox, non avviato da uno scheduler nel deployment corrente. |
 | `routing` | `backend/src/adapters/routing` | Implementa la porta di routing tramite richieste HTTP al provider configurato. |
 | `storage` | `backend/src/adapters/storage` | Implementa lo storage degli allegati tramite API compatibili con S3. |
@@ -385,7 +385,7 @@ La consultazione dei luoghi e il tracking sono progettati come funzioni pubblich
 
 #### 3.6.2 NAVIGAZIONE TRA VISTE
 
-Il target usa Jakarta Faces per il flusso delle pagine server-side (Home/Mappa e Ricerca, Dettaglio Luogo, Pianificatore Percorso, Nuova Segnalazione, Tracking Segnalazione, Area Personale, Dashboard Amministratore). Ogni vista dovrà esporre i dati in modalità testuale equivalente alla mappa (NFR-01, NFR-02). Il prototipo corrente implementa solo la vista di tracking.
+Il target usa Jakarta Faces per il flusso delle pagine server-side (Home/Mappa e Ricerca, Dettaglio Luogo, Pianificatore Percorso, Nuova Segnalazione, Tracking Segnalazione, Area Personale, Dashboard Amministratore). Ogni vista dovrà esporre i dati in modalità testuale equivalente alla mappa (NFR-01, NFR-02). Il prototipo corrente implementa il tracking e la ricerca geospaziale con risultati testuali in `places.xhtml`; non include una mappa interattiva né una ricerca per nome. La ricerca usa `SearchPlaces` e il repository in memoria vuoto del bootstrap, quindi il dettaglio di luoghi con dati non è ancora verificabile nel runtime corrente.
 
 #### 3.6.3 GESTIONE ASINCRONA ED EVENTI
 
