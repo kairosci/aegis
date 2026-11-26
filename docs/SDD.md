@@ -8,7 +8,7 @@
 | Corso | Ingegneria del Software e Interazione Uomo-Macchina |
 | Docenti | Prof.ssa Mariacarla Staffa |
 | Candidati | Alessio Attilio, Michela Rita Brancaccio, Andrea Plini |
-| Anno accademico | 2025/2026 |
+| Anno accademico | 2026/2027 |
 
 ## SOMMARIO
 
@@ -64,7 +64,10 @@ Le altre definizioni sono raccolte nel [glossario](#6-glossario).
 |---|---|
 | [RAD: Documento di Analisi dei Requisiti](RAD.md) | Requisiti, attori, casi d’uso e vincoli. |
 | [Jakarta EE 11](https://jakarta.ee/release/11/) | Piattaforma applicativa di riferimento. |
-| [Compatibilità WildFly 42](https://www.wildfly.org/news/2026/10/22/WildFly-42-is-released/) | Profili EE 11 supportati e combinazioni Java dichiarate dal progetto WildFly. |
+| [Apache Tomcat 11](https://tomcat.apache.org/tomcat-11.0-doc/) | Container Servlet 6.1 e Pages 4.0. Tomcat non implementa da solo l’intera piattaforma Jakarta EE. |
+| [Mojarra 4.1](https://github.com/eclipse-ee4j/mojarra) | Implementazione Jakarta Faces inclusa nel WAR per l’esecuzione su container Servlet. |
+| [Weld 6](https://weld.cdi-spec.org/documentation/) | Implementazione CDI 4.1 per Java 17+ e Jakarta EE 11, avviata dal listener Servlet. |
+| [Jersey 4](https://eclipse-ee4j.github.io/jersey/) | Implementazione Jakarta REST inclusa nel WAR per il container Servlet. |
 | [Roadmap di supporto Java SE di Oracle](https://www.oracle.com/java/technologies/java-se-support-roadmap.html) | Versioni Java classificate LTS da Oracle. Il supporto dipende dalla distribuzione scelta. |
 | [WCAG 2.1 livello AA](https://www.w3.org/TR/WCAG21/) | Baseline di accessibilità del RAD. |
 | Specifica OpenAPI | Da generare e versionare insieme all’API. |
@@ -80,13 +83,15 @@ Il documento è organizzato in 6 capitoli: il Capitolo 1 definisce scopo e obiet
 
 Il progetto è di tipo **greenfield** (sviluppo ex novo): non esiste un sistema preesistente da migrare o integrare come legacy. L’architettura viene progettata da zero per acquisire i feed ufficiali GTFS del trasporto pubblico locale dell’area metropolitana di Napoli e affiancarli alle segnalazioni georeferenziate degli utenti.
 
+Il repository contiene inoltre un prototipo parziale di UC-04: vista Facelets in italiano, CSS Bootstrap locale, bean CDI e caso d’uso `TrackReport`. I repository selezionati dal bootstrap sono in memoria e non hanno dati iniziali. La build produce il WAR, ma l’avvio su Tomcat, il recupero positivo di una segnalazione e le verifiche con utenti non sono stati osservati.
+
 ## 3. SISTEMA PROPOSTO
 
 ### 3.1 PANORAMICA
 
 AEGIS è una web app responsive per consultare l’accessibilità di luoghi e servizi di trasporto, pianificare spostamenti e inviare segnalazioni. L’Ospite può consultare luoghi, pianificare percorsi, seguire segnalazioni tramite codice e registrarsi. Solo l’Utente registrato autenticato può inviare segnalazioni. Le viste server-side usano Jakarta Faces e Facelets. Le API REST usano Jakarta REST. I worker eseguono le sincronizzazioni e le attività asincrone.
 
-La baseline applicativa è Java 21 LTS, Jakarta EE 11 e WildFly 42. PostgreSQL 16 con PostGIS 3.4 conserva i dati relazionali e geografici. Redis fornisce la cache. Gli allegati sono conservati in object storage compatibile con S3, con MinIO in locale e AWS S3 in produzione. Le integrazioni esterne sono isolate dietro porte applicative. Queste versioni e questi prodotti sono proposte non approvate. Il Responsabile tecnico deve confermarli nella configurazione dell'ambiente di riferimento prima dell'implementazione.
+Il target locale richiesto per il progetto è Java 21 e Tomcat 11.0.29. Il WAR include Mojarra 4.1, Weld 6 e Jersey 4 perché Tomcat fornisce il container Servlet e non un runtime Jakarta EE completo. Le versioni sono bloccate nel progetto e la compilazione del WAR è verificata. Il deployment e l’avvio su Tomcat restano da verificare. PostgreSQL/PostGIS, Redis, object storage e integrazioni esterne appartengono all’architettura proposta, ma non sono collegati al wiring CDI corrente. L’ambiente di produzione e la relativa configurazione sono decisioni aperte del Responsabile tecnico.
 
 Il browser riceve HTML per le viste e JSON per le API. La mappa usa una libreria cartografica client-side, mentre i dati di luoghi e accessibilità provengono dall’API. Consultazione dei luoghi e tracking tramite codice sono pubblici. UC-03, preferiti, notifiche, storico personale e operazioni amministrative richiedono autenticazione e autorizzazione. I ruoli sono Utente registrato e Amministratore. Le transizioni di moderazione sono quelle definite in FR-09 del RAD.
 
@@ -99,12 +104,12 @@ La tabella seguente mappa i moduli architetturali sui requisiti funzionali, non 
 | Places | Gestire luoghi, fermate e stazioni e fornire ricerche geospaziali. | FR-01, FR-06, UC-02 | NFR-08, NFR-10 |
 | Accessibility | Gestire caratteristiche, stato, fonte, timestamp e validità. | FR-02, FR-03, UC-01, UC-02 | NFR-08 |
 | Routing | Validare richieste, invocare il provider e mostrare l’incertezza dei tratti. | FR-04, FR-05, UC-01 | NFR-08, NFR-10 |
-| Reports | Creare segnalazioni e consentire il tracking pubblico tramite codice senza esporre dati personali. | FR-07, FR-08, UC-03, UC-04 | NFR-04, NFR-06, NFR-07 |
+| Reports | Creare segnalazioni e consentire il tracking pubblico tramite codice senza esporre dati personali. | FR-07, FR-08, UC-03, UC-04 | NFR-04, NFR-06, NFR-07, NFR-14 |
 | Moderation | Applicare le autorizzazioni e validare le transizioni conservando la cronologia append-only. | FR-09, UC-05 | NFR-04, NFR-05, NFR-06 |
 | Identity | Gestire autenticazione, registrazione, ruoli e separazione dei dati identificativi. | FR-13 (UC-03, UC-05–UC-08), FR-14 (UC-07–UC-09), FR-15 (UC-08) | NFR-04, NFR-05 |
 | Integrations | Implementare adattatori per fonti di trasporto, routing, notifiche e storage. | FR-10 (UC-06), FR-12 (UC-05, UC-08) | NFR-07, NFR-12 |
 | Worker | Eseguire sincronizzazioni schedulate, riconciliare upload e inviare notifiche in modo asincrono e recuperabile. | FR-07 (UC-03), FR-10, FR-11, UC-06, FR-12 (UC-05, UC-08) | NFR-07, NFR-09, NFR-10 |
-| Web | Fornire viste accessibili in Facelets con mappa, alternative testuali, moduli, pannello di moderazione e monitoraggio delle sincronizzazioni. | FR-01–FR-15, UC-01–UC-09 | NFR-01, NFR-02, NFR-03, NFR-10, NFR-13 |
+| Web | Fornire viste accessibili in Facelets con mappa, alternative testuali, moduli, pannello di moderazione e monitoraggio delle sincronizzazioni. | FR-01–FR-15, UC-01–UC-09 | NFR-01, NFR-02, NFR-03, NFR-10, NFR-13, NFR-14 |
 | Runtime e Operations | Gestire configurazione, distribuzione, osservabilità, migrazioni e ripristino. | Nessun caso d’uso diretto | NFR-05, NFR-09, NFR-10, NFR-12 |
 
 *Tabella 3.1: Decomposizione del sistema in moduli e tracciabilità verso il RAD*
@@ -120,8 +125,8 @@ Internamente, ciascun dominio applicativo è organizzato in tre package:
 ```mermaid
 flowchart TB
   accTitle: Diagramma dei moduli di AEGIS
-  accDescr: Il browser raggiunge viste Facelets e API REST tramite ingress. I moduli Places, Routing, Reports e Identity usano database, storage e cache. Worker e adattatori di integrazione collegano fonti GTFS, provider di routing e canali di notifica.
-  Browser[Browser: Facelets, HTML/ARIA, JS]
+  accDescr: Diagramma del sistema target. Il browser raggiunge viste Facelets e API REST tramite ingress. Places, Routing, Reports e Identity usano database, storage e cache. Worker e adattatori di integrazione collegano fonti GTFS, provider di routing e canali di notifica, non attivi nel prototipo.
+  Browser[Frontend: Facelets, Bootstrap, HTML/ARIA]
   Ingress[Reverse Proxy / Terminazione TLS]
   Faces[Modulo Web: Jakarta Faces e Facelets]
   Rest[API Gateway: Jakarta REST]
@@ -168,32 +173,32 @@ flowchart TB
 
 #### 3.2.2 STRUTTURA DEL CODICE SORGENTE
 
-Il reactor Maven in `pom.xml` coordina dodici moduli sotto `src/`. I moduli separano configurazione, dominio, casi d'uso, adattatori e assemblaggio dell'applicazione.
+Il reactor Maven in `pom.xml` coordina dodici moduli sotto `backend/src/`. I moduli separano configurazione, dominio, casi d'uso, adattatori e assemblaggio dell'applicazione. Il frontend è in `frontend/`: lo script Node copia la vista Facelets e gli stili, aggiunge il CSS Bootstrap locale e produce gli asset consumati dal packaging WAR.
 
 | Modulo Maven | Percorso | Responsabilità |
 |---|---|---|
-| `config` | `src/config` | Carica configurazione tipizzata e bundle dei messaggi da `config/data/`. |
-| `domain` | `src/domain` | Definisce entità, value object e regole di dominio per luoghi, accessibilità, percorsi, segnalazioni e identità. |
-| `application` | `src/application` | Definisce porte e casi d'uso senza dipendenze dagli adattatori Jakarta EE. |
-| `inmemory` | `src/adapters/inmemory` | Fornisce implementazioni in memoria delle porte per gli ambienti che le configurano. |
-| `jpa` | `src/adapters/jpa` | Mappa luoghi, caratteristiche, segnalazioni, eventi e prenotazioni su PostgreSQL tramite JPA. |
-| `rest` | `src/adapters/rest` | Espone risorse HTTP, DTO, mapper e traduzione degli errori. |
-| `web` | `src/adapters/web` | Collega i flussi Jakarta Faces alle porte applicative. |
-| `worker` | `src/adapters/worker` | Esegue il lavoro asincrono dell'outbox dopo la transazione applicativa. |
-| `routing` | `src/adapters/routing` | Implementa la porta di routing tramite richieste HTTP al provider configurato. |
-| `storage` | `src/adapters/storage` | Implementa lo storage degli allegati tramite API compatibili con S3. |
-| `gtfs` | `src/adapters/gtfs` | Legge i dati di trasporto pubblico dal feed GTFS configurato. |
-| `bootstrap` | `src/bootstrap` | Assembla le dipendenze CDI e produce il WAR dell'applicazione. |
+| `config` | `backend/src/config` | Carica configurazione tipizzata e bundle dei messaggi da `config/data/`. |
+| `domain` | `backend/src/domain` | Definisce entità, value object e regole di dominio per luoghi, accessibilità, percorsi, segnalazioni e identità. |
+| `application` | `backend/src/application` | Definisce porte e casi d'uso senza dipendenze dagli adattatori Jakarta EE. |
+| `inmemory` | `backend/src/adapters/inmemory` | Fornisce implementazioni in memoria delle porte usate dal wiring corrente. |
+| `jpa` | `backend/src/adapters/jpa` | Contiene adattatori JPA per luoghi, caratteristiche, segnalazioni, eventi e prenotazioni. Il wiring corrente non li seleziona. |
+| `rest` | `backend/src/adapters/rest` | Espone risorse HTTP, DTO, mapper e traduzione degli errori. |
+| `web` | `backend/src/adapters/web` | Collega il tracking Jakarta Faces al caso d'uso e localizza le etichette degli stati. |
+| `worker` | `backend/src/adapters/worker` | Contiene l'elaboratore dell'outbox, non avviato da uno scheduler nel deployment corrente. |
+| `routing` | `backend/src/adapters/routing` | Implementa la porta di routing tramite richieste HTTP al provider configurato. |
+| `storage` | `backend/src/adapters/storage` | Implementa lo storage degli allegati tramite API compatibili con S3. |
+| `gtfs` | `backend/src/adapters/gtfs` | Legge i dati di trasporto pubblico dal feed GTFS configurato. |
+| `bootstrap` | `backend/src/bootstrap` | Assembla le dipendenze CDI e produce `aegis.war`, includendo gli asset compilati del frontend. |
 
 `config/data/application.properties` contiene i valori di configurazione. `ConfigLoader` richiede `AEGIS_DATA_DIR` e converte gli input in impostazioni tipizzate; `MessageSource` carica i bundle dalla stessa directory. I testi localizzati e i valori dipendenti dall'ambiente non sono incorporati nei sorgenti Java.
 
-Le versioni degli strumenti sono dichiarate in `mise.toml`. I target del Makefile passano tramite `mise exec`: `make compile` compila il reactor, `make package` produce gli artefatti, `make javadoc` genera e controlla la documentazione Java, `make docs` genera gli export DOCX in `build/docs/` e `make tomcat` avvia il container servlet locale. I prerequisiti per gli export sono elencati nel README.
+Le versioni degli strumenti sono dichiarate in `mise.toml`. I target del Makefile passano tramite `mise exec`: `make compile` compila il reactor, `make frontend-build` genera gli asset, `make package` genera gli asset e il WAR, `make javadoc` genera e controlla la documentazione Java, `make docs` genera gli export DOCX in `build/docs/` e `make tomcat` avvia Tomcat senza distribuire il WAR. I prerequisiti per gli export sono elencati nel README.
 
-Nel bootstrap, `WEB-INF/beans.xml` attiva CDI e `BeanConfiguration` produce la configurazione, la sorgente dei messaggi, le porte con adattatori in memoria e i casi d'uso. Le risorse REST hanno scope di richiesta e `OutboxNotificationWorker` scope applicativo. Il provider di routing prodotto dal bootstrap segnala l'indisponibilità del servizio e non calcola percorsi. `ReportResource.create` non dichiara `@Transactional`; la demarcazione transazionale resta da definire e verificare nel runtime scelto.
+Nel bootstrap, `WEB-INF/beans.xml` abilita la discovery CDI e `WEB-INF/web.xml` avvia Weld e mappa Faces su `*.xhtml`. `BeanConfiguration` produce la configurazione, la sorgente dei messaggi, le porte in memoria e i casi d'uso. Le implementazioni Faces, CDI e REST sono incluse nel WAR per l'esecuzione su Tomcat. Il provider di routing prodotto dal bootstrap segnala l'indisponibilità del servizio e non calcola percorsi. `ReportResource.create` non dichiara `@Transactional`. La demarcazione transazionale resta da definire. `OutboxNotificationWorker` è una classe disponibile nel modulo, ma non è schedulato né avviato nell'artefatto attuale. La vista UC-04 visualizza le cinque etichette italiane. Il repository in memoria non contiene segnalazioni iniziali e il flusso positivo non è stato verificato.
 
 Il modulo JPA contiene `JpaPlaceRepository`, `JpaReportRepository` e `JpaSubmissionReservations`, oltre alle entità e ai mapper. Il primo implementa la lettura di luoghi e caratteristiche, il secondo persiste segnalazioni ed eventi e ricostruisce gli aggregati, il terzo registra le prenotazioni usando il digest della chiave e un lock pessimista sulla riga. `BeanConfiguration` continua a produrre repository e prenotazioni in memoria; gli adattatori JPA non sono selezionati dal wiring CDI corrente.
 
-Il modulo `routing` contiene `HttpRoutingProvider`, che invia origine e destinazione all'endpoint HTTP configurato usando la credenziale configurata. Il modulo `storage` contiene `S3CompatibleStorageAdapter`, che mette in staging gli allegati nell'endpoint e nel bucket configurati applicando il prefisso e i tipi di contenuto ammessi. Il modulo `gtfs` contiene `GtfsTransitDataProvider`, che legge le fermate dal file GTFS nella directory configurata. Questi adattatori sono implementati ma non sono selezionati da `BeanConfiguration`: il provider di routing attivo nel bootstrap segnala indisponibilità e le porte di storage e trasporto restano da collegare nel wiring di distribuzione.
+Il modulo `routing` contiene `HttpRoutingProvider`, che invia origine e destinazione all'endpoint HTTP configurato usando la credenziale configurata. Il modulo `storage` contiene `S3CompatibleStorageAdapter`, che mette in staging gli allegati nell'endpoint e nel bucket configurati applicando il prefisso e i tipi di contenuto ammessi. Il modulo `gtfs` contiene `GtfsTransitDataProvider`, che legge le fermate dal file GTFS nella directory configurata. Questi adattatori sono implementati ma `BeanConfiguration` non li seleziona. Il provider di routing attivo nel bootstrap segnala indisponibilità. Le porte di storage e trasporto restano da collegare nel wiring di distribuzione. `ModerationResource` dichiara `@Transactional`, ma il WAR Tomcat non include un transaction manager o un interceptor Jakarta Transactions. L’effettiva demarcazione transazionale non è quindi garantita. Anche `ReportResource.create` non dichiara `@Transactional`.
 
 
 L'applicazione JAX-RS espone le risorse sotto `/api/v1`: `GET /places` e `GET /places/{id}` consultano i luoghi, `POST /reports` invia una segnalazione, `GET /reports/{code}` restituisce lo stato pubblico, `POST /reports/{id}/decision` registra una decisione di moderazione e `GET /routes?origin={id}&destination={id}` richiede un percorso. Le risposte d'errore passano da `ApiExceptionMapper`, che restituisce il codice pubblico e il messaggio localizzato senza includere il testo originale dell'eccezione.
@@ -203,45 +208,45 @@ L'applicazione JAX-RS espone le risorse sotto `/api/v1`: `GET /places` e `GET /p
 | Nodo | Ambiente e software | Responsabilità |
 |---|---|---|
 | Dispositivo client | Browser desktop o mobile e tecnologie assistive. | Renderizzare le viste, interagire con la mappa e inviare richieste HTTPS. |
-| Container applicativo | Java 21 LTS, Jakarta EE 11, WildFly 42, Jakarta Faces, Facelets e Jakarta REST. | Servire viste e API e coordinare i casi d’uso. |
-| Container worker | Java 21 e Jakarta EE 11 su WildFly 42. | Sincronizzare fonti e gestire attività lente e retry. |
-| Database | PostgreSQL 16 con PostGIS 3.4. | Conservare entità, eventi e geometrie. |
-| Object storage | MinIO in locale e AWS S3 in produzione, tramite API S3. | Conservare immagini in modo privato fino alla verifica e associazione autorizzata. |
-| Cache | Redis. | Conservare risultati di lettura versionati per generazione e query. |
+| Container applicativo | Target locale: Java 21, Tomcat 11.0.29, Mojarra 4.1.21, Weld 6.0.4.Final e Jersey 4.0.3 inclusi nel WAR. Il WAR è costruito ma il deployment non è verificato. | Servire la vista Facelets e le API REST. |
+| Elaborazione asincrona | Il modulo `worker` contiene `OutboxNotificationWorker`, ma non è attivato né schedulato. Runtime e packaging futuri sono TBD. | Elaborare notifiche e sincronizzazioni secondo il disegno target. |
+| Database | PostgreSQL 16 con PostGIS 3.4, proposta non collegata al wiring CDI corrente. | Conservare entità, eventi e geometrie. |
+| Object storage | MinIO in locale e AWS S3 in produzione sono proposte, non configurate nel deployment corrente. | Conservare immagini in modo privato fino alla verifica e associazione autorizzata. |
+| Cache | Redis, proposta non collegata al wiring corrente. | Conservare risultati di lettura versionati per generazione e query. |
 | Ingress e distribuzione | Terminazione TLS e CDN secondo l’ambiente. | Instradare il traffico verso l’applicazione e distribuire risorse statiche. |
 | Servizi esterni | Fonti GTFS, provider di routing, ClamAV e canali di notifica. | Fornire dati e capacità integrate tramite adattatori. |
 
-Il diagramma di deployment mostra i nodi runtime e i protocolli usati tra browser, applicazione, worker, database, cache, object storage e sistemi esterni.
+Il diagramma mostra il target di deployment. Il WAR corrente include i provider web necessari a Tomcat; database, cache, storage, integrazioni e worker non sono attivati nell'ambiente locale.
 
 ```mermaid
 flowchart LR
   accTitle: Deployment UML di AEGIS
-  accDescr: Nodi device ed execution environment ospitano gli artifact client e server. I collegamenti indicano HTTPS, JDBC, RESP e API S3.
+  accDescr: Il browser raggiunge il WAR sul container Tomcat tramite HTTPS. Database, cache, storage, sistemi esterni e worker sono nodi del deployment proposto e non sono attivati dal prototipo corrente.
   Client["«device» Dispositivo client<br/>«artifact» Browser"]
   Ingress["«device» Ingress e distribuzione<br/>Terminazione TLS / CDN"]
-  App["«device» Nodo applicativo<br/>«executionEnvironment» WildFly 42 / Java 21<br/>«artifact» aegis.war: Jakarta Faces, Facelets, Jakarta REST"]
-  Worker["«device» Nodo worker<br/>«executionEnvironment» Java 21 / WildFly 42<br/>«artifact» aegis-worker.jar"]
+  App["«device» Nodo applicativo<br/>«executionEnvironment» Tomcat 11.0.29 / Java 21<br/>«artifact» aegis.war: Mojarra, Weld, Jersey"]
+  Worker["«device» Nodo worker proposto<br/>Runtime e packaging TBD<br/>non attivo nel prototipo"]
   DB["«device» Nodo database<br/>«executionEnvironment» PostgreSQL 16 con PostGIS 3.4"]
   Redis["«device» Cache<br/>«executionEnvironment» Redis"]
   S3["«device» Object storage<br/>«executionEnvironment» MinIO locale / AWS S3 produzione"]
   External["«device» Sistemi esterni<br/>«artifact» GTFS, routing, ClamAV, notifiche"]
   Client -->|HTTPS| Ingress
   Ingress -->|HTTPS| App
-  App -->|JDBC| DB
-  Worker -->|JDBC| DB
-  App -->|RESP| Redis
-  Worker -->|RESP| Redis
-  App -->|S3 API| S3
-  Worker -->|S3 API| S3
-  Worker -->|HTTPS| External
-  App -->|HTTPS| External
+  App -.->|JDBC, proposto| DB
+  Worker -.->|JDBC, proposto| DB
+  App -.->|RESP, proposto| Redis
+  Worker -.->|RESP, proposto| Redis
+  App -.->|S3 API, proposto| S3
+  Worker -.->|S3 API, proposto| S3
+  Worker -.->|HTTPS, proposto| External
+  App -.->|HTTPS, proposto| External
 ```
 
 *Figura 3.2: Diagramma di deployment dei nodi di sistema*
 
-Il browser comunica con il nodo applicativo tramite HTTPS. Applicazione e worker usano JDBC per PostgreSQL, RESP per Redis e API S3 per gli allegati. I worker raggiungono fonti GTFS, ClamAV e servizi integrati tramite HTTPS.
+Il browser comunica con il WAR tramite HTTPS. I collegamenti JDBC, RESP, S3 e HTTPS dei nodi non attivi descrivono integrazioni proposte e non sono evidenza di servizi configurati o verificati.
 
-In sviluppo è previsto Docker Compose con PostgreSQL 16/PostGIS 3.4, Redis e MinIO. Staging e produzione sono ambienti separati. In produzione l’applicazione usa WildFly 42, AWS S3, PostgreSQL e Redis. Segreti e credenziali sono forniti tramite configurazione esterna al repository.
+Docker Compose, staging e produzione sono ambienti proposti e non sono configurati nel repository. La scelta del runtime di produzione e dei servizi persistenti è aperta. Quando definite, credenziali e segreti saranno forniti tramite configurazione esterna al repository.
 
 La pipeline di rilascio dovrà compilare e verificare gli artefatti applicativi, eseguire test e scansioni delle dipendenze, creare immagini versionate e distribuire progressivamente. Le migrazioni devono mantenere la compatibilità con le versioni applicative attive durante il rilascio. La configurazione applicativa dovrà essere versionata e distinta per ambiente. I segreti non dovranno essere inclusi nel repository.
 
@@ -331,7 +336,7 @@ Consultazione dei luoghi e tracking tramite codice non richiedono un account. L�
 
 #### 3.5.2 CONTROLLO DEGLI ACCESSI AI DATI
 
-Ogni endpoint e azione Facelets verifica identità e ruoli lato server tramite annotazioni Jakarta Security (`@RolesAllowed`):
+Nel target ogni endpoint e azione protetta deve verificare identità e ruoli lato server. L’implementazione REST richiede un principal e il ruolo corrispondente tramite `SecurityContext`. Su Tomcat non è configurato un provider che li fornisca, quindi le operazioni protette rispondono con rifiuto. L’annotazione Jakarta Security `@RolesAllowed` non è configurata nel deployment corrente:
 
 - Ruolo `REGISTERED_USER`: accesso alla propria area personale, gestione luoghi preferiti, gestione consensi notifiche e consultazione delle proprie segnalazioni (`author_id = currentUser.id`).
 - Ruolo `ADMINISTRATOR`: accesso alla coda di moderazione, esecuzione delle transizioni di stato delle segnalazioni e avvio/monitoraggio delle sincronizzazioni GTFS.
@@ -376,15 +381,15 @@ Gli esiti delle verifiche, le limitazioni note e l'accettazione del rischio resi
 
 #### 3.6.1 GESTIONE DELLA SESSIONE UTENTE
 
-La sessione è necessaria per le funzioni protette e non condiziona consultazione dei luoghi e tracking pubblico. Jakarta Security integra la sessione applicativa con il controllo dei ruoli Utente registrato e Amministratore. Le sessioni sono terminate al logout e scadono secondo la configurazione sicura del runtime WildFly.
+La consultazione dei luoghi e il tracking sono progettati come funzioni pubbliche. L’implementazione corrente non contiene un provider di identità né un flusso di login. `BeanConfiguration` costruisce una policy da identificativi configurati, che nella configurazione versionata sono vuoti. La policy non sostituisce l’autenticazione e non abilita un esercizio protetto. L’integrazione di un provider, la gestione delle sessioni e i relativi tempi di scadenza restano decisioni aperte.
 
 #### 3.6.2 NAVIGAZIONE TRA VISTE
 
-Jakarta Faces gestisce il flusso delle pagine server-side (Home/Mappa e Ricerca, Dettaglio Luogo, Pianificatore Percorso, Nuova Segnalazione, Tracking Segnalazione, Area Personale, Dashboard Amministratore). Ogni vista espone i dati in doppia modalità sincronizzata (mappa interattiva e tabella HTML semantica con attributi ARIA) per garantire la piena navigabilità da tastiera e screen reader (NFR-01, NFR-02).
+Il target usa Jakarta Faces per il flusso delle pagine server-side (Home/Mappa e Ricerca, Dettaglio Luogo, Pianificatore Percorso, Nuova Segnalazione, Tracking Segnalazione, Area Personale, Dashboard Amministratore). Ogni vista dovrà esporre i dati in modalità testuale equivalente alla mappa (NFR-01, NFR-02). Il prototipo corrente implementa solo la vista di tracking.
 
 #### 3.6.3 GESTIONE ASINCRONA ED EVENTI
 
-Le sincronizzazioni e le attività lente sono eseguite da worker. La transazione di pubblicazione registra anche il lavoro pendente di pulizia cache. Un worker recupera i lavori incompleti da `source_sync` e ne registra l’esito. Le chiavi cache includono la generazione attiva, così un arresto del worker non rende leggibili dati superati. Per gli allegati, `report_attachment` conserva l’intento prima della scrittura in object storage e permette di riprendere o pulire un upload anche se la transazione che crea il report fallisce. L’oggetto resta privato fino alla scansione ClamAV valida e al collegamento autorizzato. Per FR-12, l’intenzione di notifica è registrata in `notification_outbox` nella stessa transazione che completa la moderazione o l’operazione autorizzata. Un worker elabora l’intenzione dopo il commit tramite `NotificationPort`. Un errore non annulla il caso d’uso già persistito e lascia il lavoro osservabile e recuperabile. Il sistema non garantisce consegna esattamente una volta. I log escludono credenziali, codici di tracking, descrizioni delle segnalazioni e dati personali non necessari. Le metriche escludono identificativi personali e valori ad alta cardinalità. Ogni allarme indica impatto, responsabile, procedura e criterio di chiusura. Backup e ripristino coprono database e object storage, verificano integrità e riferimenti e riconciliano i lavori pendenti. Le chiamate a provider esterni non mantengono aperte transazioni database. Metriche e allarmi rendono osservabili disponibilità, latenza, ritardo delle fonti, errori di sincronizzazione, lavori di pulizia cache e upload pendenti, stato ed età delle notifiche pendenti e dimensione e anzianità della coda di moderazione.
+Questa sezione descrive il flusso target, non il comportamento già disponibile nel prototipo. L’artefatto corrente non avvia un worker e usa archivi in memoria. La persistenza durevole, la pulizia cache, la scansione ClamAV, la consegna delle notifiche, l’osservabilità operativa e le procedure di ripristino non sono implementate o verificate. Nel target, sincronizzazioni e attività lente saranno eseguite da worker. La transazione di pubblicazione registrerà anche il lavoro pendente di pulizia cache. Un worker recupererà i lavori incompleti da `source_sync` e ne registrerà l’esito. Le chiavi cache includeranno la generazione attiva, così un arresto del worker non renderà leggibili dati superati. Per gli allegati, `report_attachment` conserverà l’intento prima della scrittura in object storage e permetterà retry o pulizia idempotente. L’oggetto resterà privato fino a scansione valida e collegamento autorizzato. Per FR-12, l’intenzione di notifica sarà registrata in `notification_outbox` nella stessa transazione della moderazione. Un worker elaborerà l’intenzione dopo il commit. La consegna esattamente una volta non è garantita.
 
 #### 3.6.4 GESTIONE DEGLI ERRORI
 

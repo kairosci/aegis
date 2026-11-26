@@ -10,16 +10,18 @@ MERMAID ?= $(TOOL) $(MERMAID_BIN)
 PUPPETEER ?= $(TOOL) $(PUPPETEER_BIN)
 PUPPETEER_CONFIG ?=
 OUTPUT_DIR ?= build/docs
+AEGIS_DATA_DIR ?= $(CURDIR)/config/data
 DOCX_TOOL_INPUTS = Makefile mise.toml config/documentation/package.json config/documentation/package-lock.json $(PUPPETEER_CONFIG)
 
 .DEFAULT_GOAL := help
-.PHONY: help install-tools install-doc-tools check-node check-pandoc check-mermaid compile package javadoc tomcat render-docs docs
+.PHONY: help install-tools install-doc-tools check-node check-pandoc check-mermaid compile frontend-build package javadoc tomcat render-docs docs
 
 help:
 	@printf '%s\n' \
 	  'make install-tools  Install the pinned toolchain from mise.toml' \
 	  'make compile        Compile the Java reactor with the pinned JDK and Maven' \
-	  'make package        Build the Java artifacts without running tests' \
+	  'make frontend-build Build the Bootstrap frontend assets' \
+	  'make package        Build the frontend assets and Java artifacts' \
 	  'make javadoc        Generate Java API docs and check Javadoc completeness' \
 	  'make tomcat         Start the pinned local servlet/JSP container' \
 	  'make docs           Generate RAD and SDD DOCX files in $(OUTPUT_DIR)' \
@@ -67,15 +69,19 @@ check-mermaid: check-node
 compile: install-tools
 	$(TOOL) mvn -B -f pom.xml compile
 
-package: install-tools
+package: frontend-build
 	$(TOOL) mvn -B -f pom.xml package
+
+frontend-build: install-tools
+	$(TOOL) npm ci --prefix frontend
+	$(TOOL) npm run build --prefix frontend
 
 javadoc: install-tools
 	$(TOOL) mvn -B -f pom.xml install
 	$(TOOL) mvn -B -f pom.xml javadoc:javadoc -Ddoclint=all -Dshow=private
 
 tomcat: install-tools
-	$(TOOL) catalina.sh run
+	AEGIS_DATA_DIR="$(AEGIS_DATA_DIR)" $(TOOL) catalina.sh run
 
 render-docs: check-mermaid
 	mkdir -p "$(OUTPUT_DIR)"

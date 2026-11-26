@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="it"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:pt="jakarta.faces.passthrough">
+<h:head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>#{reportTrackingView.text('page.title')} | aegis</title>
+    <h:outputStylesheet library="vendor" name="bootstrap.min.css" />
+    <h:outputStylesheet library="css" name="app.css" />
+</h:head>
+<h:body>
+    <a class="skip-link" href="#contenuto">#{reportTrackingView.text('accessibility.skip')}</a>
+
+    <header class="site-header">
+        <div class="container">
+            <a class="brand" href="index.xhtml"
+               aria-label="#{reportTrackingView.text('accessibility.home-link')}">aegis</a>
+        </div>
+    </header>
+
+    <main id="contenuto" class="container page-shell">
+        <section class="tracking-card card border-0 shadow-sm" aria-labelledby="page-heading">
+            <div class="card-body p-4 p-md-5">
+                <p class="eyebrow mb-2">#{reportTrackingView.text('page.section')}</p>
+                <h1 id="page-heading" class="h2 mb-3">#{reportTrackingView.text('tracking.heading')}</h1>
+                <p class="lead-copy mb-4">#{reportTrackingView.text('tracking.intro')}</p>
+
+                <h:form id="tracking-form">
+                    <div class="mb-3">
+                        <h:outputLabel for="code" styleClass="form-label fw-semibold"
+                                       value="#{reportTrackingView.text('tracking.code-label')}" />
+                        <h:inputText id="code"
+                                     value="#{reportTrackingView.code}"
+                                     styleClass="form-control form-control-lg"
+                                     pt:autocomplete="off"
+                                     required="true"
+                                     requiredMessage="#{reportTrackingView.text('tracking.required')}"
+                                     pt:aria-describedby="code-help tracking-form:code-error">
+                            <f:validateRegex pattern="[0-9A-Za-z]+"
+                                             validatorMessage="#{reportTrackingView.text('tracking.invalid-format')}" />
+                        </h:inputText>
+                        <div id="code-help" class="form-text">#{reportTrackingView.text('tracking.code-help')}</div>
+                        <h:message id="code-error" for="code" styleClass="field-error" />
+                    </div>
+
+                    <h:messages globalOnly="true" styleClass="alert alert-warning" pt:role="alert" />
+
+                    <h:commandButton action="#{reportTrackingView.track}"
+                                     value="#{reportTrackingView.text('tracking.submit')}"
+                                     styleClass="btn btn-primary btn-lg w-100" />
+
+                    <h:panelGroup layout="block" rendered="#{not empty reportTrackingView.status}"
+                                  styleClass="status-panel mt-4 p-3 rounded-3">
+                        <div role="status" aria-live="polite">
+                            <h2 class="h6 mb-1">#{reportTrackingView.text('tracking.status-heading')}</h2>
+                            <p class="mb-0 fw-semibold">#{reportTrackingView.statusLabel}</p>
+                        </div>
+                    </h:panelGroup>
+                </h:form>
+            </div>
+        </section>
+
+        <p class="privacy-note mt-4">#{reportTrackingView.text('tracking.privacy')}</p>
+    </main>
+</h:body>
+</html>

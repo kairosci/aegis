@@ -4,20 +4,22 @@ Monorepo per la piattaforma di mobilità urbana accessibile.
 
 ## Stato del repository
 
-Il repository contiene la documentazione e gli strumenti per esportare RAD e SDD in DOCX. Il prodotto applicativo non è ancora implementato: `src/` non contiene moduli e non è presente una build applicativa. Requisiti e architettura descrivono il sistema proposto e restano da convalidare.
+Il repository contiene RAD, SDD, strumenti documentali e un prototipo applicativo Java con frontend web. Il prototipo copre il tracking pubblico UC-04 con una vista Jakarta Faces in italiano e gli asset Bootstrap locali. Il prodotto non è completo né pronto per l'esercizio: gli adattatori di persistenza e le segnalazioni sono in memoria, non esiste una suite di test applicativa e il deployment su Tomcat non è stato verificato.
 
 ## Struttura
 
 | Percorso | Contenuto |
 |---|---|
 | `docs/` | [RAD](docs/RAD.md), [SDD](docs/SDD.md) e [template](docs/template/). |
-| `config/` | Configurazione condivisa della toolchain documentale e dei dati del progetto. |
-| `config/data/` | Directory per i dati del progetto. Attualmente vuota. |
-| `src/` | Codice applicativo. |
+| `backend/src/` | Moduli Maven Java per configurazione, dominio, casi d'uso, adattatori e WAR. |
+| `frontend/` | Sorgenti Facelets/CSS, Bootstrap bloccato nel lockfile e script di build degli asset. |
+| `config/` | Toolchain documentale e configurazione applicativa esterna, inclusi i messaggi italiani. |
 | `.agents/skills/` | Skill Codex specifiche del progetto. |
 | `.github/` | Dependabot e collegamento issue alla segnalazione privata delle vulnerabilità. |
 
-La documentazione e i relativi template risiedono in `docs/`. Il DOCX sorgente è il riferimento di stile e struttura. I DOCX esportati non sono versionati. Non sono configurati script di test o validazione documentale e non sono presenti workflow CI. La generazione locale degli export è disponibile con `make docs`.
+`make frontend-build` installa le dipendenze JavaScript bloccate e produce gli asset in `frontend/dist/`. `make package` costruisce tali asset e il WAR `backend/src/bootstrap/target/aegis.war`. `make tomcat` avvia il container locale, ma non installa né distribuisce automaticamente il WAR. Il runtime usa repository in memoria e non contiene dati di esempio.
+
+La documentazione e i relativi template risiedono in `docs/`. Il DOCX sorgente è il riferimento di stile e struttura. I DOCX esportati non sono versionati. La build Maven non trova test applicativi e non sono presenti workflow CI. La generazione locale degli export è disponibile con `make docs`.
 
 ## Segnalazioni
 

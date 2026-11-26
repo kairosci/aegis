@@ -8,7 +8,7 @@
 | Corso | Ingegneria del Software e Interazione Uomo-Macchina |
 | Docenti | Prof.ssa Mariacarla Staffa |
 | Candidati | Alessio Attilio, Michela Rita Brancaccio, Andrea Plini |
-| Anno accademico | 2025/2026 |
+| Anno accademico | 2026/2027 |
 
 ## SOMMARIO
 
@@ -167,6 +167,7 @@ La baseline di accessibilità del prodotto è **[WCAG 2.1 livello AA](https://ww
 | NFR-11 | Usabilità | Consentire agli utenti di completare autonomamente i flussi principali e registrare tempi ed errori. | In una prova con 5 partecipanti del target, ognuno svolge i 4 compiti della Tabella 4.2; almeno 17 dei 20 tentativi devono essere completati senza aiuto (≥85%). | Team di sviluppo / QA |
 | NFR-12 | Manutenibilità | Mantenere separati dominio, casi d’uso e adattatori, documentando le API. | Revisione dell’architettura a livelli e documentazione completa degli endpoint REST tramite specifica OpenAPI. | Responsabile tecnico |
 | NFR-13 | Portabilità | Garantire la fruibilità dell’interfaccia web su browser desktop e dispositivi mobili (*responsive design*). | Test di compatibilità su Chrome, Firefox, Safari ed Edge sia su desktop che su smartphone. | Team di sviluppo / QA |
+| NFR-14 | Localizzazione | Presentare in italiano la vista di tracking, gli errori e le etichette degli stati pubblici. | Verificare che ogni stato di `ReportStatus` abbia una chiave italiana e che la vista mostri le cinque etichette previste. Registrare i risultati per la versione e l’ambiente usati. | Responsabile tecnico (nomina da confermare) |
 
 *Tabella 3.3: Requisiti non funzionali*
 
@@ -174,7 +175,7 @@ La baseline di accessibilità del prodotto è **[WCAG 2.1 livello AA](https://ww
 
 | Vincolo | Specifica |
 |---|---|
-| Piattaforma applicativa | Backend sviluppato in Java LTS / Jakarta EE per API REST e worker asincroni, frontend web responsive. |
+| Piattaforma applicativa | Backend Java 21 con API Jakarta e frontend web responsive separati in `backend/` e `frontend/`. Il target locale è Tomcat 11 con le implementazioni Faces, CDI e REST incluse nel WAR. L’esecuzione dei worker resta da definire. |
 | Persistenza e file | Database relazionale PostgreSQL con estensione spaziale PostGIS e storage dedicato per le immagini allegate. |
 | Struttura software | Architettura disaccoppiata tra presentazione, casi d’uso, dominio e adattatori esterni, documentata con OpenAPI. |
 | Accesso e ruoli | Consultazione dei luoghi e tracking tramite codice pubblici. Invio di segnalazioni riservato all’Utente registrato autenticato. Autenticazione e controllo dei ruoli per preferiti, notifiche, storico personale e moderazione. |
@@ -316,7 +317,7 @@ UC08 ..> : include UC07
 | Attori partecipanti | Ospite, Utente registrato |
 | Condizioni d’ingresso | Codice di tracking fornito dall’utente. |
 | Condizioni d’uscita | Mostrato esclusivamente lo stato pubblico consentito della segnalazione, senza dati riservati. |
-| Requisiti qualitativi | Il codice non consente di enumerare altre segnalazioni (FR-08), le richieste ripetute con codici errati sono limitate (NFR-06), pagina fruibile tramite tecnologie assistive (NFR-01). |
+| Requisiti qualitativi | Il codice non consente di enumerare altre segnalazioni (FR-08), le richieste ripetute con codici errati sono limitate (NFR-06), la pagina è fruibile tramite tecnologie assistive (NFR-01) e presenta in italiano testi e stati pubblici (NFR-14). |
 | Flusso degli eventi | 1. L’utente inserisce il proprio codice di tracking.<br>2. Il sistema verifica l’esistenza e la validità del codice.<br>3. Il sistema recupera lo stato corrente (In verifica, Confermata, Risolta, Rifiutata, Duplicata) e le note pubbliche.<br>4. Il sistema visualizza le informazioni a schermo. |
 | Flussi alternativi e di errore | • Codice non riconosciuto o errato: il sistema mostra un messaggio generico di codice non valido, senza rivelare dettagli sull’archivio. |
 
@@ -928,11 +929,11 @@ stateDiagram-v2
 
 | Aspetto | Descrizione |
 |---|---|
-| Scopo (ruolo, interfaccia, implementazione) | Non valutabile: nel repository non è presente un prototipo navigabile o implementato, quindi non sono documentabili ruolo, viste e componenti realizzati. |
-| Modo d’uso (statico, dinamico, interattivo) | Non disponibile in assenza del prototipo. |
-| Fedeltà (bassa o alta) | Non valutabile in assenza del prototipo. |
-| Completezza funzionale (orizzontale o verticale) | Nessuna funzionalità di prototipo è presente nel repository. |
-| Durata (usa e getta, evolutivo, incrementale, interattivo) | Non determinabile senza il prototipo e il relativo piano di evoluzione. |
+| Scopo (ruolo, interfaccia, implementazione) | Prototipo per l’Ospite: consente di inserire un codice e consultare lo stato pubblico tramite Jakarta Faces. |
+| Modo d’uso (statico, dinamico, interattivo) | Interattivo, con rendering server-side e invio del modulo HTML. |
+| Fedeltà (bassa o alta) | Interfaccia responsive realizzata con Bootstrap e CSS locale. La fedeltà e l’usabilità non sono state valutate. |
+| Completezza funzionale (orizzontale o verticale) | Slice verticale parziale di UC-04. Il bean chiama `TrackReport` e localizza i cinque stati. Il repository in memoria parte vuoto e non è stato dimostrato un percorso completo con una segnalazione esistente. |
+| Durata (usa e getta, evolutivo, incrementale, interattivo) | Prototipo evolutivo. Le viste degli altri casi d’uso non sono incluse in questa slice. |
 
 *Tabella 4.1: Caratteristiche del prototipo*
 
@@ -944,7 +945,7 @@ La prova è pianificata ma non ancora svolta. Verificherà i criteri del RAD per
 
 #### 4.2.2 Metodologia
 
-Il protocollo prevede 5 partecipanti appartenenti al target del sistema. Ogni partecipante svolge i quattro compiti della Tabella 4.2, per un totale di 20 tentativi. I partecipanti sono identificati con codici anonimi. Per ciascun compito si registrano tempo, completamento senza aiuto, errori e osservazioni. I risultati non sono ancora raccolti perché nel repository non è presente il prototipo necessario alla prova.
+Il protocollo prevede 5 partecipanti appartenenti al target del sistema. Ogni partecipante svolge i quattro compiti della Tabella 4.2, per un totale di 20 tentativi. I partecipanti sono identificati con codici anonimi. Per ciascun compito si registrano tempo, completamento senza aiuto, errori e osservazioni. I risultati non sono stati raccolti. Il prototipo disponibile copre solo parte di UC-04 e non dispone di segnalazioni persistenti con cui dimostrare il flusso completo.
 
 Compiti proposti, derivati dagli scenari della Tabella 3.7:
 
