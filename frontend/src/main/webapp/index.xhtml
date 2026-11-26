@@ -38,9 +38,9 @@
                                      pt:autocomplete="off"
                                      required="true"
                                      requiredMessage="#{reportTrackingView.text('tracking.required')}"
+                                     validatorMessage="#{reportTrackingView.text('tracking.invalid-format')}"
                                      pt:aria-describedby="code-help tracking-form:code-error">
-                            <f:validateRegex pattern="[0-9A-Za-z]+"
-                                             validatorMessage="#{reportTrackingView.text('tracking.invalid-format')}" />
+                            <f:validateRegex pattern="[0-9A-Za-z]+" />
                         </h:inputText>
                         <div id="code-help" class="form-text">#{reportTrackingView.text('tracking.code-help')}</div>
                         <h:message id="code-error" for="code" styleClass="field-error" />

@@ -83,7 +83,7 @@ Il documento è organizzato in 6 capitoli: il Capitolo 1 definisce scopo e obiet
 
 Il progetto è di tipo **greenfield** (sviluppo ex novo): non esiste un sistema preesistente da migrare o integrare come legacy. L’architettura viene progettata da zero per acquisire i feed ufficiali GTFS del trasporto pubblico locale dell’area metropolitana di Napoli e affiancarli alle segnalazioni georeferenziate degli utenti.
 
-Il repository contiene inoltre un prototipo parziale di UC-04: vista Facelets in italiano, CSS Bootstrap locale, bean CDI e caso d’uso `TrackReport`. I repository selezionati dal bootstrap sono in memoria e non hanno dati iniziali. La build produce il WAR, ma l’avvio su Tomcat, il recupero positivo di una segnalazione e le verifiche con utenti non sono stati osservati.
+Il repository contiene inoltre un prototipo parziale di UC-04: vista Facelets in italiano, CSS Bootstrap locale, bean CDI e caso d’uso `TrackReport`. I repository selezionati dal bootstrap sono in memoria e non hanno dati iniziali. Il 26 novembre 2026 il WAR è stato distribuito su Tomcat 11.0.29 con Java 21 in una base locale isolata: la vista e i due fogli CSS hanno risposto `200` e i testi italiani sono stati renderizzati. Non è stato verificato il recupero positivo di una segnalazione né sono state svolte verifiche con utenti.
 
 ## 3. SISTEMA PROPOSTO
 
@@ -91,7 +91,7 @@ Il repository contiene inoltre un prototipo parziale di UC-04: vista Facelets in
 
 AEGIS è una web app responsive per consultare l’accessibilità di luoghi e servizi di trasporto, pianificare spostamenti e inviare segnalazioni. L’Ospite può consultare luoghi, pianificare percorsi, seguire segnalazioni tramite codice e registrarsi. Solo l’Utente registrato autenticato può inviare segnalazioni. Le viste server-side usano Jakarta Faces e Facelets. Le API REST usano Jakarta REST. I worker eseguono le sincronizzazioni e le attività asincrone.
 
-Il target locale richiesto per il progetto è Java 21 e Tomcat 11.0.29. Il WAR include Mojarra 4.1, Weld 6 e Jersey 4 perché Tomcat fornisce il container Servlet e non un runtime Jakarta EE completo. Le versioni sono bloccate nel progetto e la compilazione del WAR è verificata. Il deployment e l’avvio su Tomcat restano da verificare. PostgreSQL/PostGIS, Redis, object storage e integrazioni esterne appartengono all’architettura proposta, ma non sono collegati al wiring CDI corrente. L’ambiente di produzione e la relativa configurazione sono decisioni aperte del Responsabile tecnico.
+Il target locale richiesto per il progetto è Java 21 e Tomcat 11.0.29. Il WAR include Mojarra 4.1, Weld 6 e Jersey 4, incluso il modulo Jersey HK2, perché Tomcat fornisce il container Servlet e non un runtime Jakarta EE completo. Il modulo web dichiara il proprio archivio CDI e il bootstrap produce `MessageSource` con scope `@Dependent`, compatibile con il tipo record immutabile. Le versioni sono bloccate nel progetto. Il 26 novembre 2026 il WAR è stato avviato in una base Tomcat isolata e la vista Facelets e gli asset CSS sono stati serviti con risposta `200`; la build Maven è riuscita. La verifica non copre il recupero positivo di una segnalazione, l’autenticazione, la persistenza o il deployment di produzione. PostgreSQL/PostGIS, Redis, object storage e integrazioni esterne appartengono all’architettura proposta, ma non sono collegati al wiring CDI corrente. L’ambiente di produzione e la relativa configurazione sono decisioni aperte del Responsabile tecnico.
 
 Il browser riceve HTML per le viste e JSON per le API. La mappa usa una libreria cartografica client-side, mentre i dati di luoghi e accessibilità provengono dall’API. Consultazione dei luoghi e tracking tramite codice sono pubblici. UC-03, preferiti, notifiche, storico personale e operazioni amministrative richiedono autenticazione e autorizzazione. I ruoli sono Utente registrato e Amministratore. Le transizioni di moderazione sono quelle definite in FR-09 del RAD.
 
@@ -208,7 +208,7 @@ L'applicazione JAX-RS espone le risorse sotto `/api/v1`: `GET /places` e `GET /p
 | Nodo | Ambiente e software | Responsabilità |
 |---|---|---|
 | Dispositivo client | Browser desktop o mobile e tecnologie assistive. | Renderizzare le viste, interagire con la mappa e inviare richieste HTTPS. |
-| Container applicativo | Target locale: Java 21, Tomcat 11.0.29, Mojarra 4.1.21, Weld 6.0.4.Final e Jersey 4.0.3 inclusi nel WAR. Il WAR è costruito ma il deployment non è verificato. | Servire la vista Facelets e le API REST. |
+| Container applicativo | Target locale: Java 21, Tomcat 11.0.29, Mojarra 4.1.21, Weld 6.0.4.Final e Jersey 4.0.3 con Jersey HK2 inclusi nel WAR. Distribuzione locale verificata il 26 novembre 2026: vista Facelets e CSS serviti con risposta `200`. | Servire la vista Facelets e le API REST. |
 | Elaborazione asincrona | Il modulo `worker` contiene `OutboxNotificationWorker`, ma non è attivato né schedulato. Runtime e packaging futuri sono TBD. | Elaborare notifiche e sincronizzazioni secondo il disegno target. |
 | Database | PostgreSQL 16 con PostGIS 3.4, proposta non collegata al wiring CDI corrente. | Conservare entità, eventi e geometrie. |
 | Object storage | MinIO in locale e AWS S3 in produzione sono proposte, non configurate nel deployment corrente. | Conservare immagini in modo privato fino alla verifica e associazione autorizzata. |

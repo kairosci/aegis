@@ -4,7 +4,7 @@ Monorepo per la piattaforma di mobilità urbana accessibile.
 
 ## Stato del repository
 
-Il repository contiene RAD, SDD, strumenti documentali e un prototipo applicativo Java con frontend web. Il prototipo copre il tracking pubblico UC-04 con una vista Jakarta Faces in italiano e gli asset Bootstrap locali. Il prodotto non è completo né pronto per l'esercizio: gli adattatori di persistenza e le segnalazioni sono in memoria, non esiste una suite di test applicativa e il deployment su Tomcat non è stato verificato.
+Il repository contiene RAD, SDD, strumenti documentali e un prototipo applicativo Java con frontend web. Il prototipo copre il tracking pubblico UC-04 con una vista Jakarta Faces in italiano e gli asset Bootstrap locali. Il deployment locale su Tomcat 11.0.29 è stato verificato il 26 novembre 2026: la vista e gli asset CSS rispondono `200`. Il prodotto non è completo né pronto per l'esercizio: gli adattatori di persistenza e le segnalazioni sono in memoria, non esiste una suite di test applicativa e il recupero positivo di una segnalazione non è stato verificato.
 
 ## Struttura
 

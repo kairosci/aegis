@@ -73,7 +73,7 @@ public class BeanConfiguration {
      * @return sorgente che risolve i testi dalla directory dati
      */
     @Produces
-    @ApplicationScoped
+    @Dependent
     public MessageSource messages(AegisConfig config) {
         return MessageSource.from(config);
     }
