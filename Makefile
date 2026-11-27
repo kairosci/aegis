@@ -1,35 +1,30 @@
-# Tutte le versioni degli strumenti sono in mise.toml.
-# Ogni comando passa da `mise exec`, quindi il Makefile non ripete versioni.
+# Le versioni degli strumenti sono dichiarate in mise.toml.
 
 MISE ?= mise
 TOOL := $(MISE) exec --
-PANDOC ?= $(TOOL) pandoc
 MERMAID_BIN ?= config/documentation/node_modules/.bin/mmdc
 PUPPETEER_BIN ?= config/documentation/node_modules/.bin/puppeteer
 MERMAID ?= $(TOOL) $(MERMAID_BIN)
 PUPPETEER ?= $(TOOL) $(PUPPETEER_BIN)
 PUPPETEER_CONFIG ?=
-OUTPUT_DIR ?= build/docs
-DOCX_TOOL_INPUTS = Makefile mise.toml config/documentation/package.json config/documentation/package-lock.json $(PUPPETEER_CONFIG)
+IMAGE_DIR ?= docs/images
+IMAGE_SIZE ?= 1600
+IMAGE_SCALE ?= 2
+WORD_DIAGRAM_CONFIG ?= config/documentation/mermaid-word.json
 
 .DEFAULT_GOAL := help
-.PHONY: help install-tools install-doc-tools check-node check-pandoc check-mermaid compile package javadoc tomcat render-docs docs
+.PHONY: help install-tools install-image-tools check-node check-mermaid images
 
 help:
 	@printf '%s\n' \
-	  'make install-tools  Install the pinned toolchain from mise.toml' \
-	  'make compile        Compile the Java reactor with the pinned JDK and Maven' \
-	  'make package        Build the Java artifacts without running tests' \
-	  'make javadoc        Generate Java API docs and check Javadoc completeness' \
-	  'make tomcat         Start the pinned local servlet/JSP container' \
-	  'make docs           Generate RAD and SDD DOCX files in $(OUTPUT_DIR)' \
-	  'make install-doc-tools  Install pinned Node tools and Chromium for Mermaid exports' \
-	  'Set PANDOC and MERMAID to select alternate executables'
+	  'make install-tools       Install the pinned toolchain from mise.toml' \
+	  'make install-image-tools Install Mermaid CLI and Chromium headless' \
+	  'make images              Generate RAD and SDD diagram images in $(IMAGE_DIR)'
 
 install-tools:
 	$(MISE) install
 
-install-doc-tools: install-tools
+install-image-tools: install-tools
 	$(TOOL) npm ci --prefix config/documentation
 	$(TOOL) npm exec --prefix config/documentation -- puppeteer browsers install chrome-headless-shell
 
@@ -40,17 +35,10 @@ check-node: install-tools
 	  exit 1; \
 	fi
 
-check-pandoc: install-tools
-	@version="$$($(PANDOC) --version | sed -n '1s/^pandoc //p')"; \
-	if [ -z "$$version" ]; then \
-	  printf 'Pandoc non disponibile tramite mise.\n' >&2; \
-	  exit 1; \
-	fi
-
 check-mermaid: check-node
 	@expected="$$($(TOOL) node -p "require('./config/documentation/package.json').devDependencies['@mermaid-js/mermaid-cli']")"; \
 	if [ ! -x "$(MERMAID_BIN)" ]; then \
-	  printf 'Mermaid CLI non trovato. Eseguire make install-doc-tools.\n' >&2; \
+	  printf 'Mermaid CLI non trovato. Eseguire make install-image-tools.\n' >&2; \
 	  exit 1; \
 	fi; \
 	actual="$$($(MERMAID) --version)"; \
@@ -60,33 +48,14 @@ check-mermaid: check-node
 	fi; \
 	browsers="$$($(PUPPETEER) browsers list)"; \
 	if ! printf '%s\n' "$$browsers" | grep -q 'chrome-headless-shell@'; then \
-	  printf 'Chromium headless non trovato. Eseguire make install-doc-tools.\n' >&2; \
+	  printf 'Chromium headless non trovato. Eseguire make install-image-tools.\n' >&2; \
 	  exit 1; \
 	fi
 
-compile: install-tools
-	$(TOOL) mvn -B -f pom.xml compile
-
-package: install-tools
-	$(TOOL) mvn -B -f pom.xml package
-
-javadoc: install-tools
-	$(TOOL) mvn -B -f pom.xml install
-	$(TOOL) mvn -B -f pom.xml javadoc:javadoc -Ddoclint=all -Dshow=private
-
-tomcat: install-tools
-	$(TOOL) catalina.sh run
-
-render-docs: check-mermaid
-	mkdir -p "$(OUTPUT_DIR)"
-	$(MERMAID) $(if $(PUPPETEER_CONFIG),--puppeteerConfigFile "$(PUPPETEER_CONFIG)") --input docs/RAD.md --output "$(OUTPUT_DIR)/rad-rendered.md" --outputFormat png --artefacts "$(OUTPUT_DIR)" --size 630 --jobs 1
-	$(MERMAID) $(if $(PUPPETEER_CONFIG),--puppeteerConfigFile "$(PUPPETEER_CONFIG)") --input docs/SDD.md --output "$(OUTPUT_DIR)/sdd-rendered.md" --outputFormat png --artefacts "$(OUTPUT_DIR)" --size 630 --jobs 1
-
-docs: check-node check-pandoc
-	$(MAKE) --no-print-directory $(OUTPUT_DIR)/rad-is.docx $(OUTPUT_DIR)/sdd-is.docx
-
-$(OUTPUT_DIR)/rad-is.docx: docs/RAD.md docs/template/template.docx $(DOCX_TOOL_INPUTS) | render-docs
-	$(PANDOC) --from=gfm --to=docx --standalone --reference-doc=docs/template/template.docx --resource-path=".:docs:$(OUTPUT_DIR)" "$(OUTPUT_DIR)/rad-rendered.md" --output="$@"
-
-$(OUTPUT_DIR)/sdd-is.docx: docs/SDD.md docs/template/template.docx $(DOCX_TOOL_INPUTS) | render-docs
-	$(PANDOC) --from=gfm --to=docx --standalone --reference-doc=docs/template/template.docx --resource-path=".:$(OUTPUT_DIR)" "$(OUTPUT_DIR)/sdd-rendered.md" --output="$@"
+images: check-mermaid
+	@temporary_dir="$$(mktemp -d)"; \
+	trap '$(TOOL) node -e "require(\"node:fs\").rmSync(process.argv[1], {recursive: true, force: true})" "$$temporary_dir"' EXIT; \
+	mkdir -p "$$temporary_dir/rad" "$$temporary_dir/sdd"; \
+	$(MERMAID) --configFile "$(WORD_DIAGRAM_CONFIG)" $(if $(PUPPETEER_CONFIG),--puppeteerConfigFile "$(PUPPETEER_CONFIG)") --input docs/RAD.md --output "$$temporary_dir/rad-rendered.md" --outputFormat png --artefacts "$$temporary_dir/rad" --size "$(IMAGE_SIZE)" --scale "$(IMAGE_SCALE)" --jobs 1 && \
+	$(MERMAID) --configFile "$(WORD_DIAGRAM_CONFIG)" $(if $(PUPPETEER_CONFIG),--puppeteerConfigFile "$(PUPPETEER_CONFIG)") --input docs/SDD.md --output "$$temporary_dir/sdd-rendered.md" --outputFormat png --artefacts "$$temporary_dir/sdd" --size "$(IMAGE_SIZE)" --scale "$(IMAGE_SCALE)" --jobs 1 && \
+	$(TOOL) node config/documentation/render-word-images.mjs "$$temporary_dir/rad" "$$temporary_dir/sdd" "$(IMAGE_DIR)"

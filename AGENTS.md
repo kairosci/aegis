@@ -9,7 +9,7 @@
 
 Le skill specifiche del progetto si trovano in `.agents/skills/`. Usa solo quelle pertinenti alla richiesta. Non caricare le skill di altri ambiti per abitudine.
 
-Per ogni modifica a RAD, SDD, template o documentazione di progetto, applica `aegis-docs` e `aegis-antislop` insieme. Verifica evidenze, tracciabilità, linguaggio, diagrammi ed export prima di concludere.
+Per ogni modifica a RAD, SDD, template o documentazione di progetto, applica `aegis-docs` e `aegis-antislop` insieme. Verifica evidenze, tracciabilità, linguaggio, diagrammi e immagini renderizzate prima di concludere.
 
 ## Pull request
 
@@ -19,7 +19,7 @@ Prima di creare o aggiornare una pull request, leggi `.github/pull_request_templ
 
 ### Stato e ambito
 
-Il repository contiene la documentazione RAD/SDD e gli strumenti per esportarla in DOCX. L'applicazione non è ancora implementata e non dispone di build o test applicativi. Gli script di validazione, i test documentali e i workflow CI sono stati rimossi. Il repository è pubblico ma non dichiara una licenza. Finché OPEN-10 non è risolta, non inviare contributi esterni che richiedono diritti di riuso o ridistribuzione.
+Il repository contiene la documentazione RAD/SDD e gli strumenti per generare immagini dei diagrammi. Non genera DOCX. L'applicazione non è ancora implementata e non dispone di build o test applicativi. Gli script di validazione, i test documentali e i workflow CI sono stati rimossi. Il repository è pubblico ma non dichiara una licenza. Finché OPEN-10 non è risolta, non inviare contributi esterni che richiedono diritti di riuso o ridistribuzione.
 
 ### Flusso di lavoro
 
@@ -31,23 +31,23 @@ Il repository contiene la documentazione RAD/SDD e gli strumenti per esportarla 
 
 Per modifiche documentali applicare la skill [aegis-antislop](.agents/skills/aegis-antislop/SKILL.md) insieme alla skill [aegis-docs](.agents/skills/aegis-docs/SKILL.md). Controllare che ogni affermazione sia sostenuta da una fonte o marcata come proposta o decisione aperta, che i termini restino coerenti e che il diagramma globale riporti tutti i casi d'uso e le relative associazioni.
 
-### Esportazione DOCX
+### Immagini dei diagrammi
 
-Le versioni richieste per l'esportazione sono descritte nei [prerequisiti documentali del README](README.md#prerequisiti-documentali).
+Le versioni richieste per la generazione delle immagini sono descritte nel README.
 
-Per generare localmente gli export installare gli strumenti Mermaid e Chromium headless:
-
-```sh
-make install-doc-tools
-```
-
-Generare gli export con:
+Per installare Mermaid CLI e Chromium headless:
 
 ```sh
-make docs
+make install-image-tools
 ```
 
-Gli export vengono salvati in `build/docs/` e non vanno aggiunti al repository. `make docs` genera i file senza eseguire controlli automatici. Esaminare manualmente gli export prima di condividerli. I controlli della build e i test applicativi non esistono finché ENG-03 non introduce una build.
+Generare le immagini dei diagrammi RAD e SDD con:
+
+```sh
+make images
+```
+
+Le immagini vengono salvate in `docs/images/` e versionate insieme ai documenti. Il target genera solo immagini e non esegue controlli automatici. Esaminare manualmente le immagini prima di condividerle. I controlli della build e i test applicativi non esistono finché ENG-03 non introduce una build.
 
 ### Criteri di revisione
 
